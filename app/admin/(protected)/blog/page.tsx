@@ -1,0 +1,110 @@
+import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import Image from 'next/image'
+
+export default async function BlogPage() {
+  const supabase = await createClient()
+  const { data: posts } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Blog & Actualités</h1>
+        <Link
+          href="/admin/blog/nouveau"
+          className="px-4 py-2 bg-[#22C83A] text-white rounded-lg hover:bg-[#1ab030] transition font-medium"
+        >
+          + Nouvel article
+        </Link>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Article
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Catégorie
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Statut
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {posts?.map((post) => (
+              <tr key={post.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4">
+                  <div className="flex items-center">
+                    {post.featured_image_url && (
+                      <div className="relative w-12 h-12 mr-3">
+                        <Image
+                          src={post.featured_image_url}
+                          alt={post.title}
+                          fill
+                          className="rounded object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {post.title}
+                      </div>
+                      {post.excerpt && (
+                        <div className="text-sm text-gray-500 line-clamp-1">
+                          {post.excerpt}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {post.category && (
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                      {post.category}
+                    </span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {post.published_at
+                    ? new Date(post.published_at).toLocaleDateString('fr-FR')
+                    : '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      post.is_published
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {post.is_published ? 'Publié' : 'Brouillon'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <Link
+                    href={`/admin/blog/${post.id}`}
+                    className="text-[#014F43] hover:text-[#22C83A]"
+                  >
+                    Modifier
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
