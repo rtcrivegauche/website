@@ -24,6 +24,7 @@ const AVAILABLE_MENUS = [
   { key: 'menu_pages', label: 'Pages personnalisées', description: 'Gestion des pages additionnelles' },
   { key: 'menu_navigation', label: 'Navigation', description: 'Gestion des liens de menus publics' },
   { key: 'menu_media', label: 'Médias', description: 'Gestion de la bibliothèque de médias' },
+  { key: 'menu_messages', label: 'Messages de contact', description: 'Accès aux messages reçus du formulaire de contact' },
   { key: 'menu_users', label: 'Utilisateurs', description: 'Gestion des comptes d\'administration' },
   { key: 'menu_roles', label: 'Rôles & Permissions', description: 'Gestion des privilèges et profils' },
   { key: 'menu_config', label: 'Configuration', description: 'Paramètres généraux du site' },

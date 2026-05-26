@@ -60,7 +60,7 @@ export default function Footer() {
 
       // 2. Charger les items de navigation
       const { data: items } = await supabase
-        .from('navigation_items')
+        .from('navigation')
         .select('*')
         .eq('is_active', true)
         .order('order_index')

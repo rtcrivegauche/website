@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import Header from '@/components/public/Header'
+import Footer from '@/components/public/Footer'
+import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -62,34 +65,37 @@ export default async function CustomPage({ params }: PageProps) {
 
   // Si c'est du contenu riche ou hybride
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-bold text-[#014F43] mb-4">
-          {page.title}
-        </h1>
-        
-        {page.description && (
-          <p className="text-xl text-gray-600 mb-8">
-            {page.description}
-          </p>
-        )}
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+      <Header />
+      <main className="flex-grow mt-24">
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <h1 className="text-4xl font-bold text-[#014F43] mb-4">
+            {page.title}
+          </h1>
+          
+          {page.description && (
+            <p className="text-xl text-gray-600 mb-8">
+              {page.description}
+            </p>
+          )}
 
-        {/* Contenu riche (à implémenter avec un éditeur plus tard) */}
-        {page.rich_content && (
-          <div className="prose prose-lg max-w-none">
-            {/* TODO: Implémenter le rendu du contenu riche */}
-            <pre>{JSON.stringify(page.rich_content, null, 2)}</pre>
-          </div>
-        )}
+          {/* Contenu riche rendu de manière sécurisée */}
+          {page.rich_content?.html && (
+            <div className="prose prose-lg max-w-none">
+              <SafeHtmlRenderer html={page.rich_content.html} />
+            </div>
+          )}
 
-        {/* Embed code en mode hybride */}
-        {page.content_type === 'hybrid' && page.embed_code && (
-          <div 
-            className="mt-8"
-            dangerouslySetInnerHTML={{ __html: page.embed_code }}
-          />
-        )}
-      </div>
+          {/* Embed code en mode hybride */}
+          {page.content_type === 'hybrid' && page.embed_code && (
+            <div 
+              className="mt-8"
+              dangerouslySetInnerHTML={{ __html: page.embed_code }}
+            />
+          )}
+        </div>
+      </main>
+      <Footer />
     </div>
   )
 }

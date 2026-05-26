@@ -1,14 +1,36 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Edit, Menu, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Menu } from 'lucide-react'
+import NavigationList from '@/components/admin/NavigationList'
 
 export default async function NavigationPage() {
   const supabase = await createClient()
   
-  const { data: items } = await supabase
-    .from('navigation_items')
+  let { data: items } = await supabase
+    .from('navigation')
     .select('*')
     .order('order_index')
+
+  // Auto-initialisation si la table est vide
+  if (!items || items.length === 0) {
+    const defaultLinks = [
+      { label: 'ACCUEIL', url: '/', order_index: 1, is_active: true },
+      { label: 'LE CLUB', url: '/a-propos', order_index: 2, is_active: true },
+      { label: 'NOS ACTIONS', url: '/actions', order_index: 3, is_active: true },
+      { label: 'ÉVÉNEMENTS', url: '/evenements', order_index: 4, is_active: true },
+      { label: 'MEMBRES', url: '/membres', order_index: 5, is_active: true },
+      { label: 'ACTUALITÉS', url: '/blog', order_index: 6, is_active: true },
+    ]
+
+    const { data: inserted, error } = await supabase
+      .from('navigation')
+      .insert(defaultLinks)
+      .select()
+
+    if (!error && inserted) {
+      items = inserted
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -44,54 +66,14 @@ export default async function NavigationPage() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-2">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
-              >
-                <GripVertical size={20} className="text-gray-400 cursor-move" />
-                
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                    {!item.is_active && (
-                      <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded">
-                        Inactif
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600">{item.url}</p>
-                  {item.parent_id && (
-                    <p className="text-xs text-gray-500 mt-1">Sous-menu</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/admin/navigation/${item.id}`}
-                    className="p-2 text-gray-600 hover:bg-gray-200 rounded transition-colors"
-                    title="Modifier"
-                  >
-                    <Edit size={18} />
-                  </Link>
-                  <button
-                    className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <NavigationList initialItems={items} />
         )}
       </div>
 
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-800">
-          <strong>Note :</strong> Pour que les modifications soient visibles sur le site, 
-          vous devez mettre à jour le composant Header.tsx pour utiliser ces données dynamiques.
+          <strong>Note :</strong> La navigation est maintenant entièrement dynamique et gérée depuis cette page.
+          Vous pouvez réordonner les liens grâce aux flèches de direction ou modifier les liens individuellement.
         </p>
       </div>
     </div>

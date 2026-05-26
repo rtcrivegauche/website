@@ -42,14 +42,14 @@ export default function NavigationForm({ navItem, parentItems }: NavigationFormP
     try {
       if (navItem) {
         const { error } = await supabase
-          .from('navigation_items')
+          .from('navigation')
           .update(data)
           .eq('id', navItem.id)
 
         if (error) throw error
       } else {
         const { error } = await supabase
-          .from('navigation_items')
+          .from('navigation')
           .insert([data])
 
         if (error) throw error

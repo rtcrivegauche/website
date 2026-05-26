@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUploader from '@/components/admin/ImageUploader'
 
 type GalleryItem = {
   id?: string
@@ -130,16 +131,13 @@ export default function GalleryItemForm({ item }: { item: GalleryItem | null }) 
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de l&apos;image *
-            </label>
-            <input
-              type="url"
-              required
-              value={formData.media_url}
-              onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
-              placeholder="https://..."
+            <ImageUploader
+              value={formData.media_url || null}
+              onChange={(url) => setFormData({ ...formData, media_url: url || '' })}
+              entityType="gallery"
+              entityId={item?.id}
+              label="Fichier image"
+              error={!formData.media_url ? "L'image est requise." : undefined}
             />
           </div>
 

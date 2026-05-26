@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Upload, Image as ImageIcon, X } from 'lucide-react'
+import ImageUploader from '@/components/admin/ImageUploader'
 
 interface ConfigFormProps {
   config: any
@@ -28,60 +28,12 @@ export default function ConfigForm({ config }: ConfigFormProps) {
     social_linkedin: config?.social_linkedin || '',
     social_twitter: config?.social_twitter || '',
     hero_subtitle: config?.hero_subtitle || '',
+    hero_image_url: config?.hero_image_url || '',
     hero_cta_primary: config?.hero_cta_primary || '',
     hero_cta_secondary: config?.hero_cta_secondary || '',
     hero_cta_primary_url: config?.hero_cta_primary_url || '',
     hero_cta_secondary_url: config?.hero_cta_secondary_url || '',
   })
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: 'site_logo_url' | 'footer_logo_url') => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setLoading(true)
-    setError('')
-    setSuccess(false)
-
-    try {
-      const supabase = createClient()
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${fieldName}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
-      const filePath = `logos/${fileName}`
-
-      // Uploader vers le bucket 'images' public
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (uploadError) throw uploadError
-
-      // Récupérer l'URL publique du fichier uploadé
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath)
-
-      // Mettre à jour le formulaire avec l'URL publique générée
-      setFormData(prev => ({
-        ...prev,
-        [fieldName]: publicUrl
-      }))
-    } catch (err: any) {
-      console.error('Upload error:', err)
-      setError(err.message || 'Erreur lors de l\'upload de l\'image')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRemoveImage = (fieldName: 'site_logo_url' | 'footer_logo_url') => {
-    setFormData(prev => ({
-      ...prev,
-      [fieldName]: ''
-    }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -132,98 +84,24 @@ export default function ConfigForm({ config }: ConfigFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Logo Principal (Header) */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-gray-700">
-              Logo du site principal (Header)
-            </label>
-            
-            {formData.site_logo_url ? (
-              <div className="relative w-fit border border-gray-200 rounded-xl p-4 bg-gray-50 flex items-center justify-center max-w-xs group">
-                <img 
-                  src={formData.site_logo_url} 
-                  alt="Logo Header Preview" 
-                  className="h-16 w-auto object-contain" 
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage('site_logo_url')}
-                  className="absolute -top-2 -right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
-                  title="Supprimer"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-gray-50 max-w-xs">
-                <ImageIcon className="text-gray-400 mb-2" size={32} />
-                <span className="text-xs text-gray-500 mb-2">Aucun logo principal configuré</span>
-              </div>
-            )}
-
-            <div className="relative w-fit">
-              <input
-                type="file"
-                id="header_logo"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e, 'site_logo_url')}
-                className="hidden"
-                disabled={loading}
-              />
-              <label
-                htmlFor="header_logo"
-                className={`flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 transition cursor-pointer ${loading ? 'opacity-50 pointer-events-none' : ''}`}
-              >
-                <Upload size={14} />
-                {formData.site_logo_url ? 'Changer de logo' : 'Uploader un logo'}
-              </label>
-            </div>
+            <ImageUploader
+              value={formData.site_logo_url || null}
+              onChange={(url) => setFormData(prev => ({ ...prev, site_logo_url: url || '' }))}
+              entityType="config"
+              entityId={config?.id}
+              label="Logo du site principal (Header)"
+            />
           </div>
 
           {/* Logo Footer */}
           <div className="space-y-3">
-            <label className="block text-sm font-bold text-gray-700">
-              Logo de pied de page (Footer)
-            </label>
-            
-            {formData.footer_logo_url ? (
-              <div className="relative w-fit border border-gray-200 rounded-xl p-4 bg-gray-50 flex items-center justify-center max-w-xs group">
-                <img 
-                  src={formData.footer_logo_url} 
-                  alt="Logo Footer Preview" 
-                  className="h-16 w-auto object-contain" 
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage('footer_logo_url')}
-                  className="absolute -top-2 -right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
-                  title="Supprimer"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-gray-50 max-w-xs">
-                <ImageIcon className="text-gray-400 mb-2" size={32} />
-                <span className="text-xs text-gray-500 mb-2">Aucun logo de pied de page configuré</span>
-              </div>
-            )}
-
-            <div className="relative w-fit">
-              <input
-                type="file"
-                id="footer_logo"
-                accept="image/*"
-                onChange={(e) => handleFileUpload(e, 'footer_logo_url')}
-                className="hidden"
-                disabled={loading}
-              />
-              <label
-                htmlFor="footer_logo"
-                className={`flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 transition cursor-pointer ${loading ? 'opacity-50 pointer-events-none' : ''}`}
-              >
-                <Upload size={14} />
-                {formData.footer_logo_url ? 'Changer de logo' : 'Uploader un logo'}
-              </label>
-            </div>
+            <ImageUploader
+              value={formData.footer_logo_url || null}
+              onChange={(url) => setFormData(prev => ({ ...prev, footer_logo_url: url || '' }))}
+              entityType="config"
+              entityId={config?.id}
+              label="Logo de pied de page (Footer)"
+            />
           </div>
         </div>
       </div>
@@ -362,6 +240,16 @@ export default function ConfigForm({ config }: ConfigFormProps) {
       {/* Hero Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
         <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Section Hero (Page d&apos;accueil)</h2>
+
+        <div className="pb-4 border-b border-gray-100">
+          <ImageUploader
+            value={formData.hero_image_url || null}
+            onChange={(url) => setFormData(prev => ({ ...prev, hero_image_url: url || '' }))}
+            entityType="config"
+            entityId={config?.id}
+            label="Image capsule centrale du Hero (Servir [Image] Inspirer)"
+          />
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">

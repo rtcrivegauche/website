@@ -5,13 +5,88 @@ import { Plus, Edit, Eye, EyeOff, Trash2 } from 'lucide-react'
 export default async function CustomPagesPage() {
   const supabase = await createClient()
   
-  const { data: pages, error } = await supabase
+  let { data: pages, error } = await supabase
     .from('custom_pages')
     .select('*')
     .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching pages:', error)
+  }
+
+  // Auto-initialisation si aucune page n'existe en base de données
+  if (!pages || pages.length === 0) {
+    const defaultPages = [
+      {
+        slug: 'a-propos',
+        title: 'À propos de nous',
+        description: 'Découvrez le Rotaract Club de Cotonou Rive Gauche Cica, notre histoire, nos valeurs et notre impact.',
+        content_type: 'rich_text',
+        rich_content: {
+          html: `
+            <h2 class="text-3xl font-bold text-[#014F43] mb-6">Notre Histoire</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Le Rotaract Club de Cotonou Rive Gauche Cica est un club de jeunes leaders engagés 
+              dans le service communautaire et le développement professionnel. Notre club fait partie du réseau mondial Rotaract, parrainé par le Rotary International.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Depuis notre création, nous avons mené de nombreuses actions de service, 
+              touché des centaines de bénéficiaires et formé des dizaines de jeunes leaders qui font 
+              aujourd'hui la différence dans notre communauté.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              Notre nom "Cica" symbolise notre engagement envers l'excellence et notre volonté 
+              de créer un impact durable dans la société béninoise.
+            </p>
+          `,
+          json: {
+            type: "doc",
+            content: [
+              {
+                type: "heading",
+                attrs: { level: 2 },
+                content: [{ type: "text", text: "Notre Histoire" }]
+              },
+              {
+                type: "paragraph",
+                content: [{ type: "text", text: "Le Rotaract Club de Cotonou Rive Gauche Cica..." }]
+              }
+            ]
+          }
+        },
+        is_published: true
+      },
+      {
+        slug: 'rejoindre-le-club',
+        title: 'Rejoindre le Rotaract Cica',
+        description: 'Formulaire d\'inscription pour devenir membre du Club Rotaract de Cotonou Rive Gauche Cica',
+        content_type: 'embed',
+        embed_code: `<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Rejoindre le Rotaract Cica</title>
+    <script async src="https://tally.so/widgets/embed.js"></script>
+    <style type="text/css">
+      html { margin: 0; height: 100%; overflow: hidden; }
+      iframe { position: absolute; top: 0; right: 0; bottom: 0; left: 0; border: 0; }
+    </style>
+  </head>
+  <body>
+    <iframe data-tally-src="https://tally.so/r/YOUR_FORM_ID?transparentBackground=1" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" title="Rejoindre le Rotaract Cica"></iframe>
+  </body>
+</html>`,
+        is_published: false
+      }
+    ]
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('custom_pages')
+      .insert(defaultPages)
+      .select()
+
+    if (!insertError && inserted) {
+      pages = inserted
+    }
   }
 
   return (

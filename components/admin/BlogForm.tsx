@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
+import ImageUploader from '@/components/admin/ImageUploader'
+
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-32 bg-gray-50 border border-gray-200 rounded-lg animate-pulse" />
+})
 
 type PostData = {
   id?: string
@@ -10,6 +17,7 @@ type PostData = {
   slug: string
   excerpt: string
   content: string
+  content_json?: any | null
   featured_image_url: string
   category: string
   is_published: boolean
@@ -26,6 +34,7 @@ export default function BlogForm({ post }: { post: PostData | null }) {
     slug: post?.slug || '',
     excerpt: post?.excerpt || '',
     content: post?.content || '',
+    content_json: (post as any)?.content_json || null,
     featured_image_url: post?.featured_image_url || '',
     category: post?.category || '',
     is_published: post?.is_published ?? false,
@@ -85,9 +94,14 @@ export default function BlogForm({ post }: { post: PostData | null }) {
           <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" placeholder="LEADERSHIP, IMPACT, etc." />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Image à la une (URL)</label>
-          <input type="url" value={formData.featured_image_url} onChange={(e) => setFormData({ ...formData, featured_image_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        <div className="md:col-span-2">
+          <ImageUploader
+            value={formData.featured_image_url || null}
+            onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
+            entityType="blog"
+            entityId={post?.id}
+            label="Image d'illustration"
+          />
         </div>
 
         <div className="md:col-span-2">
@@ -97,7 +111,11 @@ export default function BlogForm({ post }: { post: PostData | null }) {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">Contenu *</label>
-          <textarea rows={12} required value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" placeholder="Contenu complet de l'article" />
+          <RichTextEditor
+            value={formData.content_json || formData.content}
+            onChange={(data) => setFormData({ ...formData, content: data.html, content_json: data.json })}
+            placeholder="Rédigez le contenu riche de l'article de blog..."
+          />
         </div>
       </div>
 

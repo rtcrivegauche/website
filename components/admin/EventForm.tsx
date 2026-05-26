@@ -3,12 +3,20 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
+import ImageUploader from '@/components/admin/ImageUploader'
+
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-32 bg-gray-50 border border-gray-200 rounded-lg animate-pulse" />
+})
 
 type EventData = {
   id?: string
   title: string
   slug: string
   description: string
+  description_json?: any | null
   event_date: string
   location: string
   location_address: string
@@ -32,6 +40,7 @@ export default function EventForm({ event }: { event: EventData | null }) {
     title: event?.title || '',
     slug: event?.slug || '',
     description: event?.description || '',
+    description_json: (event as any)?.description_json || null,
     event_date: event?.event_date?.split('T')[0] || '',
     event_time: event?.event_date?.split('T')[1]?.substring(0, 5) || '',
     location: event?.location || '',
@@ -122,12 +131,21 @@ export default function EventForm({ event }: { event: EventData | null }) {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea rows={4} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <RichTextEditor
+            value={formData.description_json || formData.description}
+            onChange={(data) => setFormData({ ...formData, description: data.html, description_json: data.json })}
+            placeholder="Écrivez la description détaillée de l'événement..."
+          />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Image à la une (URL)</label>
-          <input type="url" value={formData.featured_image_url} onChange={(e) => setFormData({ ...formData, featured_image_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <ImageUploader
+            value={formData.featured_image_url || null}
+            onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
+            entityType="events"
+            entityId={event?.id}
+            label="Image à la une"
+          />
         </div>
 
         <div>
@@ -141,8 +159,13 @@ export default function EventForm({ event }: { event: EventData | null }) {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Photo du conférencier (URL)</label>
-          <input type="url" value={formData.speaker_photo_url} onChange={(e) => setFormData({ ...formData, speaker_photo_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <ImageUploader
+            value={formData.speaker_photo_url || null}
+            onChange={(url) => setFormData({ ...formData, speaker_photo_url: url || '' })}
+            entityType="events"
+            entityId={event?.id}
+            label="Photo du conférencier"
+          />
         </div>
       </div>
 

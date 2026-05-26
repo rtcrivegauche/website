@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
+import ImageUploader from '@/components/admin/ImageUploader'
+
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-32 bg-gray-50 border border-gray-200 rounded-lg animate-pulse" />
+})
 
 type Member = {
   id?: string
@@ -17,6 +24,7 @@ type Member = {
   professional_classification: string | null
   company: string | null
   bio: string | null
+  bio_json?: any | null
   skills: string[] | null
   email: string | null
   phone: string | null
@@ -52,6 +60,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
     professional_classification: member?.professional_classification || null,
     company: member?.company || null,
     bio: member?.bio || null,
+    bio_json: (member as any)?.bio_json || null,
     skills: member?.skills || [],
     email: member?.email || null,
     phone: member?.phone || null,
@@ -197,15 +206,12 @@ export default function MemberForm({ member }: { member: Member | null }) {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de la photo
-            </label>
-            <input
-              type="url"
-              value={formData.photo_url || ''}
-              onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
-              placeholder="https://..."
+            <ImageUploader
+              value={formData.photo_url}
+              onChange={(url) => setFormData({ ...formData, photo_url: url })}
+              entityType="members"
+              entityId={member?.id}
+              label="Photo de profil"
             />
           </div>
 
@@ -358,12 +364,16 @@ export default function MemberForm({ member }: { member: Member | null }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Biographie
           </label>
-          <textarea
-            rows={6}
-            value={formData.bio || ''}
-            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
-            placeholder="Parcours, expériences, passions..."
+          <RichTextEditor
+            value={formData.bio_json || formData.bio || ''}
+            onChange={(data) => {
+              setFormData({
+                ...formData,
+                bio: data.html,
+                bio_json: data.json
+              })
+            }}
+            placeholder="Parcours, expériences, passions du membre..."
           />
         </div>
 

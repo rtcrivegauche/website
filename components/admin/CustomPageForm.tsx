@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-gray-50 border border-gray-200 animate-pulse rounded-lg flex items-center justify-center text-gray-400">Chargement de l'éditeur riche...</div>
+})
 
 interface CustomPageFormProps {
   page?: {
@@ -31,6 +37,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
     description: page?.description || '',
     content_type: page?.content_type || 'embed',
     embed_code: page?.embed_code || '',
+    rich_content: page?.rich_content || null,
     meta_title: page?.meta_title || '',
     meta_description: page?.meta_description || '',
     og_image_url: page?.og_image_url || '',
@@ -143,26 +150,43 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
             onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
           >
-            <option value="embed">Code intégré (Tally, YouTube, etc.)</option>
-            <option value="rich_text">Contenu riche (à venir)</option>
-            <option value="hybrid">Hybride (à venir)</option>
+            <option value="embed">Code intégré uniquement (Tally, etc.)</option>
+            <option value="rich_text">Contenu riche uniquement (Tiptap)</option>
+            <option value="hybrid">Hybride (Texte riche Tiptap + Code intégré en bas)</option>
           </select>
         </div>
 
-        {formData.content_type === 'embed' && (
+        {(formData.content_type === 'rich_text' || formData.content_type === 'hybrid') && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Code HTML à intégrer *
+              Contenu riche (texte et visuels) *
+            </label>
+            <RichTextEditor
+              value={formData.rich_content?.html || ''}
+              onChange={(data) => setFormData({
+                ...formData,
+                rich_content: { html: data.html, json: data.json }
+              })}
+              placeholder="Rédigez le contenu personnalisé de votre page..."
+            />
+          </div>
+        )}
+
+        {(formData.content_type === 'embed' || formData.content_type === 'hybrid') && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {formData.content_type === 'hybrid' ? 'Code HTML à intégrer en bas de page' : 'Code HTML à intégrer *'}
             </label>
             <textarea
               value={formData.embed_code}
               onChange={(e) => setFormData({ ...formData, embed_code: e.target.value })}
-              rows={12}
+              rows={formData.content_type === 'hybrid' ? 6 : 12}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent font-mono text-sm"
-              placeholder="<iframe data-tally-src=&quot;https://tally.so/r/YOUR_FORM_ID&quot; ...></iframe>"
+              placeholder={formData.content_type === 'hybrid' ? "<iframe data-tally-src=\"https://tally.so/r/YOUR_FORM_ID\" ...></iframe>" : "<html>\n  ...\n</html>"}
+              required={formData.content_type === 'embed'}
             />
             <p className="text-sm text-gray-500 mt-2">
-              💡 <strong>Tally :</strong> Copiez le code d&apos;intégration depuis Tally → Share → Embed → Full page
+              💡 <strong>Intégration :</strong> Collez ici des scripts, vidéos ou formulaires si nécessaire.
             </p>
           </div>
         )}

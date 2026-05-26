@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUploader from '@/components/admin/ImageUploader'
 
 interface MediaFormProps {
   media?: {
@@ -73,16 +74,19 @@ export default function MediaForm({ media }: MediaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            URL du média *
-          </label>
-          <input
-            type="url"
-            value={formData.url}
-            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
-            placeholder="https://..."
-            required
+          <ImageUploader
+            value={formData.url || null}
+            onChange={(url) => {
+              setFormData({ 
+                ...formData, 
+                url: url || '',
+                media_type: 'image/webp' // R2 convertit en WebP
+              })
+            }}
+            entityType="medias"
+            entityId={media?.id}
+            label="Fichier Média (Image) *"
+            error={!formData.url ? "Le fichier média est requis." : undefined}
           />
         </div>
 

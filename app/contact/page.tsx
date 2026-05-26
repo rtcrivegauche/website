@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import ContactForm from '@/components/ContactForm'
+import Header from '@/components/public/Header'
+import Footer from '@/components/public/Footer'
 
 export const metadata = {
   title: 'Contact',
@@ -16,9 +18,11 @@ export default async function ContactPage() {
     .single()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-[#014F43] to-[#00362d] text-white py-16 md:py-24">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+      <Header />
+      <main className="flex-grow mt-24">
+        {/* Hero */}
+        <section className="bg-gradient-to-br from-[#014F43] to-[#00362d] text-white py-16 md:py-24">
         <div className="max-w-[1320px] mx-auto px-6">
           <div className="flex items-center gap-3 mb-4">
             <Mail size={32} />
@@ -140,6 +144,8 @@ export default async function ContactPage() {
           </div>
         </div>
       </section>
+      </main>
+      <Footer />
     </div>
   )
 }

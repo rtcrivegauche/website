@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
+import ImageUploader from '@/components/admin/ImageUploader'
+
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-32 bg-gray-50 border border-gray-200 rounded-lg animate-pulse" />
+})
 
 const CATEGORIES = ['SANTÉ', 'ÉDUCATION', 'ENVIRONNEMENT', 'LEADERSHIP']
 
@@ -12,6 +19,7 @@ type ActionData = {
   slug: string
   description: string
   content: string
+  content_json?: any | null
   featured_image_url: string
   category: string
   start_date: string
@@ -33,6 +41,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
     slug: action?.slug || '',
     description: action?.description || '',
     content: action?.content || '',
+    content_json: (action as any)?.content_json || null,
     featured_image_url: action?.featured_image_url || '',
     category: action?.category || 'SANTÉ',
     start_date: action?.start_date || '',
@@ -126,8 +135,13 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Image à la une (URL)</label>
-          <input type="url" value={formData.featured_image_url} onChange={(e) => setFormData({ ...formData, featured_image_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <ImageUploader
+            value={formData.featured_image_url || null}
+            onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
+            entityType="actions"
+            entityId={action?.id}
+            label="Image à la une"
+          />
         </div>
 
         <div className="md:col-span-2">
@@ -137,7 +151,11 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">Contenu détaillé</label>
-          <textarea rows={8} value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <RichTextEditor
+            value={formData.content_json || formData.content}
+            onChange={(data) => setFormData({ ...formData, content: data.html, content_json: data.json })}
+            placeholder="Rédigez le contenu riche de l'action..."
+          />
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
+import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -59,9 +60,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               </div>
 
               {event.description && (
-                <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-                  {event.description}
-                </p>
+                <div className="mb-8 leading-relaxed">
+                  <SafeHtmlRenderer html={event.description} />
+                </div>
               )}
 
               {event.speaker_name && (

@@ -17,6 +17,7 @@ import {
   Shield,
   UserCog,
   FolderOpen,
+  Mail,
   X
 } from 'lucide-react'
 
@@ -49,6 +50,7 @@ const menuSectionsRaw = [
       { label: 'Pages personnalisées', href: '/admin/pages', icon: FileCode, permissionKey: 'menu_pages' },
       { label: 'Navigation', href: '/admin/navigation', icon: MenuIcon, permissionKey: 'menu_navigation' },
       { label: 'Médias', href: '/admin/media', icon: FolderOpen, permissionKey: 'menu_media' },
+      { label: 'Messages', href: '/admin/messages', icon: Mail, permissionKey: 'menu_messages' },
     ]
   },
   {

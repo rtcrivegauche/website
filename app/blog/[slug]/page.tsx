@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
+import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -81,7 +82,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             )}
 
             <div className="prose prose-lg max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }} />
+              <SafeHtmlRenderer html={post.content} />
             </div>
 
             {post.tags && post.tags.length > 0 && (

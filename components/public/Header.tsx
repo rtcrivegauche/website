@@ -34,7 +34,7 @@ export default function Header() {
 
       // 2. Charger les items de navigation
       const { data: items } = await supabase
-        .from('navigation_items')
+        .from('navigation')
         .select('*')
         .eq('is_active', true)
         .order('order_index')
@@ -44,7 +44,7 @@ export default function Header() {
       } else {
         // Auto-initialisation si aucun item de navigation n'existe du tout
         const { data: allItems } = await supabase
-          .from('navigation_items')
+          .from('navigation')
           .select('*')
         
         if (!allItems || allItems.length === 0) {
@@ -57,11 +57,11 @@ export default function Header() {
             { label: 'ACTUALITÉS', url: '/blog', order_index: 6, is_active: true },
           ]
           
-          await supabase.from('navigation_items').insert(defaultLinks)
+          await supabase.from('navigation').insert(defaultLinks)
           
           // Re-fetch après insertion
           const { data: newItems } = await supabase
-            .from('navigation_items')
+            .from('navigation')
             .select('*')
             .eq('is_active', true)
             .order('order_index')

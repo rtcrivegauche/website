@@ -11,7 +11,7 @@ export default async function NavigationPage({ params }: NavigationPageProps) {
   const supabase = await createClient()
 
   const { data: allItems } = await supabase
-    .from('navigation_items')
+    .from('navigation')
     .select('*')
     .order('order_index')
 
@@ -25,7 +25,7 @@ export default async function NavigationPage({ params }: NavigationPageProps) {
   }
 
   const { data: navItem } = await supabase
-    .from('navigation_items')
+    .from('navigation')
     .select('*')
     .eq('id', id)
     .single()

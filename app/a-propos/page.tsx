@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Users, Target, Heart, Award } from 'lucide-react'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
+import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
 
 export const metadata = {
   title: 'À propos',
@@ -17,6 +18,65 @@ export default async function AProposPage() {
     .select('*')
     .single()
 
+  // 1. Tenter de charger le contenu dynamique depuis custom_pages
+  let { data: customPage } = await supabase
+    .from('custom_pages')
+    .select('*')
+    .eq('slug', 'a-propos')
+    .single()
+
+  // 2. Si aucune page "a-propos" n'existe, on l'initialise avec le contenu par défaut
+  if (!customPage) {
+    const defaultAboutHTML = `
+      <h2 class="text-3xl font-bold text-[#014F43] mb-6">Notre Histoire</h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        Le Rotaract Club de Cotonou Rive Gauche Cica est un club de jeunes leaders engagés 
+        dans le service communautaire et le développement professionnel. Notre club fait partie du réseau mondial Rotaract, parrainé par le Rotary International.
+      </p>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        Depuis notre création, nous avons mené de nombreuses actions de service, 
+        touché des centaines de bénéficiaires et formé des dizaines de jeunes leaders qui font 
+        aujourd'hui la différence dans notre communauté.
+      </p>
+      <p class="text-gray-700 leading-relaxed">
+        Notre nom "Cica" symbolise notre engagement envers l'excellence et notre volonté 
+        de créer un impact durable dans la société béninoise.
+      </p>
+    `
+
+    const defaultAboutJson = {
+      type: "doc",
+      content: [
+        {
+          type: "heading",
+          attrs: { level: 2 },
+          content: [{ type: "text", text: "Notre Histoire" }]
+        },
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Le Rotaract Club de Cotonou Rive Gauche Cica..." }]
+        }
+      ]
+    }
+
+    const { data: inserted } = await supabase
+      .from('custom_pages')
+      .insert([{
+        slug: 'a-propos',
+        title: 'À propos de nous',
+        description: config?.tagline || 'Servir, Inspirer, Grandir Ensemble',
+        content_type: 'rich_text',
+        rich_content: { html: defaultAboutHTML, json: defaultAboutJson },
+        is_published: true
+      }])
+      .select()
+      .single()
+
+    if (inserted) {
+      customPage = inserted
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -30,26 +90,34 @@ export default async function AProposPage() {
         </div>
       </section>
 
-      {/* Notre histoire */}
+      {/* Notre histoire / Contenu dynamique */}
       <section className="max-w-[1320px] mx-auto px-6 py-16">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-[#014F43] mb-6">Notre Histoire</h2>
-          <div className="prose prose-lg max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Le Rotaract Club de Cotonou Rive Gauche Cica est un club de jeunes leaders engagés 
-              dans le service communautaire et le développement professionnel. Fondé en [année], 
-              notre club fait partie du réseau mondial Rotaract, parrainé par le Rotary International.
-            </p>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Depuis notre création, nous avons mené plus de [nombre] actions de service, 
-              touché [nombre] bénéficiaires et formé des dizaines de jeunes leaders qui font 
-              aujourd&apos;hui la différence dans notre communauté.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Notre nom &quot;Cica&quot; symbolise notre engagement envers l&apos;excellence et notre volonté 
-              de créer un impact durable dans la société béninoise.
-            </p>
-          </div>
+          {customPage?.rich_content?.html ? (
+            <div className="prose prose-lg max-w-none">
+              <SafeHtmlRenderer html={customPage.rich_content.html} />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-3xl font-bold text-[#014F43] mb-6">Notre Histoire</h2>
+              <div className="prose prose-lg max-w-none">
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Le Rotaract Club de Cotonou Rive Gauche Cica est un club de jeunes leaders engagés 
+                  dans le service communautaire et le développement professionnel. Fondé en [année], 
+                  notre club fait partie du réseau mondial Rotaract, parrainé par le Rotary International.
+                </p>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Depuis notre création, nous avons mené plus de [nombre] actions de service, 
+                  touché [nombre] bénéficiaires et formé des dizaines de jeunes leaders qui font 
+                  aujourd&apos;hui la différence dans notre communauté.
+                </p>
+                <p className="text-gray-700 leading-relaxed">
+                  Notre nom &quot;Cica&quot; symbolise notre engagement envers l&apos;excellence et notre volonté 
+                  de créer un impact durable dans la société béninoise.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

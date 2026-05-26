@@ -32,8 +32,7 @@ export default function ContactForm() {
           email: formData.email,
           phone: formData.phone || null,
           subject: formData.subject,
-          message: formData.message,
-          status: 'new'
+          message: formData.message
         }])
       
       if (error) throw error
