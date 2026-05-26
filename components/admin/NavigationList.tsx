@@ -10,7 +10,7 @@ interface NavigationItem {
   label: string
   url: string
   parent_id: string | null
-  order_index: number
+  display_order: number
   is_active: boolean
 }
 
@@ -23,8 +23,8 @@ export default function NavigationList({ initialItems }: NavigationListProps) {
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const supabase = createClient()
 
-  // Trier les items par order_index
-  const sortedItems = [...items].sort((a, b) => a.order_index - b.order_index)
+  // Trier les items par display_order
+  const sortedItems = [...items].sort((a, b) => a.display_order - b.display_order)
 
   const handleDelete = async (id: string, label: string) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer le lien "${label}" ?`)) {
@@ -56,11 +56,11 @@ export default function NavigationList({ initialItems }: NavigationListProps) {
     const currentItem = sortedItems[index]
     const swapItem = sortedItems[targetIndex]
 
-    // Échanger les order_index
-    const currentOrder = currentItem.order_index
-    const swapOrder = swapItem.order_index
+    // Échanger les display_order
+    const currentOrder = currentItem.display_order
+    const swapOrder = swapItem.display_order
 
-    // Si les order_index sont identiques ou mal définis, réindexer tout de manière propre
+    // Si les display_order sont identiques ou mal définis, réindexer tout de manière propre
     let newCurrentOrder = swapOrder
     let newSwapOrder = currentOrder
 
@@ -73,14 +73,14 @@ export default function NavigationList({ initialItems }: NavigationListProps) {
       // Mettre à jour en base de données
       const { error: error1 } = await supabase
         .from('navigation')
-        .update({ order_index: newCurrentOrder })
+        .update({ display_order: newCurrentOrder })
         .eq('id', currentItem.id)
 
       if (error1) throw error1
 
       const { error: error2 } = await supabase
         .from('navigation')
-        .update({ order_index: newSwapOrder })
+        .update({ display_order: newSwapOrder })
         .eq('id', swapItem.id)
 
       if (error2) throw error2
@@ -88,10 +88,10 @@ export default function NavigationList({ initialItems }: NavigationListProps) {
       // Mettre à jour l'état local
       setItems(items.map(item => {
         if (item.id === currentItem.id) {
-          return { ...item, order_index: newCurrentOrder }
+          return { ...item, display_order: newCurrentOrder }
         }
         if (item.id === swapItem.id) {
-          return { ...item, order_index: newSwapOrder }
+          return { ...item, display_order: newSwapOrder }
         }
         return item
       }))

@@ -9,7 +9,7 @@ interface NavigationItem {
   label: string
   url: string
   parent_id: string | null
-  order_index: number
+  display_order: number
   is_active: boolean
 }
 
@@ -25,7 +25,7 @@ export default function NavigationForm({ navItem, parentItems }: NavigationFormP
     label: navItem?.label || '',
     url: navItem?.url || '',
     parent_id: navItem?.parent_id || '',
-    order_index: navItem?.order_index || 0,
+    display_order: navItem?.display_order || 0,
     is_active: navItem?.is_active ?? true,
   })
 
@@ -122,8 +122,8 @@ export default function NavigationForm({ navItem, parentItems }: NavigationFormP
           </label>
           <input
             type="number"
-            value={formData.order_index}
-            onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) })}
+            value={formData.display_order}
+            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
           />
         </div>

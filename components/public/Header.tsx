@@ -37,7 +37,7 @@ export default function Header() {
         .from('navigation')
         .select('*')
         .eq('is_active', true)
-        .order('order_index')
+        .order('display_order')
       
       if (items && items.length > 0) {
         setNavLinks(items)
@@ -49,12 +49,12 @@ export default function Header() {
         
         if (!allItems || allItems.length === 0) {
           const defaultLinks = [
-            { label: 'ACCUEIL', url: '/', order_index: 1, is_active: true },
-            { label: 'LE CLUB', url: '/a-propos', order_index: 2, is_active: true },
-            { label: 'NOS ACTIONS', url: '/actions', order_index: 3, is_active: true },
-            { label: 'ÉVÉNEMENTS', url: '/evenements', order_index: 4, is_active: true },
-            { label: 'MEMBRES', url: '/membres', order_index: 5, is_active: true },
-            { label: 'ACTUALITÉS', url: '/blog', order_index: 6, is_active: true },
+            { label: 'ACCUEIL', url: '/', display_order: 1, is_active: true },
+            { label: 'LE CLUB', url: '/a-propos', display_order: 2, is_active: true },
+            { label: 'NOS ACTIONS', url: '/actions', display_order: 3, is_active: true },
+            { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 4, is_active: true },
+            { label: 'MEMBRES', url: '/membres', display_order: 5, is_active: true },
+            { label: 'ACTUALITÉS', url: '/blog', display_order: 6, is_active: true },
           ]
           
           await supabase.from('navigation').insert(defaultLinks)
@@ -64,7 +64,7 @@ export default function Header() {
             .from('navigation')
             .select('*')
             .eq('is_active', true)
-            .order('order_index')
+            .order('display_order')
           if (newItems && newItems.length > 0) {
             setNavLinks(newItems)
           }

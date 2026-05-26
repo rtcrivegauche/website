@@ -13,7 +13,7 @@ export default async function NavigationPage({ params }: NavigationPageProps) {
   const { data: allItems } = await supabase
     .from('navigation')
     .select('*')
-    .order('order_index')
+    .order('display_order')
 
   if (id === 'nouveau') {
     return (

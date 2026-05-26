@@ -63,7 +63,7 @@ export default function Footer() {
         .from('navigation')
         .select('*')
         .eq('is_active', true)
-        .order('order_index')
+        .order('display_order')
       
       if (items && items.length > 0) {
         setNavLinks(items)
