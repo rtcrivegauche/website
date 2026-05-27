@@ -75,6 +75,8 @@ export default function UserRoleForm({ userRole, roles }: UserRoleFormProps) {
             router.push('/admin/users')
             router.refresh()
           }, 1500)
+        } else {
+          setError(result.error || "Une erreur est survenue lors de la création de l'utilisateur.")
         }
       }
     } catch (err: any) {
