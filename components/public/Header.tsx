@@ -86,13 +86,13 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-sm">
         {/* Desktop Header */}
-        <div className="hidden md:flex max-w-[1320px] mx-auto px-6 py-5 justify-between items-center gap-8">
+        <div className="hidden md:flex max-w-[1320px] mx-auto px-6 py-2 justify-between items-center gap-8">
           <Link href="/" className="flex-shrink-0">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className="h-10 w-auto object-contain" 
+                className="h-20 md:h-24 lg:h-28 w-auto object-contain transition-all" 
               />
             ) : (
               <div className="text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
@@ -134,13 +134,13 @@ export default function Header() {
         </div>
 
         {/* Mobile Header */}
-        <div className="flex md:hidden px-5 py-4 justify-between items-center">
+        <div className="flex md:hidden px-5 py-2 justify-between items-center">
           <Link href="/">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className="h-9 w-auto object-contain" 
+                className="h-16 w-auto object-contain" 
               />
             ) : (
               <div className="text-[20px] font-extrabold text-[#014F43] uppercase tracking-tight">

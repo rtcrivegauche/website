@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import { getFeaturedActions } from '@/lib/actions/home'
 
 export default async function ActionsSection() {
@@ -10,11 +11,20 @@ export default async function ActionsSection() {
   return (
     <section className="max-w-[1320px] mx-auto py-12 md:py-16">
       <div className="flex justify-between items-end mb-8 px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#014F43] max-w-md">
+        <h2 className="text-2xl md:text-4xl font-black text-[#014F43] max-w-xs md:max-w-md tracking-tight leading-tight">
           Nos axes de service prioritaires
         </h2>
-        <Link href="/actions" className="text-[#014F43] text-sm font-bold underline underline-offset-4 mb-2 hidden md:block hover:text-[#E11A60] transition-colors">
-          VOIR TOUTES LES ACTIONS
+        <Link 
+          href="/actions" 
+          className="text-[#014F43] hover:text-[#E11A60] transition-colors flex items-center gap-1.5 mb-1 md:mb-2 flex-shrink-0"
+          aria-label="Voir toutes les actions"
+        >
+          <span className="text-xs font-bold uppercase tracking-wider hidden md:inline underline underline-offset-4">
+            VOIR TOUTES LES ACTIONS
+          </span>
+          <span className="p-2.5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-100 md:hidden transition-colors">
+            <ChevronRight size={18} />
+          </span>
         </Link>
       </div>
 
@@ -32,7 +42,7 @@ export default async function ActionsSection() {
       </div>
 
       {/* Mobile/Tablet Carousel */}
-      <div className="lg:hidden actions-carousel pl-6">
+      <div className="lg:hidden actions-carousel px-6">
         {actions.map((action) => (
           <ActionCard 
             key={action.id} 

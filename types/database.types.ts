@@ -178,6 +178,51 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['homepage_sections']['Row'], 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Database['public']['Tables']['homepage_sections']['Insert']>
       }
+      reports: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          summary: string
+          content: string | null
+          pdf_url: string | null
+          meeting_date: string
+          is_published: boolean
+          views_count: number
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: Omit<Database['public']['Tables']['reports']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['reports']['Insert']>
+      }
+      newsletter_subscribers: {
+        Row: {
+          id: string
+          first_name: string
+          email: string
+          whatsapp_number: string | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['newsletter_subscribers']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['newsletter_subscribers']['Insert']>
+      }
+      testimonials: {
+        Row: {
+          id: string
+          name: string
+          role: string
+          promotion: string | null
+          quote: string
+          avatar_url: string | null
+          display_order: number
+          is_published: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['testimonials']['Row'], 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Database['public']['Tables']['testimonials']['Insert']>
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>

@@ -14,7 +14,7 @@ export default async function Hero() {
   const ctaSecondaryUrl = config?.hero_cta_secondary_url || "/actions"
 
   return (
-    <section className="min-h-[580px] md:min-h-[620px] flex items-center justify-center text-center px-6 py-16 md:py-20">
+    <section className="min-h-[580px] md:min-h-[620px] flex items-center justify-center text-center px-6 pt-8 pb-16 md:pt-10 md:pb-20">
       <div className="max-w-[1400px] mx-auto">
         {/* Desktop Hero */}
         <div className="hidden md:block">

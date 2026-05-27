@@ -18,6 +18,7 @@ import {
   UserCog,
   FolderOpen,
   Mail,
+  Quote,
   X
 } from 'lucide-react'
 
@@ -42,6 +43,8 @@ const menuSectionsRaw = [
       { label: 'Actions', href: '/admin/actions', icon: Target, permissionKey: 'menu_actions' },
       { label: 'Blog', href: '/admin/blog', icon: FileText, permissionKey: 'menu_blog' },
       { label: 'Galerie', href: '/admin/galerie', icon: Image, permissionKey: 'menu_galerie' },
+      { label: 'Rapports', href: '/admin/rapports', icon: FileText, permissionKey: 'menu_rapports' },
+      { label: 'Témoignages', href: '/admin/temoignages', icon: Quote, permissionKey: 'menu_testimonials' },
     ]
   },
   {
@@ -51,6 +54,7 @@ const menuSectionsRaw = [
       { label: 'Navigation', href: '/admin/navigation', icon: MenuIcon, permissionKey: 'menu_navigation' },
       { label: 'Médias', href: '/admin/media', icon: FolderOpen, permissionKey: 'menu_media' },
       { label: 'Messages', href: '/admin/messages', icon: Mail, permissionKey: 'menu_messages' },
+      { label: 'Abonnés', href: '/admin/abonnees', icon: Mail, permissionKey: 'menu_abonnees' },
     ]
   },
   {
@@ -155,7 +159,7 @@ export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }:
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition"
           >
-            <span className="text-xl">🏠</span>
+            <Home size={18} />
             <span className="font-medium">Voir le site</span>
           </Link>
         </div>

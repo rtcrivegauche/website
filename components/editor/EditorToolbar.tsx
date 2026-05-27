@@ -20,7 +20,10 @@ import {
   Image as ImageIcon,
   Undo,
   Redo,
-  Loader2
+  Loader2,
+  Code,
+  CodeXml,
+  Minus
 } from 'lucide-react'
 
 interface EditorToolbarProps {
@@ -228,6 +231,30 @@ export default function EditorToolbar({ editor }: EditorToolbarProps) {
         title="Citation"
       >
         <Quote size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        className={`p-2 rounded text-gray-700 ${editor.isActive('code') ? 'bg-rose-100 text-rose-700 font-bold' : 'hover:bg-gray-200'}`}
+        title="Code en ligne"
+      >
+        <Code size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        className={`p-2 rounded text-gray-700 ${editor.isActive('codeBlock') ? 'bg-rose-100 text-rose-700 font-bold' : 'hover:bg-gray-200'}`}
+        title="Bloc de code"
+      >
+        <CodeXml size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        className="p-2 hover:bg-gray-200 rounded text-gray-700"
+        title="Ligne horizontale"
+      >
+        <Minus size={16} />
       </button>
 
       <div className="w-[1px] h-6 bg-gray-300 mx-1 align-self-center my-auto" />

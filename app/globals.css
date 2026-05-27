@@ -306,3 +306,104 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* ============================================
+   RESPONSIVE CAROUSELS (MOBILE & TABLET)
+   ============================================ */
+@media (max-width: 1023px) {
+  .actions-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .actions-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .actions-carousel .action-card {
+    min-width: 280px;
+    max-width: 280px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+  
+  .members-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 24px;
+    padding: 20px 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .members-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .members-carousel .member-card {
+    min-width: 240px;
+    max-width: 240px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+  
+  .gallery-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gallery-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .gallery-carousel .gallery-item {
+    min-width: 300px;
+    max-width: 300px;
+    height: 320px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+  
+  .news-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .news-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .news-carousel .news-card {
+    min-width: 280px;
+    max-width: 280px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+  
+  .reports-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .reports-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .reports-carousel > * {
+    min-width: 280px;
+    max-width: 280px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+}

@@ -89,7 +89,7 @@ export async function getFeaturedMembers() {
       .from('members')
       .select('*')
       .eq('is_active', true)
-      .limit(3)
+      .limit(6)
     
     return data || []
   }
@@ -163,7 +163,7 @@ export async function getFeaturedPosts() {
       .select('*')
       .eq('is_published', true)
       .order('published_at', { ascending: false })
-      .limit(3)
+      .limit(4)
     
     return data || []
   }

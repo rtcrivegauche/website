@@ -7,7 +7,7 @@ export default async function GaleriePage() {
   const supabase = await createClient()
   
   const { data: items, error } = await supabase
-    .from('gallery_items')
+    .from('gallery')
     .select('*')
     .order('created_at', { ascending: false })
 

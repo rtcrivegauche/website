@@ -10,7 +10,7 @@ export default async function EditGalleryItemPage({ params }: { params: Promise<
   
   if (id !== 'nouveau') {
     const { data } = await supabase
-      .from('gallery_items')
+      .from('gallery')
       .select('*')
       .eq('id', id)
       .single()
