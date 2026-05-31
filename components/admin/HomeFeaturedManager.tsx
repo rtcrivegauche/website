@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { X, GripVertical } from 'lucide-react'
@@ -42,6 +42,41 @@ export default function HomeFeaturedManager({
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+  // Nettoyage automatique en arrière-plan des éléments orphelins (supprimés ou dépubliés)
+  useEffect(() => {
+    const cleanupOrphans = async () => {
+      const orphans = featured.filter(f => {
+        let items: ContentItem[] = []
+        if (f.item_type === 'event') items = events
+        else if (f.item_type === 'action') items = actions
+        else if (f.item_type === 'member') items = members
+        else if (f.item_type === 'gallery') items = gallery
+        else if (f.item_type === 'post') items = posts
+        else return true // Type inconnu, considéré orphelin
+
+        // Si l'item n'existe plus dans les items actifs/publiés, il est orphelin
+        return !items.some(item => item.id === f.item_id)
+      })
+
+      if (orphans.length > 0) {
+        console.log(`Nettoyage silencieux de ${orphans.length} élément(s) de page d'accueil orphelin(s) de la BDD...`)
+        const supabase = createClient()
+        const idsToDelete = orphans.map(o => o.id)
+        
+        const { error } = await supabase
+          .from('home_featured_items')
+          .delete()
+          .in('id', idsToDelete)
+
+        if (!error) {
+          router.refresh()
+        }
+      }
+    }
+
+    cleanupOrphans()
+  }, [featured, events, actions, members, gallery, posts, router])
 
   const sections = [
     {
@@ -150,7 +185,9 @@ export default function HomeFeaturedManager({
       )}
 
       {sections.map(section => {
-        const currentFeatured = getFeaturedForSection(section.key)
+        const currentFeatured = getFeaturedForSection(section.key).filter(f => 
+          section.items.some(item => item.id === f.item_id)
+        )
         const selectedIds = currentFeatured.map(f => f.item_id)
         const availableItems = section.items.filter(item => !selectedIds.includes(item.id))
 
