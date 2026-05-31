@@ -20,6 +20,7 @@ export const r2Client = new S3Client({
     secretAccessKey: cleanSecretAccessKey,
   },
   region: 'auto',
+  forcePathStyle: true, // REQUIS pour Cloudflare R2 afin d'éviter les erreurs SSL de double sous-domaine !
 })
 
 export const R2_BUCKET_NAME = (process.env.CLOUDFLARE_R2_BUCKET_NAME || '').trim()
