@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
@@ -26,12 +28,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
         <article className="max-w-4xl mx-auto px-6">
           <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
             {event.featured_image_url && (
-              <div className="relative h-96">
+              <div className="relative w-full aspect-square md:aspect-[1920/744]">
                 <Image
                   src={event.featured_image_url}
                   alt={event.title}
                   fill
                   className="object-cover"
+                  priority
                 />
               </div>
             )}

@@ -96,10 +96,7 @@ export default function Footer() {
                   Club Rotaract de Cotonou Rive Gauche Cica
                 </h3>
               )}
-              {/* Mention District 9103 */}
-              <p className="text-xs font-bold uppercase tracking-widest text-[#E11A60]">
-                Membre du Rotary International, District 9103
-              </p>
+
             </div>
             
             <p className="text-gray-400 leading-relaxed text-sm md:text-base max-w-md mx-auto lg:mx-0">
@@ -144,36 +141,78 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Officiel */}
+          {/* Contact Officiel sous forme de boutons */}
           <div>
             <h4 className="text-lg font-black text-white mb-6 uppercase tracking-wider text-center lg:text-left">Contact</h4>
-            <ul className="space-y-4 text-gray-400 text-sm">
-              <li className="flex items-start gap-3 justify-center lg:justify-start text-left">
-                <Mail size={18} className="text-[#E11A60] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email Officiel</p>
-                  <a href="mailto:rtcctnrivegauchecica@gmail.com" className="text-gray-300 hover:text-white transition-colors">
-                    rtcctnrivegauchecica@gmail.com
-                  </a>
+            <div className="grid grid-cols-1 gap-3 max-w-sm mx-auto lg:mx-0">
+              {/* Bouton Appel */}
+              <a 
+                href={`tel:${siteConfig?.contact_phone || '+22997000000'}`} 
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800/40 border border-gray-700/50 hover:border-[#E11A60] hover:bg-gray-800 text-white hover:text-white transition-all duration-300 group shadow-sm hover:shadow-md"
+              >
+                <div className="p-2 rounded-lg bg-gray-900 group-hover:bg-[#E11A60] text-[#E11A60] group-hover:text-white transition-colors duration-300">
+                  <Phone size={16} />
                 </div>
-              </li>
-              <li className="flex items-start gap-3 justify-center lg:justify-start text-left">
-                <Phone size={18} className="text-[#E11A60] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Téléphone</p>
-                  <a href={`tel:${siteConfig?.contact_phone || '+229'}`} className="text-gray-300 hover:text-white transition-colors">
+                <div className="text-left">
+                  <span className="block text-[9px] font-bold text-gray-500 uppercase tracking-wider">Téléphone (Appel direct)</span>
+                  <span className="block text-xs font-semibold text-gray-300 group-hover:text-white transition-colors">
                     {siteConfig?.contact_phone || '+229 XX XX XX XX'}
-                  </a>
+                  </span>
                 </div>
-              </li>
-              <li className="flex items-start gap-3 justify-center lg:justify-start text-left">
-                <MapPin size={18} className="text-[#E11A60] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Adresse</p>
-                  <span className="text-gray-300">{siteConfig?.contact_address || 'Cotonou, Bénin'}</span>
+              </a>
+
+              {/* Bouton WhatsApp */}
+              <a 
+                href={`https://wa.me/${(siteConfig?.contact_phone || '+22997000000').replace(/[^0-9]/g, '')}`} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800/40 border border-gray-700/50 hover:border-emerald-500 hover:bg-gray-800 text-white hover:text-white transition-all duration-300 group shadow-sm hover:shadow-md"
+              >
+                <div className="p-2 rounded-lg bg-gray-900 group-hover:bg-emerald-500 text-emerald-500 group-hover:text-white transition-colors duration-300 flex items-center justify-center">
+                  {socialIcons.WhatsApp({ className: "w-4 h-4" })}
                 </div>
-              </li>
-            </ul>
+                <div className="text-left">
+                  <span className="block text-[9px] font-bold text-gray-500 uppercase tracking-wider">WhatsApp</span>
+                  <span className="block text-xs font-semibold text-gray-300 group-hover:text-white transition-colors">
+                    Démarrer une discussion
+                  </span>
+                </div>
+              </a>
+
+              {/* Bouton Email */}
+              <a 
+                href="mailto:rtcctnrivegauchecica@gmail.com" 
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800/40 border border-gray-700/50 hover:border-[#E11A60] hover:bg-gray-800 text-white hover:text-white transition-all duration-300 group shadow-sm hover:shadow-md"
+              >
+                <div className="p-2 rounded-lg bg-gray-900 group-hover:bg-[#E11A60] text-[#E11A60] group-hover:text-white transition-colors duration-300">
+                  <Mail size={16} />
+                </div>
+                <div className="text-left">
+                  <span className="block text-[9px] font-bold text-gray-500 uppercase tracking-wider">Email Officiel</span>
+                  <span className="block text-xs font-semibold break-all text-gray-300 group-hover:text-white transition-colors">
+                    rtcctnrivegauchecica@gmail.com
+                  </span>
+                </div>
+              </a>
+
+              {/* Bouton Localisation */}
+              <a 
+                href={`https://maps.google.com/?q=${encodeURIComponent(siteConfig?.contact_address || 'Cotonou, Bénin')}`} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800/40 border border-gray-700/50 hover:border-blue-500 hover:bg-gray-800 text-white hover:text-white transition-all duration-300 group shadow-sm hover:shadow-md"
+              >
+                <div className="p-2 rounded-lg bg-gray-900 group-hover:bg-blue-500 text-blue-500 group-hover:text-white transition-colors duration-300">
+                  <MapPin size={16} />
+                </div>
+                <div className="text-left">
+                  <span className="block text-[9px] font-bold text-gray-500 uppercase tracking-wider">Adresse & Localisation</span>
+                  <span className="block text-xs font-semibold text-gray-300 group-hover:text-white transition-colors">
+                    {siteConfig?.contact_address || 'Cotonou, Bénin'}
+                  </span>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -24,47 +26,52 @@ export default async function EventsPage() {
             Rejoignez-nous lors de nos prochaines rencontres et activités
           </p>
 
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {events?.map((event) => (
               <Link
                 key={event.id}
                 href={`/evenements/${event.slug}`}
-                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:flex-row"
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100/50"
               >
                 {event.featured_image_url && (
-                  <div className="relative h-64 md:h-auto md:w-1/3 overflow-hidden">
+                  <div className="relative w-full aspect-square md:aspect-[1920/744] overflow-hidden">
                     <Image
                       src={event.featured_image_url}
                       alt={event.title}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="object-cover group-hover:scale-105 transition-transform duration-555"
                     />
                   </div>
                 )}
-                <div className="flex-1 p-8">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-[#014F43] p-4 rounded-lg text-center min-w-[80px]">
-                      <span className="block text-3xl font-bold text-white">
-                        {new Date(event.event_date).getDate()}
-                      </span>
-                      <span className="text-xs text-white uppercase">
-                        {new Date(event.event_date).toLocaleDateString('fr-FR', { month: 'short' })}
-                      </span>
+                <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="bg-[#014F43] p-3 rounded-xl text-center min-w-[70px]">
+                        <span className="block text-2xl font-bold text-white">
+                          {new Date(event.event_date).getDate()}
+                        </span>
+                        <span className="text-[10px] text-white/90 uppercase font-bold tracking-wider">
+                          {new Date(event.event_date).toLocaleDateString('fr-FR', { month: 'short' })}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-[#014F43] group-hover:text-[#E11A60] transition-colors line-clamp-1">
+                          {event.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {new Date(event.event_date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} • {event.location}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-[#014F43] group-hover:text-[#22C83A] transition-colors">
-                        {event.title}
-                      </h3>
-                      <p className="text-gray-600">
-                        {new Date(event.event_date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} • {event.location}
+                    {event.description && (
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">
+                        {event.description}
                       </p>
-                    </div>
+                    )}
                   </div>
-                  {event.description && (
-                    <p className="text-gray-600 line-clamp-2">
-                      {event.description}
-                    </p>
-                  )}
+                  <div className="text-xs font-bold text-[#E11A60] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    En savoir plus et s'inscrire →
+                  </div>
                 </div>
               </Link>
             ))}

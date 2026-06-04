@@ -45,6 +45,7 @@ const menuSectionsRaw = [
       { label: 'Galerie', href: '/admin/galerie', icon: Image, permissionKey: 'menu_galerie' },
       { label: 'Rapports', href: '/admin/rapports', icon: FileText, permissionKey: 'menu_rapports' },
       { label: 'Témoignages', href: '/admin/temoignages', icon: Quote, permissionKey: 'menu_testimonials' },
+      { label: 'Président', href: '/admin/presidents', icon: Users, permissionKey: 'menu_presidents' },
     ]
   },
   {

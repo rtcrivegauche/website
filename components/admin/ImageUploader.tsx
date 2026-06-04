@@ -6,7 +6,7 @@ import { Upload, X, ImageIcon, Loader2 } from 'lucide-react'
 interface ImageUploaderProps {
   value: string | null
   onChange: (url: string | null) => void
-  entityType: 'members' | 'events' | 'actions' | 'blog' | 'gallery' | 'config' | 'medias'
+  entityType: 'members' | 'events' | 'actions' | 'blog' | 'gallery' | 'config' | 'medias' | 'presidents'
   entityId?: string | null
   label?: string
   error?: string

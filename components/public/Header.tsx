@@ -18,6 +18,24 @@ export default function Header() {
   ])
   const [siteConfig, setSiteConfig] = useState<any>(null)
 
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 30) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    // Détection initiale
+    handleScroll()
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   useEffect(() => {
     const fetchData = async () => {
       const supabase = createClient()
@@ -84,15 +102,23 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-sm">
+      <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out border-b border-gray-100 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-xl shadow-md py-1.5 md:py-2' 
+          : 'bg-white/80 backdrop-blur-xl shadow-sm py-3 md:py-5'
+      }`}>
         {/* Desktop Header */}
-        <div className="hidden md:flex max-w-[1320px] mx-auto px-6 py-2 justify-between items-center gap-8">
+        <div className="hidden md:flex max-w-[1320px] mx-auto px-6 justify-between items-center gap-8">
           <Link href="/" className="flex-shrink-0">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className="h-20 md:h-24 lg:h-28 w-auto object-contain transition-all" 
+                className={`w-auto object-contain transition-all duration-300 ease-in-out ${
+                  isScrolled 
+                    ? 'h-12 md:h-14 lg:h-16' 
+                    : 'h-18 md:h-22 lg:h-24'
+                }`} 
               />
             ) : (
               <div className="text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
@@ -134,13 +160,15 @@ export default function Header() {
         </div>
 
         {/* Mobile Header */}
-        <div className="flex md:hidden px-5 py-2 justify-between items-center">
-          <Link href="/">
+        <div className="flex md:hidden px-5 justify-between items-center">
+          <Link href="/" className="flex-shrink-0">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className="h-16 w-auto object-contain" 
+                className={`w-auto object-contain transition-all duration-300 ease-in-out ${
+                  isScrolled ? 'h-13' : 'h-18'
+                }`} 
               />
             ) : (
               <div className="text-[20px] font-extrabold text-[#014F43] uppercase tracking-tight">

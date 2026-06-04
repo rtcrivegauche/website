@@ -1,8 +1,12 @@
+export const dynamic = 'force-dynamic'
+
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { Mail, Phone, Award } from 'lucide-react'
 import type { Metadata } from 'next'
+import Header from '@/components/public/Header'
+import Footer from '@/components/public/Footer'
 
 interface MemberPageProps {
   params: Promise<{ slug: string }>
@@ -45,9 +49,11 @@ export default async function MemberPage({ params }: MemberPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-[#014F43] to-[#00362d] text-white py-16">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+      <Header />
+      <div className="flex-1">
+        {/* Hero */}
+        <section className="bg-gradient-to-br from-[#014F43] to-[#00362d] text-white pt-28 pb-16 md:pt-36 lg:pt-40">
         <div className="max-w-[1320px] mx-auto px-6">
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
             {/* Photo */}
@@ -255,6 +261,8 @@ export default async function MemberPage({ params }: MemberPageProps) {
           </div>
         </div>
       </section>
+      </div>
+      <Footer />
     </div>
   )
 }
