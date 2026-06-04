@@ -24,7 +24,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   return (
     <div className="min-h-screen low-poly-bg">
       <Header />
-      <main className="mt-24 py-16">
+      <main className="pt-28 pb-16 md:pt-36 lg:pt-40">
         <article className="max-w-4xl mx-auto px-6">
           <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
             {event.featured_image_url && (
@@ -71,9 +71,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               {event.speaker_name && (
                 <div className="bg-gray-50 p-6 rounded-xl mb-8">
                   <h3 className="text-xl font-bold text-[#014F43] mb-4">Intervenant</h3>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                     {event.speaker_photo_url && (
-                      <div className="relative w-20 h-20 rounded-full overflow-hidden">
+                      <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
                         <Image
                           src={event.speaker_photo_url}
                           alt={event.speaker_name}
@@ -85,7 +85,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                     <div>
                       <p className="text-lg font-bold text-[#014F43]">{event.speaker_name}</p>
                       {event.speaker_title && (
-                        <p className="text-gray-600">{event.speaker_title}</p>
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line">{event.speaker_title}</p>
                       )}
                     </div>
                   </div>
