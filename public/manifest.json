@@ -2,7 +2,7 @@
   "name": "Club Rotaract de Cotonou Rive Gauche Cica",
   "short_name": "Rotaract Cica",
   "description": "Application officielle et Dashboard Admin du Club Rotaract de Cotonou Rive Gauche Cica.",
-  "start_url": "/",
+  "start_url": "/admin",
   "display": "standalone",
   "background_color": "#014F43",
   "theme_color": "#014F43",

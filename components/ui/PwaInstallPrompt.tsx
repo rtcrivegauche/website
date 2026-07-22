@@ -8,6 +8,18 @@ export default function PwaInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false)
 
   useEffect(() => {
+    // Vérifier si l'utilisateur est déjà dans l'application PWA installée
+    const isStandalone = typeof window !== 'undefined' && (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true ||
+      document.referrer.includes('android-app://')
+    )
+
+    if (isStandalone) {
+      setShowPrompt(false)
+      return
+    }
+
     // Écouter l'événement d'installation PWA native
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
@@ -15,7 +27,9 @@ export default function PwaInstallPrompt() {
 
       // Vérifier si l'utilisateur n'a pas fermé la bannière récemment
       const dismissedTime = localStorage.getItem('pwa_prompt_dismissed')
-      if (!dismissedTime || Date.now() - parseInt(dismissedTime) > 86400000 * 3) {
+      const isInstalled = localStorage.getItem('pwa_installed') === 'true'
+
+      if (!isInstalled && (!dismissedTime || Date.now() - parseInt(dismissedTime) > 86400000 * 3)) {
         setShowPrompt(true)
       }
     }
@@ -35,6 +49,7 @@ export default function PwaInstallPrompt() {
 
     if (outcome === 'accepted') {
       console.log('Installation PWA acceptée par l\'utilisateur')
+      localStorage.setItem('pwa_installed', 'true')
     }
 
     setDeferredPrompt(null)
