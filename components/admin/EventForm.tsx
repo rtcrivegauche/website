@@ -69,6 +69,10 @@ export default function EventForm({ event }: { event: EventData | null }) {
 
     try {
       const supabase = createClient()
+      if (!formData.event_date || formData.event_date.trim() === '' || !formData.event_time || formData.event_time.trim() === '') {
+        throw new Error('La date et l\'heure de l\'événement sont requises.')
+      }
+
       const eventDateTime = `${formData.event_date}T${formData.event_time}:00`
       
       const dataToSave = {

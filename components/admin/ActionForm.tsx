@@ -67,6 +67,8 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
       
       const dataToSave = {
         ...formData,
+        start_date: formData.start_date && formData.start_date.trim() !== '' ? formData.start_date : null,
+        end_date: formData.end_date && formData.end_date.trim() !== '' ? formData.end_date : null,
         beneficiaries_count: formData.beneficiaries_count ? parseInt(formData.beneficiaries_count as string) : null,
       }
 
