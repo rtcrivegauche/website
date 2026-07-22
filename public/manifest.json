@@ -1,7 +1,7 @@
 {
-  "name": "Rotaract Club Cotonou Rive Gauche Cica",
+  "name": "Club Rotaract de Cotonou Rive Gauche Cica",
   "short_name": "Rotaract Cica",
-  "description": "Application officielle et Dashboard Admin du Club Rotaract Cotonou Rive Gauche Cica.",
+  "description": "Application officielle et Dashboard Admin du Club Rotaract de Cotonou Rive Gauche Cica.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#014F43",
@@ -9,9 +9,9 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "/icons/favicon-rtc-rgc.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

@@ -15,15 +15,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://rotaract-cica.com'),
   title: {
-    default: "Rotaract Cica - Cotonou Rive Gauche",
-    template: "%s | Rotaract Cica"
+    default: "Club Rotaract de Cotonou Rive Gauche Cica",
+    template: "%s | Club Rotaract de Cotonou Rive Gauche Cica"
   },
-  description: "Rotaract Club de Cotonou Rive Gauche Cica - Servir, Inspirer, Grandir Ensemble. Rejoignez-nous pour faire la différence dans notre communauté.",
-  keywords: ["Rotaract", "Cotonou", "Bénin", "Service", "Jeunesse", "Volontariat", "Club", "Rotary"],
-  authors: [{ name: "Rotaract Cica" }],
-  creator: "Rotaract Cica",
-  publisher: "Rotaract Cica",
+  description: "Club Rotaract de Cotonou Rive Gauche Cica - Servir, Inspirer, Grandir Ensemble. Rejoignez-nous pour faire la différence dans notre communauté.",
+  keywords: ["Club Rotaract de Cotonou Rive Gauche Cica", "Rotaract", "Cotonou Rive Gauche", "Cica", "Bénin", "Service", "Jeunesse", "Volontariat", "Club", "Rotary"],
+  authors: [{ name: "Club Rotaract de Cotonou Rive Gauche Cica" }],
+  creator: "Club Rotaract de Cotonou Rive Gauche Cica",
+  publisher: "Club Rotaract de Cotonou Rive Gauche Cica",
   formatDetection: {
     email: false,
     address: false,
@@ -33,14 +34,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://rotaract-cica.com",
-    siteName: "Rotaract Cica",
-    title: "Rotaract Cica - Cotonou Rive Gauche",
-    description: "Servir, Inspirer, Grandir Ensemble",
+    siteName: "Club Rotaract de Cotonou Rive Gauche Cica",
+    title: "Club Rotaract de Cotonou Rive Gauche Cica",
+    description: "Servir, Inspirer, Grandir Ensemble - Club Rotaract de Cotonou Rive Gauche Cica",
+    images: [
+      {
+        url: "/icons/favicon-rtc-rgc.png",
+        width: 512,
+        height: 512,
+        alt: "Club Rotaract de Cotonou Rive Gauche Cica"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rotaract Cica - Cotonou Rive Gauche",
-    description: "Servir, Inspirer, Grandir Ensemble",
+    title: "Club Rotaract de Cotonou Rive Gauche Cica",
+    description: "Servir, Inspirer, Grandir Ensemble - Club Rotaract de Cotonou Rive Gauche Cica",
+    images: ["/icons/favicon-rtc-rgc.png"],
   },
   robots: {
     index: true,
@@ -55,8 +65,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   icons: {
-    icon: "/icons/icon.svg",
-    apple: "/icons/icon.svg",
+    icon: "/icons/favicon-rtc-rgc.png",
+    apple: "/icons/favicon-rtc-rgc.png",
+    shortcut: "/favicon.png",
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
