@@ -24,14 +24,22 @@ export default async function UserPage({ params }: UserPageProps) {
     )
   }
 
-  const { data: userRole } = await supabase
-    .from('user_roles')
+  const { data: user } = await supabase
+    .from('users')
     .select('*')
     .eq('id', id)
     .single()
 
-  if (!userRole) {
+  if (!user) {
     notFound()
+  }
+
+  // Mapper pour correspondre aux propriétés attendues par UserRoleForm (id, user_id, role_id, is_active)
+  const userRole = {
+    id: user.id,
+    user_id: user.id,
+    role_id: user.role_id || '',
+    is_active: user.is_active ?? true
   }
 
   return (

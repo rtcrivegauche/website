@@ -6,7 +6,7 @@ export default async function UsersPage() {
   const supabase = await createClient()
   
   const { data: users } = await supabase
-    .from('user_roles')
+    .from('users')
     .select(`
       *,
       roles (
@@ -61,18 +61,31 @@ export default async function UsersPage() {
                       <UserCog className="text-[#014F43]" size={20} />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{user.user_id}</p>
+                      <p className="font-semibold text-gray-950">{user.full_name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  {user.roles ? (
-                    <span className="px-3 py-1 bg-[#014F43]/10 text-[#014F43] rounded-full text-sm font-medium">
-                      {user.roles.name}
-                    </span>
-                  ) : (
-                    <span className="text-gray-400">Aucun rôle</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {user.roles ? (
+                      <span className="px-3 py-1 bg-[#014F43]/10 text-[#014F43] rounded-full text-xs font-semibold uppercase tracking-wider">
+                        {user.roles.name}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400">Aucun rôle</span>
+                    )}
+
+                    {user.is_active ? (
+                      <span className="px-2 py-0.5 bg-green-100 text-green-800 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        Actif
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 bg-red-100 text-red-800 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        Inactif
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-600">
                   {new Date(user.created_at).toLocaleDateString('fr-FR')}

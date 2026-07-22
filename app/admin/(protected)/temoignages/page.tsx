@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Edit2, Quote, Star, ArrowUpDown } from 'lucide-react'
+import { Plus, Edit2, Quote } from 'lucide-react'
+import TestimonialVideoConfig from '@/components/admin/TestimonialVideoConfig'
 
 export const metadata = {
   title: 'Gestion des Témoignages - Administration',
@@ -11,6 +12,7 @@ export const metadata = {
 export default async function TestimonialsAdminPage() {
   const supabase = await createClient()
 
+  // 1. Récupérer les témoignages
   const { data: testimonials, error } = await supabase
     .from('testimonials')
     .select('*')
@@ -20,13 +22,22 @@ export default async function TestimonialsAdminPage() {
     console.error('Error fetching testimonials:', error)
   }
 
+  // 2. Récupérer la config vidéo YouTube
+  const { data: configData } = await supabase
+    .from('site_config')
+    .select('value')
+    .eq('key', 'testimonials_video_url')
+    .single()
+
+  const videoUrl = configData?.value || ''
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Témoignages</h1>
           <p className="text-gray-500 mt-1">
-            Gérez les citations et les témoignages de vos membres et invités affichés sur la page d'accueil.
+            Gérez les citations et la vidéo YouTube des invités affichées sur la page d'accueil.
           </p>
         </div>
         <Link
@@ -38,6 +49,10 @@ export default async function TestimonialsAdminPage() {
         </Link>
       </div>
 
+      {/* Configuration de la vidéo YouTube d'invités */}
+      <TestimonialVideoConfig initialVideoUrl={videoUrl} />
+
+      {/* Liste des témoignages */}
       {!testimonials || testimonials.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-150 p-12 text-center max-w-2xl mx-auto">
           <div className="p-4 bg-gray-55 rounded-full w-fit mx-auto text-gray-400 mb-4">
@@ -64,7 +79,6 @@ export default async function TestimonialsAdminPage() {
                 !t.is_published ? 'border-dashed border-gray-300 opacity-70' : 'border-gray-150'
               }`}
             >
-              {/* Statut non publié */}
               {!t.is_published && (
                 <span className="absolute top-4 right-4 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Brouillon
@@ -72,7 +86,6 @@ export default async function TestimonialsAdminPage() {
               )}
 
               <div>
-                {/* Icône et citation */}
                 <Quote className="text-gray-100 w-16 h-16 absolute -top-2 left-4 -z-0 pointer-events-none" />
                 <p className="text-gray-600 italic text-sm leading-relaxed mb-6 mt-4 line-clamp-4 relative z-10">
                   « {t.quote} »

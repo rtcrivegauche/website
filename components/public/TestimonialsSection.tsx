@@ -44,26 +44,48 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
 export default function TestimonialsSection() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS)
+  const [youtubeEmbedUrl, setYoutubeEmbedUrl] = useState<string>("https://www.youtube.com/embed/dQw4w9WgXcQ")
 
   useEffect(() => {
-    async function loadTestimonials() {
+    async function loadData() {
       try {
         const supabase = createClient()
+        
+        // Charger les témoignages
         const { data, error } = await supabase
           .from('testimonials')
           .select('*')
           .eq('is_published', true)
           .order('display_order', { ascending: true })
 
-        if (error) throw error
-        if (data && data.length > 0) {
+        if (!error && data && data.length > 0) {
           setTestimonials(data)
         }
+
+        // Charger l'URL vidéo YouTube depuis site_config
+        const { data: configData } = await supabase
+          .from('site_config')
+          .select('value')
+          .eq('key', 'testimonials_video_url')
+          .single()
+
+        if (configData?.value) {
+          const rawUrl = configData.value.trim()
+          let embedUrl = rawUrl
+          
+          // Helper d'extraction d'ID YouTube
+          const ytMatch = rawUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)
+          if (ytMatch && ytMatch[1]) {
+            embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`
+          }
+          
+          setYoutubeEmbedUrl(embedUrl)
+        }
       } catch (e) {
-        console.error('Erreur lors du chargement des témoignages:', e)
+        console.error('Erreur chargement témoignages/vidéo:', e)
       }
     }
-    loadTestimonials()
+    loadData()
   }, [])
 
   useEffect(() => {
@@ -104,9 +126,8 @@ export default function TestimonialsSection() {
 
           {/* Iframe vidéo réactive premium */}
           <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-lg border-2 border-white bg-gray-900 group">
-            {/* Remplacement simple par une vidéo YouTube ou Vimeo du District ou Rotaract */}
             <iframe 
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Lien fictif propre ou réel si configuré
+              src={youtubeEmbedUrl}
               title="Témoignages invités Rotaract"
               className="absolute inset-0 w-full h-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

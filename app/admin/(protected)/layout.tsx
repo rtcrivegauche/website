@@ -15,28 +15,32 @@ export default async function AdminLayout({
     redirect('/admin/login')
   }
 
-  // Récupérer le rôle et les permissions de l'utilisateur connecté
-  const { data: userRole } = await supabase
-    .from('user_roles')
+  // Récupérer le rôle, les permissions et le statut d'activité de l'utilisateur connecté
+  const { data: profile } = await supabase
+    .from('users')
     .select(`
-      role_id,
+      is_active,
       roles (
         id,
         name,
         permissions
       )
     `)
-    .eq('user_id', user.id)
-    .maybeSingle() // maybeSingle évite de lever une exception si aucun enregistrement n'existe
+    .eq('id', user.id)
+    .maybeSingle()
 
-  // Résoudre le typage si la relation roles est renvoyée sous forme de tableau par le client auto-généré
-  const roleData = Array.isArray(userRole?.roles)
-    ? userRole.roles[0]
-    : (userRole?.roles as any)
+  // Si l'utilisateur a été désactivé, le déconnecter et le rediriger vers la connexion
+  if (profile && profile.is_active === false) {
+    await supabase.auth.signOut()
+    redirect('/admin/login?error=compte_desactive')
+  }
 
-  // Si l'utilisateur est connecté à l'admin mais n'a pas d'entrée dans user_roles,
-  // on lui accorde tous les accès par sécurité (Super Admin de secours) pour éviter tout blocage.
-  const isSuperAdmin = roleData?.name === 'admin' || !userRole
+  const roleData = Array.isArray(profile?.roles)
+    ? profile.roles[0]
+    : (profile?.roles as any)
+
+  // Si l'utilisateur a le rôle admin, c'est le Super Admin
+  const isSuperAdmin = roleData?.name === 'admin'
   const permissions = roleData?.permissions || (isSuperAdmin ? {
     menu_dashboard: true,
     menu_home: true,

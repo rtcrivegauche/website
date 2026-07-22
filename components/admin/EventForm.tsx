@@ -27,6 +27,7 @@ type EventData = {
   category: string
   max_attendees: number | string
   registration_url: string
+  google_calendar_url?: string
   is_featured: boolean
   is_published: boolean
 }
@@ -52,6 +53,7 @@ export default function EventForm({ event }: { event: EventData | null }) {
     category: event?.category || '',
     max_attendees: event?.max_attendees || '',
     registration_url: event?.registration_url || '',
+    google_calendar_url: event?.google_calendar_url || '',
     is_featured: event?.is_featured ?? false,
     is_published: event?.is_published ?? false,
   })
@@ -127,6 +129,16 @@ export default function EventForm({ event }: { event: EventData | null }) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
           <input type="text" value={formData.location_address} onChange={(e) => setFormData({ ...formData, location_address: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Lien d'inscription (Optionnel)</label>
+          <input type="url" value={formData.registration_url} onChange={(e) => setFormData({ ...formData, registration_url: e.target.value })} placeholder="https://..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Lien Google Calendar (Optionnel)</label>
+          <input type="url" value={formData.google_calendar_url} onChange={(e) => setFormData({ ...formData, google_calendar_url: e.target.value })} placeholder="https://calendar.google.com/..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
         <div className="md:col-span-2">

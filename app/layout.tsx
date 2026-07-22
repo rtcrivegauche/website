@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -7,6 +7,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#014F43",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -47,10 +53,18 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon.svg",
+    apple: "/icons/icon.svg",
+  },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
+
+import PwaRegister from "@/components/ui/PwaRegister";
+import PwaInstallPrompt from "@/components/ui/PwaInstallPrompt";
 
 export default function RootLayout({
   children,
@@ -62,7 +76,11 @@ export default function RootLayout({
       lang="fr"
       className={`${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <PwaRegister />
+        <PwaInstallPrompt />
+        {children}
+      </body>
     </html>
   );
 }
