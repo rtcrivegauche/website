@@ -64,7 +64,6 @@ export const metadata: Metadata = {
 };
 
 import PwaRegister from "@/components/ui/PwaRegister";
-import PwaInstallPrompt from "@/components/ui/PwaInstallPrompt";
 
 export default function RootLayout({
   children,
@@ -78,7 +77,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans">
         <PwaRegister />
-        <PwaInstallPrompt />
         {children}
       </body>
     </html>
