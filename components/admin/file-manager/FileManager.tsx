@@ -205,7 +205,7 @@ export default function FileManager({
         throw new Error('Échec de la génération de signature d\'upload')
       }
 
-      const { uploadUrl, publicUrl, originalName } = await presignResponse.json()
+      const { uploadUrl, publicUrl, originalName, bucket, finalFormat, entityType, fileKey } = await presignResponse.json()
 
       // 2. Déposer le fichier directement sur Cloudflare R2
       const uploadResponse = await fetch(uploadUrl, {
@@ -220,11 +220,18 @@ export default function FileManager({
 
       // 3. Sauvegarder dans la table media_files
       const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
       const { data: newMedia } = await supabase.from('media_files').insert([{
+        user_id: user?.id || null,
+        entity_type: entityType || 'uploads',
         original_name: originalName,
+        file_key: fileKey,
         public_url: publicUrl,
         mime_type: fileToUpload.type || 'application/octet-stream',
+        final_format: finalFormat || 'webp',
         size_bytes: fileToUpload.size,
+        bucket: bucket || 'rtcrivegaucheclub',
         provider: 'cloudflare_r2'
       }]).select().single()
 

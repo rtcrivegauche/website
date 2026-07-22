@@ -46,11 +46,17 @@ export async function POST(req: Request) {
     // L'URL publique d'accès final
     const publicUrl = `${publicBaseUrl}/${fileKey}`
 
+    // Extraire le format final de l'extension
+    const finalFormat = sanitizedOriginalName.split('.').pop() || 'webp'
+
     return NextResponse.json({
       uploadUrl,
       publicUrl,
       fileKey,
-      originalName: sanitizedOriginalName
+      originalName: sanitizedOriginalName,
+      bucket: bucketName,
+      finalFormat,
+      entityType
     })
 
   } catch (error: any) {
