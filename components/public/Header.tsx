@@ -128,7 +128,7 @@ export default function Header() {
           </Link>
           
           <nav className="flex items-center gap-7 flex-1 justify-center">
-            {navLinks.map((link) => (
+            {navLinks.filter(item => item.type !== 'cta').map((link) => (
               <Link
                 key={link.url}
                 href={link.url}
@@ -144,18 +144,51 @@ export default function Header() {
           </nav>
           
           <div className="flex items-center gap-3 flex-shrink-0">
-            <Link
-              href={siteConfig?.hero_cta_primary_url || '/membres'}
-              className="hidden lg:block px-5 py-2.5 bg-[#E11A60] text-white text-sm font-bold rounded-full hover:scale-95 transition-all duration-200 whitespace-nowrap text-center shadow-md hover:shadow-lg"
-            >
-              REJOINDRE LE CLUB
-            </Link>
-            <Link
-              href="/contact"
-              className="px-5 py-2.5 border-2 border-[#014F43] text-[#014F43] text-sm font-bold rounded-full hover:bg-[#014F43] hover:text-white transition-all duration-300 whitespace-nowrap text-center"
-            >
-              CONTACT
-            </Link>
+            {(() => {
+              const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
+              if (ctaItems.length > 0) {
+                return ctaItems.map((cta) => {
+                  const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
+                  const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
+                  const textColor = cta.text_color || (isBgTransparent ? '#014F43' : '#FFFFFF')
+                  const borderColor = cta.border_color || (isBgTransparent ? '#014F43' : 'transparent')
+                  const shape = cta.shape || 'rounded-full'
+
+                  return (
+                    <Link
+                      key={cta.id || cta.url}
+                      href={cta.url}
+                      style={{
+                        backgroundColor: bgColor,
+                        color: textColor,
+                        borderColor: borderColor,
+                        borderWidth: '2px',
+                        borderStyle: 'solid'
+                      }}
+                      className={`px-5 py-2.5 text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center ${shape}`}
+                    >
+                      {cta.label}
+                    </Link>
+                  )
+                })
+              }
+              return (
+                <>
+                  <Link
+                    href={siteConfig?.hero_cta_primary_url || '/membres'}
+                    className="hidden lg:block px-5 py-2.5 bg-[#E11A60] text-white text-sm font-bold rounded-full hover:scale-95 transition-all duration-200 whitespace-nowrap text-center shadow-md hover:shadow-lg"
+                  >
+                    REJOINDRE LE CLUB
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="px-5 py-2.5 border-2 border-[#014F43] text-[#014F43] text-sm font-bold rounded-full hover:bg-[#014F43] hover:text-white transition-all duration-300 whitespace-nowrap text-center"
+                  >
+                    CONTACT
+                  </Link>
+                </>
+              )
+            })()}
           </div>
         </div>
 
@@ -199,7 +232,7 @@ export default function Header() {
             &times;
           </button>
           
-          {navLinks.map((link) => (
+          {navLinks.filter(item => item.type !== 'cta').map((link) => (
             <Link
               key={link.url}
               href={link.url}
@@ -211,21 +244,57 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          
-          <Link
-            href={siteConfig?.hero_cta_primary_url || '/membres'}
-            onClick={() => setMobileMenuOpen(false)}
-            className="px-8 py-3 bg-white text-[#014F43] rounded-full font-bold mt-4 text-center w-full max-w-xs shadow-md hover:bg-gray-100"
-          >
-            REJOINDRE LE CLUB
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="px-8 py-3 border-2 border-white text-white rounded-full font-bold text-center w-full max-w-xs hover:bg-white/10"
-          >
-            CONTACT
-          </Link>
+
+          <div className="w-full max-w-xs flex flex-col gap-3 mt-4">
+            {(() => {
+              const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
+              if (ctaItems.length > 0) {
+                return ctaItems.map((cta) => {
+                  const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
+                  const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
+                  const textColor = cta.text_color || '#FFFFFF'
+                  const borderColor = cta.border_color || (isBgTransparent ? '#FFFFFF' : 'transparent')
+                  const shape = cta.shape || 'rounded-full'
+
+                  return (
+                    <Link
+                      key={cta.id || cta.url}
+                      href={cta.url}
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{
+                        backgroundColor: bgColor,
+                        color: textColor,
+                        borderColor: borderColor,
+                        borderWidth: '2px',
+                        borderStyle: 'solid'
+                      }}
+                      className={`px-8 py-3 text-center font-bold shadow-md text-base w-full ${shape}`}
+                    >
+                      {cta.label}
+                    </Link>
+                  )
+                })
+              }
+              return (
+                <>
+                  <Link
+                    href={siteConfig?.hero_cta_primary_url || '/membres'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-8 py-3 bg-white text-[#014F43] rounded-full font-bold text-center w-full shadow-md hover:bg-gray-100"
+                  >
+                    REJOINDRE LE CLUB
+                  </Link>
+                  <Link
+                    href="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-8 py-3 border-2 border-white text-white rounded-full font-bold text-center w-full hover:bg-white/10"
+                  >
+                    CONTACT
+                  </Link>
+                </>
+              )
+            })()}
+          </div>
         </div>
       )}
     </>

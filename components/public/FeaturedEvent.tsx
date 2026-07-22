@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { getFeaturedEvent } from '@/lib/actions/home'
+import { stripHtml } from '@/lib/utils'
 
 export default async function FeaturedEvent() {
   const event = await getFeaturedEvent()
@@ -21,7 +22,7 @@ export default async function FeaturedEvent() {
           
           {event.description && (
             <p className="text-[15px] md:text-xl text-gray-600 mb-6 md:mb-8 italic opacity-90 leading-relaxed max-w-2xl">
-              {event.description}
+              {stripHtml(event.description)}
             </p>
           )}
           

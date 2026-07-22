@@ -493,3 +493,96 @@
   content: "";
   margin-top: 0.5em;
 }
+
+/* =========================================================
+   STYLES COMPLETS POUR RENDU TYPOGRAPHIQUE DE L'ÉDITEUR TIPTAP
+   ========================================================= */
+.tiptap-rendered-content h1, .prose h1 {
+  font-size: 2.25rem !important;
+  line-height: 2.5rem !important;
+  font-weight: 800 !important;
+  color: #014F43 !important;
+  margin-top: 1.8em !important;
+  margin-bottom: 0.8em !important;
+}
+
+.tiptap-rendered-content h2, .prose h2 {
+  font-size: 1.75rem !important;
+  line-height: 2.25rem !important;
+  font-weight: 700 !important;
+  color: #014F43 !important;
+  margin-top: 1.6em !important;
+  margin-bottom: 0.6em !important;
+}
+
+.tiptap-rendered-content h3, .prose h3 {
+  font-size: 1.35rem !important;
+  line-height: 1.85rem !important;
+  font-weight: 700 !important;
+  color: #014F43 !important;
+  margin-top: 1.4em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.tiptap-rendered-content h4, .prose h4 {
+  font-size: 1.15rem !important;
+  line-height: 1.6rem !important;
+  font-weight: 600 !important;
+  color: #014F43 !important;
+  margin-top: 1.2em !important;
+  margin-bottom: 0.4em !important;
+}
+
+.tiptap-rendered-content p, .prose p {
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+  line-height: 1.75 !important;
+}
+
+/* Prise en compte absolue de l'alignement inline Tiptap */
+.tiptap-rendered-content [style*="text-align: center"],
+.prose [style*="text-align: center"] {
+  text-align: center !important;
+}
+
+.tiptap-rendered-content [style*="text-align: right"],
+.prose [style*="text-align: right"] {
+  text-align: right !important;
+}
+
+.tiptap-rendered-content [style*="text-align: justify"],
+.prose [style*="text-align: justify"] {
+  text-align: justify !important;
+}
+
+.tiptap-rendered-content [style*="text-align: left"],
+.prose [style*="text-align: left"] {
+  text-align: left !important;
+}
+
+/* Styles pour Tableaux Tiptap */
+.tiptap-rendered-content table, .prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  font-size: 0.95rem;
+}
+
+.tiptap-rendered-content th, .prose th {
+  background-color: #014F43;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.tiptap-rendered-content td, .prose td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.tiptap-rendered-content tr:nth-child(even), .prose tr:nth-child(even) {
+  background-color: #f9fafb;
+}

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
 import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
+import { stripHtml } from '@/lib/utils'
 
 export default async function ActionDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -49,7 +50,7 @@ export default async function ActionDetailPage({ params }: { params: Promise<{ s
 
           {action.description && (
             <p className="text-xl text-gray-600 mb-8">
-              {action.description}
+              {stripHtml(action.description)}
             </p>
           )}
 
