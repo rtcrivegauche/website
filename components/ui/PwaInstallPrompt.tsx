@@ -52,8 +52,8 @@ export default function PwaInstallPrompt() {
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-50 animate-in slide-in-from-bottom duration-300">
       <div className="bg-[#014F43] text-white p-4 rounded-2xl shadow-2xl border border-white/20 flex items-center justify-between gap-4 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-[#E11A60] rounded-xl text-white flex-shrink-0">
-            <Smartphone size={24} />
+          <div className="w-10 h-10 bg-white p-1 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+            <img src="/icons/favicon-rtc-rgc.png" alt="Club Rotaract Cica" className="w-full h-full object-contain" />
           </div>
           <div>
             <h4 className="font-extrabold text-sm leading-tight">Installer l'application RTC Cica</h4>
