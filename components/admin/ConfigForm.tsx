@@ -33,6 +33,19 @@ export default function ConfigForm({ config }: ConfigFormProps) {
     hero_cta_secondary: config?.hero_cta_secondary || '',
     hero_cta_primary_url: config?.hero_cta_primary_url || '',
     hero_cta_secondary_url: config?.hero_cta_secondary_url || '',
+    og_image_url: config?.og_image_url || '',
+    about_image_url: config?.about_image_url || '',
+    about_badge_number: config?.about_badge_number || '98%',
+    about_badge_text: config?.about_badge_text || 'Satisfaction des membres dans nos projets communautaires.',
+    stat_1_value: config?.stat_1_value ?? 15,
+    stat_1_suffix: config?.stat_1_suffix || '',
+    stat_1_label: config?.stat_1_label || "ans d'impact",
+    stat_2_value: config?.stat_2_value ?? 100,
+    stat_2_suffix: config?.stat_2_suffix || '+',
+    stat_2_label: config?.stat_2_label || 'actions réalisées',
+    stat_3_value: config?.stat_3_value ?? 500,
+    stat_3_suffix: config?.stat_3_suffix || '+',
+    stat_3_label: config?.stat_3_label || 'personnes touchées',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -312,6 +325,165 @@ export default function ConfigForm({ config }: ConfigFormProps) {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
               placeholder="/actions"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Image de Partage Réseaux Sociaux (Open Graph) */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+        <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Image de Partage Réseaux Sociaux (Open Graph & WhatsApp)</h2>
+        <p className="text-xs text-gray-500">
+          Cette image s'affiche automatiquement lorsque vous partagez le lien du site sur WhatsApp, Facebook, LinkedIn ou Twitter.
+        </p>
+        <ImageUploader
+          value={formData.og_image_url || null}
+          onChange={(url) => setFormData(prev => ({ ...prev, og_image_url: url || '' }))}
+          entityType="config"
+          entityId={config?.id}
+          label="Image officielle de partage social (Open Graph / WhatsApp)"
+        />
+      </div>
+
+      {/* Section À Propos de la Page d'Accueil */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+        <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Section À Propos (Page d'accueil)</h2>
+        
+        <ImageUploader
+          value={formData.about_image_url || null}
+          onChange={(url) => setFormData(prev => ({ ...prev, about_image_url: url || '' }))}
+          entityType="config"
+          entityId={config?.id}
+          label="Image principale de présentation d'À Propos"
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Chiffre / Statut du Badge (ex: 98%)
+            </label>
+            <input
+              type="text"
+              value={formData.about_badge_number}
+              onChange={(e) => setFormData({ ...formData, about_badge_number: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43]"
+              placeholder="98%"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Texte du Badge d'impact
+            </label>
+            <input
+              type="text"
+              value={formData.about_badge_text}
+              onChange={(e) => setFormData({ ...formData, about_badge_text: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43]"
+              placeholder="Satisfaction des membres..."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section Chiffres Clés d'Impact */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+        <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-4">Chiffres Clés d'Impact (Page d'accueil)</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Stat 1 */}
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+            <h3 className="text-sm font-bold text-[#014F43]">Statistique 1 (avec Trophée)</h3>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
+              <input
+                type="number"
+                value={formData.stat_1_value}
+                onChange={(e) => setFormData({ ...formData, stat_1_value: parseInt(e.target.value) || 0 })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Suffixe (ex: + ou %)</label>
+              <input
+                type="text"
+                value={formData.stat_1_suffix}
+                onChange={(e) => setFormData({ ...formData, stat_1_suffix: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Libellé</label>
+              <input
+                type="text"
+                value={formData.stat_1_label}
+                onChange={(e) => setFormData({ ...formData, stat_1_label: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Stat 2 */}
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+            <h3 className="text-sm font-bold text-[#014F43]">Statistique 2</h3>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
+              <input
+                type="number"
+                value={formData.stat_2_value}
+                onChange={(e) => setFormData({ ...formData, stat_2_value: parseInt(e.target.value) || 0 })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Suffixe (ex: +)</label>
+              <input
+                type="text"
+                value={formData.stat_2_suffix}
+                onChange={(e) => setFormData({ ...formData, stat_2_suffix: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Libellé</label>
+              <input
+                type="text"
+                value={formData.stat_2_label}
+                onChange={(e) => setFormData({ ...formData, stat_2_label: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Stat 3 */}
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+            <h3 className="text-sm font-bold text-[#014F43]">Statistique 3</h3>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
+              <input
+                type="number"
+                value={formData.stat_3_value}
+                onChange={(e) => setFormData({ ...formData, stat_3_value: parseInt(e.target.value) || 0 })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Suffixe (ex: +)</label>
+              <input
+                type="text"
+                value={formData.stat_3_suffix}
+                onChange={(e) => setFormData({ ...formData, stat_3_suffix: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Libellé</label>
+              <input
+                type="text"
+                value={formData.stat_3_label}
+                onChange={(e) => setFormData({ ...formData, stat_3_label: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>

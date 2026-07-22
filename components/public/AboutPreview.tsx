@@ -1,5 +1,9 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { HandHeart, TrendingUp, Users } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 const iconMap = {
   HandHeart,
@@ -15,6 +19,32 @@ type ValueItem = {
 }
 
 export default function AboutPreview() {
+  const [aboutImage, setAboutImage] = useState<string>("https://lh3.googleusercontent.com/aida-public/AB6AXuC96fb1noioaBH_jJfnvyvIsRATmdaiqwUXuS7I8qarEGz4QmrlDaJAueRbzzgX1XSkA5YIki1N80mE5kS7FfRehofQarKjin6Kk3gh8sY4Xfk2oSAC_4cKj8eMRdapsCvWLGCTrWvAzg95hVc2esCXF-nAd9NsfhJN6UUXYDzAcMKoAtWRn0joe89Eh0yyVnt4EO_8vNwnihhTE9lel4789bljUXBhsQkIggOnysf4xVfvxXWWugNxdV2B38X81HpNSBLTzQUN8SQ")
+  const [badgeNumber, setBadgeNumber] = useState<string>("98%")
+  const [badgeText, setBadgeText] = useState<string>("Satisfaction des membres dans nos projets communautaires.")
+
+  useEffect(() => {
+    async function loadAboutData() {
+      try {
+        const supabase = createClient()
+        const { data: config } = await supabase
+          .from('site_config')
+          .select('about_image_url, about_badge_number, about_badge_text')
+          .limit(1)
+          .maybeSingle()
+
+        if (config) {
+          if (config.about_image_url) setAboutImage(config.about_image_url)
+          if (config.about_badge_number) setBadgeNumber(config.about_badge_number)
+          if (config.about_badge_text) setBadgeText(config.about_badge_text)
+        }
+      } catch (e) {
+        console.error('Erreur chargement données À Propos:', e)
+      }
+    }
+    loadAboutData()
+  }, [])
+
   const values: ValueItem[] = [
     {
       iconName: 'HandHeart',
@@ -36,23 +66,21 @@ export default function AboutPreview() {
     },
   ]
 
-  const imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96fb1noioaBH_jJfnvyvIsRATmdaiqwUXuS7I8qarEGz4QmrlDaJAueRbzzgX1XSkA5YIki1N80mE5kS7FfRehofQarKjin6Kk3gh8sY4Xfk2oSAC_4cKj8eMRdapsCvWLGCTrWvAzg95hVc2esCXF-nAd9NsfhJN6UUXYDzAcMKoAtWRn0joe89Eh0yyVnt4EO_8vNwnihhTE9lel4789bljUXBhsQkIggOnysf4xVfvxXWWugNxdV2B38X81HpNSBLTzQUN8SQ"
-
   return (
     <section className="max-w-[1320px] mx-auto px-4 md:px-6 py-12 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
       {/* Image */}
       <div className="relative">
         <Image
-          src={imageUrl}
+          src={aboutImage}
           alt="Membres Rotaract"
           width={600}
           height={750}
           className="w-full aspect-[4/5] object-cover rounded-xl shadow-lg"
         />
         <div className="absolute -bottom-10 -right-10 hidden lg:block w-64 h-64 bg-[#E11A60] rounded-xl p-8 shadow-xl text-white">
-          <span className="text-5xl font-bold">98%</span>
+          <span className="text-5xl font-bold">{badgeNumber}</span>
           <p className="text-sm mt-4">
-            Satisfaction des membres dans nos projets communautaires.
+            {badgeText}
           </p>
         </div>
       </div>
