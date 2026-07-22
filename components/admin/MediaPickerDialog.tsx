@@ -105,24 +105,40 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
     setUploading(true)
     try {
       const file = files[0]
-      const formData = new FormData()
-      formData.append('file', file)
 
-      const response = await fetch('/api/upload/image', {
+      // 1. Demander une URL présignée au serveur Next.js
+      const presignResponse = await fetch('/api/upload/presign', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type || 'image/jpeg',
+          entityType: 'uploads'
+        })
       })
 
-      if (!response.ok) throw new Error('Téléversement échoué')
+      if (!presignResponse.ok) {
+        throw new Error('Échec de la génération de signature d\'upload')
+      }
 
-      const data = await response.json()
-      const uploadedUrl = data.url || data.path || data.image_url
+      const { uploadUrl, publicUrl, originalName } = await presignResponse.json()
 
-      // Sauvegarder dans media_files
+      // 2. Déposer le fichier directement sur Cloudflare R2
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'image/jpeg' },
+        body: file
+      })
+
+      if (!uploadResponse.ok) {
+        throw new Error('Le téléversement vers le stockage Cloudflare a échoué')
+      }
+
+      // 3. Sauvegarder dans la table media_files
       const supabase = createClient()
       const { data: newMedia } = await supabase.from('media_files').insert([{
-        original_name: file.name,
-        public_url: uploadedUrl,
+        original_name: originalName,
+        public_url: publicUrl,
         mime_type: file.type || 'image/jpeg',
         size_bytes: file.size,
         provider: 'cloudflare_r2'
@@ -132,14 +148,14 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
         setMediaList(prev => [{
           id: newMedia.id,
           title: newMedia.original_name || file.name,
-          url: newMedia.public_url || uploadedUrl,
+          url: newMedia.public_url || publicUrl,
           media_type: newMedia.mime_type
         }, ...prev])
       } else {
-        setMediaList(prev => [{ id: 'temp_' + Date.now(), title: file.name, url: uploadedUrl }, ...prev])
+        setMediaList(prev => [{ id: 'temp_' + Date.now(), title: file.name, url: publicUrl }, ...prev])
       }
 
-      setSelectedUrl(uploadedUrl)
+      setSelectedUrl(publicUrl)
       setActiveTab('library')
     } catch (err: any) {
       alert('Erreur upload : ' + err.message)

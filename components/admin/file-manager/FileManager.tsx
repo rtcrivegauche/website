@@ -189,45 +189,57 @@ export default function FileManager({
     setUploading(true)
     try {
       const fileToUpload = selectedFiles[0]
-      const formData = new FormData()
-      formData.append('file', fileToUpload)
 
-      const response = await fetch('/api/upload/image', {
+      // 1. Demander une URL présignée au serveur Next.js
+      const presignResponse = await fetch('/api/upload/presign', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: fileToUpload.name,
+          contentType: fileToUpload.type || 'application/octet-stream',
+          entityType: 'uploads'
+        })
       })
 
-      if (!response.ok) {
-        throw new Error('Échec du téléversement')
+      if (!presignResponse.ok) {
+        throw new Error('Échec de la génération de signature d\'upload')
       }
 
-      const data = await response.json()
+      const { uploadUrl, publicUrl, originalName } = await presignResponse.json()
+
+      // 2. Déposer le fichier directement sur Cloudflare R2
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': fileToUpload.type || 'application/octet-stream' },
+        body: fileToUpload
+      })
+
+      if (!uploadResponse.ok) {
+        throw new Error('Le téléversement vers le stockage Cloudflare a échoué')
+      }
+
+      // 3. Sauvegarder dans la table media_files
+      const supabase = createClient()
+      const { data: newMedia } = await supabase.from('media_files').insert([{
+        original_name: originalName,
+        public_url: publicUrl,
+        mime_type: fileToUpload.type || 'application/octet-stream',
+        size_bytes: fileToUpload.size,
+        provider: 'cloudflare_r2'
+      }]).select().single()
+
       const newFileItem: FileItem = {
-        id: 'file_' + Date.now(),
-        title: fileToUpload.name,
-        url: data.url || data.path || data.image_url,
+        id: newMedia?.id || 'file_' + Date.now(),
+        title: originalName,
+        url: publicUrl,
         media_type: fileToUpload.type || 'application/octet-stream',
         file_size: fileToUpload.size,
         folder_id: currentFolderId
       }
 
-      // Enregistrer également dans Supabase dans la table media_files si non fait par la route d'API
-      try {
-        const supabase = createClient()
-        await supabase.from('media_files').insert([{
-          original_name: fileToUpload.name,
-          public_url: data.url || data.path || data.image_url,
-          mime_type: fileToUpload.type,
-          size_bytes: fileToUpload.size,
-          provider: 'cloudflare_r2'
-        }]).select()
-      } catch (errDb) {
-        console.warn('Sauvegarde BDD optionnelle:', errDb)
-      }
-
       setFiles(prev => [newFileItem, ...prev])
     } catch (err: any) {
-      alert('Erreur lors du téléversement : ' + err.message)
+      alert('Erreur lors du téléversement direct : ' + err.message)
     } finally {
       setUploading(false)
       e.target.value = ''
