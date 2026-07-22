@@ -25,16 +25,28 @@ export default function TestimonialVideoConfig({ initialVideoUrl = '' }: Testimo
     try {
       const supabase = createClient()
       
-      // Sauvegarder dans site_config avec la clé 'testimonials_video_url'
-      const { error: upsertError } = await supabase
-        .from('site_config')
-        .upsert({
-          key: 'testimonials_video_url',
-          value: videoUrl.trim(),
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'key' })
+      // Sauvegarder la colonne testimonials_video_url dans la table site_config
+      const { data: config } = await supabase.from('site_config').select('id').limit(1).maybeSingle()
 
-      if (upsertError) throw upsertError
+      if (config) {
+        const { error: updateError } = await supabase
+          .from('site_config')
+          .update({
+            testimonials_video_url: videoUrl.trim() || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', config.id)
+
+        if (updateError) throw updateError
+      } else {
+        const { error: insertError } = await supabase
+          .from('site_config')
+          .insert([{
+            testimonials_video_url: videoUrl.trim() || null
+          }])
+
+        if (insertError) throw insertError
+      }
 
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)

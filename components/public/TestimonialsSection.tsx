@@ -62,15 +62,15 @@ export default function TestimonialsSection() {
           setTestimonials(data)
         }
 
-        // Charger l'URL vidéo YouTube depuis site_config
+        // Charger l'URL vidéo YouTube depuis la colonne testimonials_video_url de site_config
         const { data: configData } = await supabase
           .from('site_config')
-          .select('value')
-          .eq('key', 'testimonials_video_url')
-          .single()
+          .select('testimonials_video_url')
+          .limit(1)
+          .maybeSingle()
 
-        if (configData?.value) {
-          const rawUrl = configData.value.trim()
+        if (configData?.testimonials_video_url) {
+          const rawUrl = configData.testimonials_video_url.trim()
           let embedUrl = rawUrl
           
           // Helper d'extraction d'ID YouTube

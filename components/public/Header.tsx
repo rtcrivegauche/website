@@ -172,22 +172,7 @@ export default function Header() {
                   )
                 })
               }
-              return (
-                <>
-                  <Link
-                    href={siteConfig?.hero_cta_primary_url || '/membres'}
-                    className="hidden lg:block px-5 py-2.5 bg-[#E11A60] text-white text-sm font-bold rounded-full hover:scale-95 transition-all duration-200 whitespace-nowrap text-center shadow-md hover:shadow-lg"
-                  >
-                    REJOINDRE LE CLUB
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="px-5 py-2.5 border-2 border-[#014F43] text-[#014F43] text-sm font-bold rounded-full hover:bg-[#014F43] hover:text-white transition-all duration-300 whitespace-nowrap text-center"
-                  >
-                    CONTACT
-                  </Link>
-                </>
-              )
+              return null
             })()}
           </div>
         </div>
@@ -275,24 +260,7 @@ export default function Header() {
                   )
                 })
               }
-              return (
-                <>
-                  <Link
-                    href={siteConfig?.hero_cta_primary_url || '/membres'}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-8 py-3 bg-white text-[#014F43] rounded-full font-bold text-center w-full shadow-md hover:bg-gray-100"
-                  >
-                    REJOINDRE LE CLUB
-                  </Link>
-                  <Link
-                    href="/contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-8 py-3 border-2 border-white text-white rounded-full font-bold text-center w-full hover:bg-white/10"
-                  >
-                    CONTACT
-                  </Link>
-                </>
-              )
+              return null
             })()}
           </div>
         </div>
