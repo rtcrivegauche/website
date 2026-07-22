@@ -1,20 +1,30 @@
 import { S3Client } from '@aws-sdk/client-s3'
 
-// Nettoyage robuste des variables d'environnement contre les copier-coller contenant des espaces ou des préfixes
-const cleanAccountId = (process.env.CLOUDFLARE_R2_ACCOUNT_ID || '')
-  .trim()
-  .replace(/^https?:\/\//i, '') // supprime un éventuel http:// ou https://
-  .replace(/\/+$/, ''); // supprime les slashes de fin
+// Nettoyage robuste des variables d'environnement contre les copier-coller contenant des espaces, des préfixes ou des URLs complètes
+const rawAccountId = (process.env.CLOUDFLARE_R2_ACCOUNT_ID || '').trim()
+const entrypoint = (process.env.CLOUDFLARE_R2_ENTRYPOINT || '').trim()
+
+let endpointUrl = ''
+if (entrypoint) {
+  endpointUrl = entrypoint.startsWith('http') ? entrypoint : `https://${entrypoint}`
+} else if (rawAccountId) {
+  if (rawAccountId.includes('r2.cloudflarestorage.com')) {
+    // Si l'utilisateur a collé l'endpoint complet à la place de l'ID de compte
+    endpointUrl = rawAccountId.startsWith('http') ? rawAccountId : `https://${rawAccountId}`
+  } else {
+    endpointUrl = `https://${rawAccountId}.r2.cloudflarestorage.com`
+  }
+}
 
 const cleanAccessKeyId = (process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '').trim()
 const cleanSecretAccessKey = (process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '').trim()
 
-if (!cleanAccountId) {
-  console.warn('Warning: CLOUDFLARE_R2_ACCOUNT_ID is missing or empty')
+if (!endpointUrl) {
+  console.warn('Warning: Cloudflare R2 endpoint configuration is missing')
 }
 
 export const r2Client = new S3Client({
-  endpoint: `https://${cleanAccountId}.r2.cloudflarestorage.com`,
+  endpoint: endpointUrl,
   credentials: {
     accessKeyId: cleanAccessKeyId,
     secretAccessKey: cleanSecretAccessKey,
