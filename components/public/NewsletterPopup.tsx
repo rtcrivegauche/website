@@ -15,6 +15,14 @@ export default function NewsletterPopup() {
   })
 
   useEffect(() => {
+    // Écouter la touche Échap pour fermer la pop-up
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+
     // Vérifier si l'utilisateur a déjà souscrit ou fermé la pop-up
     const hasSubscribed = localStorage.getItem('newsletter_subscribed')
     
@@ -24,8 +32,13 @@ export default function NewsletterPopup() {
         setIsOpen(true)
       }, 6000)
 
-      return () => clearTimeout(timer)
+      return () => {
+        clearTimeout(timer)
+        window.removeEventListener('keydown', handleKeyDown)
+      }
     }
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const handleClose = () => {
@@ -81,13 +94,15 @@ export default function NewsletterPopup() {
         {/* Motif décoratif en arrière-plan */}
         <div className="absolute -top-10 -left-10 w-24 h-24 bg-[#014F43]/5 rounded-full pointer-events-none"></div>
 
-        {/* Bouton fermer */}
+        {/* Bouton fermer réactif et facile à cliquer */}
         <button
+          type="button"
           onClick={handleClose}
-          className="absolute top-4 right-4 p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 rounded-full transition-colors z-10"
-          title="Fermer"
+          className="absolute top-3.5 right-3.5 w-9 h-9 bg-gray-100 hover:bg-[#E11A60] text-gray-600 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 z-50 cursor-pointer shadow-sm hover:scale-110 active:scale-95"
+          title="Fermer la fenêtre"
+          aria-label="Fermer"
         >
-          <X size={16} />
+          <X size={18} />
         </button>
 
         {success ? (
