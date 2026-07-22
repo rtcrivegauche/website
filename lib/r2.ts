@@ -1,8 +1,16 @@
 import { S3Client } from '@aws-sdk/client-s3'
 
 // Nettoyage robuste des variables d'environnement contre les copier-coller contenant des espaces, des préfixes ou des URLs complètes
-const rawAccountId = (process.env.CLOUDFLARE_R2_ACCOUNT_ID || '').trim()
+let rawAccountId = (process.env.CLOUDFLARE_R2_ACCOUNT_ID || '').trim()
 const entrypoint = (process.env.CLOUDFLARE_R2_ENTRYPOINT || '').trim()
+
+// Nettoyage automatique des caractères non hexadécimaux accidentels (ex: un 'v' de copier-coller devant l'ID)
+if (rawAccountId && !rawAccountId.includes('r2.cloudflarestorage.com')) {
+  const hexMatch = rawAccountId.match(/[0-9a-fA-F]{32}/)
+  if (hexMatch) {
+    rawAccountId = hexMatch[0]
+  }
+}
 
 let endpointUrl = ''
 if (entrypoint) {
