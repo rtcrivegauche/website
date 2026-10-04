@@ -76,7 +76,7 @@ export default function PresidentWord() {
                 {president.full_name}
               </h3>
               <p className="text-[#E11A60] font-bold text-xs uppercase tracking-widest mt-1">
-                Président du Mandat
+                {president.full_name.toLowerCase().includes('nelly') ? 'Présidente du Mandat' : 'Président du Mandat'}
               </p>
               <span className="inline-block mt-2 px-4 py-1.5 bg-[#014F43] text-white text-xs font-black rounded-full shadow-sm">
                 {president.term}
@@ -90,7 +90,7 @@ export default function PresidentWord() {
             
             <div className="relative z-10">
               <span className="text-[#E11A60] font-black text-lg tracking-wider uppercase block mb-3">
-                Le Mot du Président
+                {president.full_name.toLowerCase().includes('nelly') ? 'Le Mot de la Présidente' : 'Le Mot du Président'}
               </span>
               
               <div className="text-gray-600 text-base md:text-lg leading-relaxed font-medium italic space-y-4">
