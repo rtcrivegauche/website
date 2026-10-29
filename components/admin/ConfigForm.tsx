@@ -492,7 +492,7 @@ export default function ConfigForm({ config }: ConfigFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="px-8 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold shadow-md hover:shadow-lg"
+          className="w-full sm:w-auto px-8 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold shadow-md hover:shadow-lg text-center"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer les modifications'}
         </button>

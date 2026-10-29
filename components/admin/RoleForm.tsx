@@ -216,18 +216,18 @@ export default function RoleForm({ role }: RoleFormProps) {
         </div>
       </div>
 
-      <div className="flex gap-4 justify-end border-t border-gray-200 pt-6">
+      <div className="flex flex-col sm:flex-row gap-3 justify-end border-t border-gray-200 pt-6 w-full">
         <button
           type="submit"
           disabled={loading}
-          className="px-8 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold"
+          className="w-full sm:w-auto px-8 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold text-center shadow-sm"
         >
           {loading ? 'Enregistrement...' : role ? 'Enregistrer les modifications' : 'Créer le rôle'}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/roles')}
-          className="px-8 py-3.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+          className="w-full sm:w-auto px-8 py-3.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium text-center"
         >
           Annuler
         </button>

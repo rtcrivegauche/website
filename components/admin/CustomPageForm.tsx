@@ -81,21 +81,21 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="min-h-screen bg-[#f4f7f9] -m-6 p-6">
+    <form onSubmit={handleSubmit} className="min-h-screen bg-[#f4f7f9] p-3 sm:p-6 rounded-2xl w-full max-w-full overflow-hidden">
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl shadow-sm">
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl shadow-sm text-sm">
           {error}
         </div>
       )}
 
       {/* Barre d'en-tête supérieure ultra moderne */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm w-full max-w-full">
         {/* Onglets de gauche */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
           <button
             type="button"
             onClick={() => setActiveTab('editor')}
-            className={`text-sm font-bold tracking-wide transition-all pb-1 border-b-2 ${
+            className={`text-xs sm:text-sm font-bold tracking-wide transition-all pb-1 border-b-2 whitespace-nowrap ${
               activeTab === 'editor' ? 'text-[#014F43] border-[#014F43]' : 'text-gray-400 border-transparent hover:text-gray-600'
             }`}
           >
@@ -104,7 +104,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
           <button
             type="button"
             onClick={() => setActiveTab('drafts')}
-            className={`text-sm font-bold tracking-wide transition-all pb-1 border-b-2 ${
+            className={`text-xs sm:text-sm font-bold tracking-wide transition-all pb-1 border-b-2 whitespace-nowrap ${
               activeTab === 'drafts' ? 'text-[#014F43] border-[#014F43]' : 'text-gray-400 border-transparent hover:text-gray-600'
             }`}
           >
@@ -113,7 +113,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
           <button
             type="button"
             onClick={() => setActiveTab('history')}
-            className={`text-sm font-bold tracking-wide transition-all pb-1 border-b-2 ${
+            className={`text-xs sm:text-sm font-bold tracking-wide transition-all pb-1 border-b-2 whitespace-nowrap ${
               activeTab === 'history' ? 'text-[#014F43] border-[#014F43]' : 'text-gray-400 border-transparent hover:text-gray-600'
             }`}
           >
@@ -122,7 +122,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
           <button
             type="button"
             onClick={() => setActiveTab('preview')}
-            className={`text-sm font-bold tracking-wide transition-all pb-1 border-b-2 ${
+            className={`text-xs sm:text-sm font-bold tracking-wide transition-all pb-1 border-b-2 whitespace-nowrap ${
               activeTab === 'preview' ? 'text-[#014F43] border-[#014F43]' : 'text-gray-400 border-transparent hover:text-gray-600'
             }`}
           >
@@ -131,18 +131,18 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
         </div>
 
         {/* Boutons de droite */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
           <button
             type="button"
             onClick={() => router.back()}
-            className="text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors"
+            className="text-xs sm:text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors"
           >
             Save
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2 bg-[#014F43] hover:bg-[#00362d] text-white text-xs font-bold rounded-lg tracking-wider uppercase transition-all shadow-sm disabled:opacity-50"
+            className="px-4 sm:px-5 py-2 bg-[#014F43] hover:bg-[#00362d] text-white text-xs font-bold rounded-lg tracking-wider uppercase transition-all shadow-sm disabled:opacity-50 whitespace-nowrap"
           >
             {loading ? 'Sauvegarde...' : 'Publish'}
           </button>
@@ -152,7 +152,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
           <button
             type="button"
             onClick={() => router.push('/admin/pages')}
-            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-all text-lg font-bold"
+            className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-all text-lg font-bold shrink-0"
             title="Fermer"
           >
             &times;

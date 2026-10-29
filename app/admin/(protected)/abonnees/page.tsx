@@ -20,10 +20,10 @@ export default async function NewsletterSubscribersPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Abonnés Newsletter</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Abonnés Newsletter</h1>
           <p className="text-gray-500 mt-1">
             Gérez la liste de contacts inscrits via notre pop-up d'informations (Emails et WhatsApp).
           </p>

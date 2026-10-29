@@ -577,11 +577,11 @@ export default function MemberForm({ member }: { member: Member | null }) {
       </div>
 
       {/* Boutons */}
-      <div className="flex gap-4 pt-4 border-t">
+      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t w-full">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 px-6 py-3 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50"
+          className="w-full sm:flex-1 px-6 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold text-center shadow-sm"
         >
           {loading ? 'Enregistrement...' : member ? 'Mettre à jour' : 'Créer le membre'}
         </button>
@@ -589,7 +589,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="w-full sm:w-auto px-6 py-3.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-center"
         >
           Annuler
         </button>
@@ -599,7 +599,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
             type="button"
             onClick={handleDelete}
             disabled={loading}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 font-bold text-center"
           >
             Supprimer
           </button>

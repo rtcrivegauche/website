@@ -183,26 +183,42 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 animate-in fade-in duration-200"
       onClick={(e) => {
         e.stopPropagation()
         onClose()
       }}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden"
+        className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-4xl max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* En-tête */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+        {/* En-tête Responsive */}
+        <div className="p-3.5 sm:p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50">
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2">
               <ImageIcon size={20} className="text-[#014F43]" />
               Sélecteur d'images
             </h2>
 
+            {/* Bouton fermer sur mobile (placé en haut à droite) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onClose()
+              }}
+              className="sm:hidden p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition"
+              aria-label="Fermer"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             {/* Onglets */}
-            <div className="flex bg-gray-200 p-1 rounded-lg text-xs font-semibold">
+            <div className="flex bg-gray-200 p-1 rounded-lg text-xs font-semibold w-full sm:w-auto">
               <button
                 type="button"
                 onClick={(e) => {
@@ -210,7 +226,7 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
                   e.stopPropagation()
                   setActiveTab('library')
                 }}
-                className={`px-3 py-1.5 rounded-md transition ${activeTab === 'library' ? 'bg-white text-[#014F43] shadow-sm' : 'text-gray-600'}`}
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition text-center ${activeTab === 'library' ? 'bg-white text-[#014F43] shadow-sm' : 'text-gray-600'}`}
               >
                 Médiathèque
               </button>
@@ -221,32 +237,34 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
                   e.stopPropagation()
                   setActiveTab('upload')
                 }}
-                className={`px-3 py-1.5 rounded-md transition ${activeTab === 'upload' ? 'bg-white text-[#014F43] shadow-sm' : 'text-gray-600'}`}
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-md transition text-center ${activeTab === 'upload' ? 'bg-white text-[#014F43] shadow-sm' : 'text-gray-600'}`}
               >
                 Uploader une image
               </button>
             </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              onClose()
-            }}
-            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition"
-          >
-            <X size={20} />
-          </button>
+            {/* Bouton fermer sur desktop */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                onClose()
+              }}
+              className="hidden sm:flex p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition"
+              aria-label="Fermer"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Corps */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
           {activeTab === 'library' ? (
             <div className="space-y-4">
               {/* Barre de recherche */}
-              <div className="relative max-w-sm">
+              <div className="relative w-full sm:max-w-sm">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
@@ -323,7 +341,7 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
         </div>
 
         {/* Pied de modal */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+        <div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={(e) => {
@@ -331,7 +349,7 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
               e.stopPropagation()
               onClose()
             }}
-            className="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition"
+            className="w-full sm:w-auto px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition text-center"
           >
             Annuler
           </button>
@@ -339,7 +357,7 @@ export default function MediaPickerDialog({ isOpen, onClose, onSelectImage }: Me
             type="button"
             onClick={handleConfirmSelection}
             disabled={!selectedUrl}
-            className="px-6 py-2.5 bg-[#014F43] text-white rounded-xl text-sm font-bold hover:bg-[#00362d] transition disabled:opacity-50 shadow-md"
+            className="w-full sm:w-auto px-6 py-2.5 bg-[#014F43] text-white rounded-xl text-sm font-bold hover:bg-[#00362d] transition disabled:opacity-50 shadow-md text-center"
           >
             Choisir cette image
           </button>

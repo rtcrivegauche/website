@@ -121,18 +121,18 @@ export default function MediaForm({ media }: MediaFormProps) {
           />
         </div>
 
-        <div className="flex gap-4 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 w-full">
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors disabled:opacity-50 font-bold text-center shadow-sm"
           >
             {loading ? 'Enregistrement...' : media ? 'Mettre à jour' : 'Ajouter'}
           </button>
           <button
             type="button"
             onClick={() => router.push('/admin/media')}
-            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            className="w-full sm:w-auto px-6 py-3.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium text-center"
           >
             Annuler
           </button>

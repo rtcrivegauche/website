@@ -161,22 +161,22 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         </div>
       </div>
 
-      <div className="flex gap-6">
-        <label className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={formData.is_published} onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })} className="w-4 h-4 text-[#E11A60] rounded" />
-          <span className="text-sm text-gray-700">Publié</span>
+          <span className="text-sm text-gray-700 font-medium">Publié</span>
         </label>
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="w-4 h-4 text-[#E11A60] rounded" />
-          <span className="text-sm text-gray-700">Mis en avant (page d'accueil)</span>
+          <span className="text-sm text-gray-700 font-medium">Mis en avant (page d'accueil)</span>
         </label>
       </div>
 
-      <div className="flex gap-4 pt-4 border-t">
-        <button type="submit" disabled={loading} className="px-6 py-2 bg-[#E11A60] text-white rounded-lg hover:bg-[#1ab030] transition disabled:opacity-50 font-medium">
+      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t w-full">
+        <button type="submit" disabled={loading} className="w-full sm:w-auto px-6 py-3 bg-[#E11A60] text-white rounded-lg hover:bg-[#c0144f] transition disabled:opacity-50 font-bold text-center shadow-sm">
           {loading ? 'Enregistrement...' : 'Enregistrer'}
         </button>
-        <button type="button" onClick={() => router.back()} className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">
+        <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium text-center">
           Annuler
         </button>
       </div>

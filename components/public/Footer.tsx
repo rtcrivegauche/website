@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { Mail, Phone, MapPin } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 // Icônes SVG en dur pour une compatibilité absolue sans import lucide-react fragile
@@ -73,7 +73,6 @@ export default function Footer() {
     { label: 'Événements', url: '/evenements' },
     { label: 'Actualités', url: '/blog' },
     { label: 'Devenir Membre', url: '/p/rejoindre-le-club' },
-    { label: 'Faire un Don', url: '/p/faire-un-don' },
     { label: 'Plan du Site', url: '/sitemap.xml' },
     { label: 'Contact', url: '/contact' }
   ]
@@ -216,19 +215,11 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright & Liens Légaux */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-xs font-semibold">
-          <p className="text-center md:text-left">
+        {/* Copyright */}
+        <div className="border-t border-gray-800 pt-8 flex items-center justify-center text-gray-500 text-xs font-semibold">
+          <p className="text-center">
             © {new Date().getFullYear()} Club Rotaract de Cotonou Rive Gauche Cica. Tous droits réservés.
           </p>
-          <div className="flex gap-6">
-            <Link href="/p/politique-confidentialite" className="hover:text-white transition-colors flex items-center gap-1">
-              Politique de Confidentialité <ExternalLink size={12} />
-            </Link>
-            <Link href="/p/mentions-legales" className="hover:text-white transition-colors flex items-center gap-1">
-              Mentions Légales <ExternalLink size={12} />
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

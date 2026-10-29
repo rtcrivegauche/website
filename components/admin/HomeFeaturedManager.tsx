@@ -213,14 +213,14 @@ export default function HomeFeaturedManager({
                       key={item.id}
                       className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
                     >
-                      <GripVertical size={16} className="text-gray-400" />
-                      <span className="text-sm font-medium text-gray-700 flex-1">
+                      <GripVertical size={16} className="text-gray-400 shrink-0" />
+                      <span className="text-sm font-medium text-gray-700 flex-1 truncate">
                         {index + 1}. {content.title || content.full_name}
                       </span>
                       <button
                         onClick={() => handleRemoveItem(item.id)}
                         disabled={loading}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors shrink-0"
                       >
                         <X size={16} />
                       </button>

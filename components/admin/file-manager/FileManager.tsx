@@ -308,16 +308,16 @@ export default function FileManager({
         </div>
 
         {/* Boutons d'action & Recherche */}
-        <div className="flex items-center gap-3 ml-auto">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto sm:ml-auto">
           {/* Champ de recherche */}
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial min-w-[140px]">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#014F43] focus:outline-none w-44 md:w-56"
+              className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#014F43] focus:outline-none w-full sm:w-44 md:w-56"
             />
           </div>
 
@@ -345,16 +345,16 @@ export default function FileManager({
           <button
             type="button"
             onClick={() => setShowNewFolderModal(true)}
-            className="flex items-center gap-2 px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition"
+            className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition"
           >
             <FolderPlus size={18} />
-            <span className="hidden sm:inline">Nouveau dossier</span>
+            <span className="hidden sm:inline">Dossier</span>
           </button>
 
           {/* Uploader Fichier */}
-          <label className="flex items-center gap-2 px-4 py-2 bg-[#014F43] hover:bg-[#00362d] text-white rounded-lg text-sm font-medium cursor-pointer transition shadow-sm">
+          <label className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-[#014F43] hover:bg-[#00362d] text-white rounded-lg text-sm font-medium cursor-pointer transition shadow-sm">
             <Upload size={18} />
-            <span>{uploading ? 'Téléversement...' : 'Ajouter un fichier'}</span>
+            <span>{uploading ? 'Upload...' : 'Ajouter'}</span>
             <input 
               type="file" 
               className="hidden" 

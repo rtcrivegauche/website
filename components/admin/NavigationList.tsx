@@ -112,69 +112,73 @@ export default function NavigationList({ initialItems }: NavigationListProps) {
         return (
           <div
             key={item.id}
-            className={`flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white transition-all duration-200 shadow-sm hover:shadow ${
+            className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-white transition-all duration-200 shadow-sm hover:shadow ${
               loadingId === item.id ? 'opacity-50 pointer-events-none' : ''
             }`}
           >
-            <GripVertical size={20} className="text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <GripVertical size={20} className="text-gray-400 flex-shrink-0" />
 
-            <div className="flex-grow min-w-0">
-              <div className="flex items-center gap-3">
-                <h3 className="font-bold text-gray-900 truncate">{item.label}</h3>
-                {!item.is_active && (
-                  <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-[10px] font-semibold uppercase tracking-wider rounded">
-                    Inactif
-                  </span>
-                )}
+              <div className="flex-grow min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-gray-900 truncate text-sm sm:text-base">{item.label}</h3>
+                  {!item.is_active && (
+                    <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-[10px] font-semibold uppercase tracking-wider rounded shrink-0">
+                      Inactif
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 truncate mt-0.5">{item.url}</p>
               </div>
-              <p className="text-sm text-gray-500 truncate mt-0.5">{item.url}</p>
             </div>
 
-            {/* Contrôles d'ordonnancement */}
-            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-0.5 flex-shrink-0">
-              <button
-                onClick={() => handleMove(index, 'up')}
-                disabled={isFirst || loadingId !== null}
-                className={`p-1.5 rounded transition-colors ${
-                  isFirst
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-[#014F43]'
-                }`}
-                title="Monter d'un niveau"
-              >
-                <ArrowUp size={16} />
-              </button>
-              <button
-                onClick={() => handleMove(index, 'down')}
-                disabled={isLast || loadingId !== null}
-                className={`p-1.5 rounded transition-colors ${
-                  isLast
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-[#014F43]'
-                }`}
-                title="Descendre d'un niveau"
-              >
-                <ArrowDown size={16} />
-              </button>
-            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60 shrink-0">
+              {/* Contrôles d'ordonnancement */}
+              <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-0.5 flex-shrink-0">
+                <button
+                  onClick={() => handleMove(index, 'up')}
+                  disabled={isFirst || loadingId !== null}
+                  className={`p-1.5 rounded transition-colors ${
+                    isFirst
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#014F43]'
+                  }`}
+                  title="Monter d'un niveau"
+                >
+                  <ArrowUp size={16} />
+                </button>
+                <button
+                  onClick={() => handleMove(index, 'down')}
+                  disabled={isLast || loadingId !== null}
+                  className={`p-1.5 rounded transition-colors ${
+                    isLast
+                      ? 'text-gray-300 cursor-not-allowed'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-[#014F43]'
+                  }`}
+                  title="Descendre d'un niveau"
+                >
+                  <ArrowDown size={16} />
+                </button>
+              </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <Link
-                href={`/admin/navigation/${item.id}`}
-                className="p-2 text-gray-600 hover:bg-gray-100 hover:text-[#014F43] rounded-lg transition-colors border border-transparent hover:border-gray-200 bg-white"
-                title="Modifier"
-              >
-                <Edit size={16} />
-              </Link>
-              <button
-                onClick={() => handleDelete(item.id, item.label)}
-                disabled={loadingId !== null}
-                className="p-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors border border-transparent hover:border-red-100 bg-white"
-                title="Supprimer"
-              >
-                <Trash2 size={16} />
-              </button>
+              {/* Actions */}
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Link
+                  href={`/admin/navigation/${item.id}`}
+                  className="p-2 text-gray-600 hover:bg-gray-100 hover:text-[#014F43] rounded-lg transition-colors border border-transparent hover:border-gray-200 bg-white"
+                  title="Modifier"
+                >
+                  <Edit size={16} />
+                </Link>
+                <button
+                  onClick={() => handleDelete(item.id, item.label)}
+                  disabled={loadingId !== null}
+                  className="p-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors border border-transparent hover:border-red-100 bg-white"
+                  title="Supprimer"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
           </div>
         )

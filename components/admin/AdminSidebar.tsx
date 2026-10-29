@@ -22,6 +22,8 @@ import {
   X
 } from 'lucide-react'
 
+import { useAdmin } from '@/components/admin/AdminContext'
+
 interface AdminSidebarProps {
   permissions?: Record<string, boolean>
   isSuperAdmin?: boolean
@@ -70,7 +72,7 @@ const menuSectionsRaw = [
 
 export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }: AdminSidebarProps) {
   const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const { sidebarOpen, setSidebarOpen } = useAdmin()
 
   // Filtrer les menus en fonction des permissions de l'utilisateur
   const filteredSections = menuSectionsRaw.map(section => {
@@ -89,33 +91,37 @@ export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }:
 
   return (
     <>
-      {/* Bouton mobile */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#014F43] text-white rounded-lg shadow-lg"
-        aria-label="Toggle menu"
-      >
-        {mobileOpen ? <X size={24} /> : <MenuIcon size={24} />}
-      </button>
-
-      {/* Overlay mobile */}
-      {mobileOpen && (
+      {/* Overlay mobile avec flou léger */}
+      {sidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={() => setMobileOpen(false)}
+          className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-xs transition-opacity"
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar Drawer */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-40
+        fixed lg:static inset-y-0 left-0 z-50
         w-64 bg-[#014F43] text-white flex flex-col
-        transform transition-transform duration-300 ease-in-out
-        ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        transform transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-6 border-b border-white/10">
-          <h1 className="text-xl font-bold">Rotaract Cica</h1>
-          <p className="text-sm text-white/70">Dashboard Admin</p>
+        {/* En-tête de la sidebar avec titre ET bouton fermer bien séparé */}
+        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold truncate">Rotaract Cica</h1>
+            <p className="text-xs text-white/70">Dashboard Admin</p>
+          </div>
+
+          {/* Bouton fermer : bien placé à droite, ne recouvre JAMAIS le texte ! */}
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex items-center justify-center shrink-0"
+            aria-label="Fermer le menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
@@ -132,7 +138,7 @@ export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }:
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setMobileOpen(false)}
+                      onClick={() => setSidebarOpen(false)}
                       className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition ${
                         isActive
                           ? 'bg-[#E11A60] text-white'
@@ -157,7 +163,7 @@ export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }:
         <div className="p-4 border-t border-white/10">
           <Link
             href="/"
-            onClick={() => setMobileOpen(false)}
+            onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition"
           >
             <Home size={18} />

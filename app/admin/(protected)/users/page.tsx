@@ -18,16 +18,16 @@ export default async function UsersPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Utilisateurs Admin</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Utilisateurs Admin</h1>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Gérez les utilisateurs ayant accès au dashboard
           </p>
         </div>
         <Link
           href="/admin/users/nouveau"
-          className="flex items-center gap-2 px-6 py-3 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#014F43] text-white rounded-lg hover:bg-[#00362d] transition-colors text-center shadow-sm"
         >
           <Plus size={20} />
           Ajouter un utilisateur

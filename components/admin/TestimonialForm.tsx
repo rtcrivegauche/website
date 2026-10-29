@@ -198,11 +198,11 @@ export default function TestimonialForm({ testimonial }: { testimonial: Testimon
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t w-full">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 px-6 py-3.5 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-lg transition-all shadow-sm hover:shadow-md disabled:opacity-50"
+          className="w-full sm:flex-1 px-6 py-3.5 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-lg transition-all shadow-sm hover:shadow-md disabled:opacity-50 text-center"
         >
           {loading ? 'Enregistrement...' : testimonial ? 'Mettre à jour' : 'Ajouter le témoignage'}
         </button>
@@ -210,7 +210,7 @@ export default function TestimonialForm({ testimonial }: { testimonial: Testimon
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-3.5 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors"
+          className="w-full sm:w-auto px-6 py-3.5 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors text-center"
         >
           Annuler
         </button>
@@ -220,7 +220,7 @@ export default function TestimonialForm({ testimonial }: { testimonial: Testimon
             type="button"
             onClick={handleDelete}
             disabled={loading}
-            className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all disabled:opacity-50 text-center"
           >
             Supprimer
           </button>

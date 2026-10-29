@@ -11,11 +11,14 @@ export default async function MembresPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Membres</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Membres</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">Gérez le trombinoscope et les fonctions des membres</p>
+        </div>
         <Link
           href="/admin/membres/nouveau"
-          className="px-4 py-2 bg-[#22C83A] text-white rounded-lg hover:bg-[#1ab030] transition font-medium"
+          className="w-full sm:w-auto px-5 py-2.5 bg-[#22C83A] text-white rounded-lg hover:bg-[#1ab030] transition font-medium text-center shadow-sm"
         >
           + Ajouter un membre
         </Link>

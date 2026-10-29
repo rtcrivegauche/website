@@ -11,11 +11,14 @@ export default async function BlogPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Blog & Actualités</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Blog & Actualités</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">Rédigez et publiez les articles d'actualité</p>
+        </div>
         <Link
           href="/admin/blog/nouveau"
-          className="px-4 py-2 bg-[#22C83A] text-white rounded-lg hover:bg-[#1ab030] transition font-medium"
+          className="w-full sm:w-auto px-5 py-2.5 bg-[#22C83A] text-white rounded-lg hover:bg-[#1ab030] transition font-medium text-center shadow-sm"
         >
           + Nouvel article
         </Link>
