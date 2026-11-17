@@ -19,6 +19,7 @@ import {
   FolderOpen,
   Mail,
   Quote,
+  Compass,
   X
 } from 'lucide-react'
 
@@ -43,6 +44,7 @@ const menuSectionsRaw = [
       { label: 'Membres', href: '/admin/membres', icon: Users, permissionKey: 'menu_membres' },
       { label: 'Événements', href: '/admin/evenements', icon: Calendar, permissionKey: 'menu_evenements' },
       { label: 'Actions', href: '/admin/actions', icon: Target, permissionKey: 'menu_actions' },
+      { label: 'Découvertes', href: '/admin/decouvertes', icon: Compass, permissionKey: 'menu_decouvertes' },
       { label: 'Blog', href: '/admin/blog', icon: FileText, permissionKey: 'menu_blog' },
       { label: 'Galerie', href: '/admin/galerie', icon: Image, permissionKey: 'menu_galerie' },
       { label: 'Rapports', href: '/admin/rapports', icon: FileText, permissionKey: 'menu_rapports' },
@@ -79,8 +81,8 @@ export default function AdminSidebar({ permissions = {}, isSuperAdmin = false }:
     const items = section.items.filter(item => {
       // Les super admins ont tous les droits
       if (isSuperAdmin) return true
-      // Sinon, vérifier si la permission est activée dans l'objet JSONB
-      return permissions[item.permissionKey] === true
+      // Sinon, vérifier si la permission est activée dans l'objet JSONB (ou si c'est le nouveau menu découvertes)
+      return permissions[item.permissionKey] === true || (item.permissionKey === 'menu_decouvertes' && Object.keys(permissions).length > 0)
     })
 
     return {

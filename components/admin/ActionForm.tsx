@@ -35,7 +35,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  
+
   const [formData, setFormData] = useState({
     title: action?.title || '',
     slug: action?.slug || '',

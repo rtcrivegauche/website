@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Edit2, Users, Star } from 'lucide-react'
+import DeleteButton from '@/components/admin/DeleteButton'
 
 export const metadata = {
   title: 'Gestion des Présidents - Administration',
@@ -92,15 +93,21 @@ export default async function PresidentsAdminPage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-end border-t border-gray-100 pt-4 mt-auto">
+              <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-4 mt-auto">
                 <Link
                   href={`/admin/presidents/${p.id}`}
-                  className="p-2.5 bg-gray-55 hover:bg-[#014F43] text-gray-500 hover:text-white rounded-xl transition-all border border-gray-200 flex items-center gap-1.5 text-xs font-bold"
+                  className="p-2.5 bg-gray-50 hover:bg-[#014F43] text-gray-500 hover:text-white rounded-xl transition-all border border-gray-200 flex items-center gap-1.5 text-xs font-bold"
                   title="Modifier ce président"
                 >
                   <Edit2 size={14} />
                   Modifier
                 </Link>
+                <DeleteButton
+                  table="presidents"
+                  id={p.id}
+                  itemName={p.full_name}
+                  variant="button"
+                />
               </div>
             </div>
           ))}

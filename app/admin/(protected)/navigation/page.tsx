@@ -17,9 +17,10 @@ export default async function NavigationPage() {
       { label: 'ACCUEIL', url: '/', display_order: 1, is_active: true },
       { label: 'LE CLUB', url: '/a-propos', display_order: 2, is_active: true },
       { label: 'NOS ACTIONS', url: '/actions', display_order: 3, is_active: true },
-      { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 4, is_active: true },
-      { label: 'MEMBRES', url: '/membres', display_order: 5, is_active: true },
-      { label: 'ACTUALITÉS', url: '/blog', display_order: 6, is_active: true },
+      { label: 'DÉCOUVERTES', url: '/decouvertes', display_order: 4, is_active: true },
+      { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 5, is_active: true },
+      { label: 'MEMBRES', url: '/membres', display_order: 6, is_active: true },
+      { label: 'ACTUALITÉS', url: '/blog', display_order: 7, is_active: true },
     ]
 
     const { data: inserted, error } = await supabase

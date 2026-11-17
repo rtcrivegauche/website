@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Plus, Edit2, Calendar, FileText, Globe, EyeOff, Trash2 } from 'lucide-react'
+import DeleteButton from '@/components/admin/DeleteButton'
 
 export const metadata = {
   title: 'Gestion des Rapports - Administration',
@@ -116,11 +117,17 @@ export default async function RapportsAdminPage() {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/admin/rapports/${report.id}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-250 text-gray-700 font-bold rounded-lg transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition-colors"
                         >
                           <Edit2 size={13} />
                           Modifier
                         </Link>
+                        <DeleteButton
+                          table="reports"
+                          id={report.id}
+                          itemName={report.title}
+                          variant="button"
+                        />
                       </div>
                     </td>
                   </tr>

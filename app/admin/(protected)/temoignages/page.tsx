@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Edit2, Quote } from 'lucide-react'
 import TestimonialVideoConfig from '@/components/admin/TestimonialVideoConfig'
+import DeleteButton from '@/components/admin/DeleteButton'
 
 export const metadata = {
   title: 'Gestion des Témoignages - Administration',
@@ -119,6 +120,12 @@ export default async function TestimonialsAdminPage() {
                   >
                     <Edit2 size={14} />
                   </Link>
+                  <DeleteButton
+                    table="testimonials"
+                    id={t.id}
+                    itemName={t.name}
+                    variant="icon"
+                  />
                 </div>
               </div>
             </div>

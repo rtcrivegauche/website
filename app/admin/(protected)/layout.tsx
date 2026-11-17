@@ -49,6 +49,7 @@ export default async function AdminLayout({
     menu_membres: true,
     menu_evenements: true,
     menu_actions: true,
+    menu_decouvertes: true,
     menu_blog: true,
     menu_galerie: true,
     menu_pages: true,

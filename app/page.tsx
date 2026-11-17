@@ -7,6 +7,7 @@ import ImpactStats from '@/components/public/ImpactStats'
 import AboutPreview from '@/components/public/AboutPreview'
 import PresidentWord from '@/components/public/PresidentWord'
 import ActionsSection from '@/components/public/ActionsSection'
+import DiscoveriesSection from '@/components/public/DiscoveriesSection'
 import FeaturedEvent from '@/components/public/FeaturedEvent'
 import FeaturedMembers from '@/components/public/FeaturedMembers'
 import GalleryPreview from '@/components/public/GalleryPreview'
@@ -29,6 +30,7 @@ export default function Home() {
         <PresidentWord />
         <ActionsSection />
         <FeaturedEvent />
+        <DiscoveriesSection />
         <FeaturedMembers />
         <GalleryPreview />
         <TestimonialsSection />

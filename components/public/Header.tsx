@@ -12,6 +12,7 @@ export default function Header() {
     { label: 'ACCUEIL', url: '/' },
     { label: 'LE CLUB', url: '/a-propos' },
     { label: 'NOS ACTIONS', url: '/actions' },
+    { label: 'DÉCOUVERTES', url: '/decouvertes' },
     { label: 'ÉVÉNEMENTS', url: '/evenements' },
     { label: 'MEMBRES', url: '/membres' },
     { label: 'ACTUALITÉS', url: '/blog' },

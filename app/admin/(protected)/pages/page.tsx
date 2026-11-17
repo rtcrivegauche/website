@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Plus, Edit, Eye, EyeOff, Trash2 } from 'lucide-react'
+import DeleteButton from '@/components/admin/DeleteButton'
 
 export default async function CustomPagesPage() {
   const supabase = await createClient()
@@ -193,12 +194,12 @@ export default async function CustomPagesPage() {
                       >
                         <Edit size={18} />
                       </Link>
-                      <button
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <DeleteButton
+                        table="custom_pages"
+                        id={page.id}
+                        itemName={page.title}
+                        variant="icon"
+                      />
                     </div>
                   </td>
                 </tr>

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
+import DeleteButton from '@/components/admin/DeleteButton'
 
 export default async function MembresPage() {
   const supabase = await createClient()
@@ -85,12 +86,20 @@ export default async function MembresPage() {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <Link
-                    href={`/admin/membres/${member.id}`}
-                    className="text-[#014F43] hover:text-[#22C83A] mr-4"
-                  >
-                    Modifier
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/admin/membres/${member.id}`}
+                      className="text-[#014F43] hover:text-[#22C83A]"
+                    >
+                      Modifier
+                    </Link>
+                    <DeleteButton
+                      table="members"
+                      id={member.id}
+                      itemName={member.full_name}
+                      variant="table-action"
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
