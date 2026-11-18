@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Calendar, Clock, MapPin, Sparkles, History, CheckCircle2 } from 'lucide-react'
+import PaginationControls from '@/components/public/PaginationControls'
 
 interface EventItem {
   id: string
@@ -23,8 +24,16 @@ interface EventsTimelineListProps {
   events: EventItem[]
 }
 
+const ITEMS_PER_PAGE = 6
+
 export default function EventsTimelineList({ events }: EventsTimelineListProps) {
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'past'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+
+  // Réinitialiser la page à 1 lors du changement de filtre
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
 
   const today = useMemo(() => {
     const d = new Date()
@@ -53,6 +62,17 @@ export default function EventsTimelineList({ events }: EventsTimelineListProps) 
     if (filter === 'past') return pastEvents
     return events
   }, [filter, events, upcomingEvents, pastEvents])
+
+  const totalPages = Math.ceil(displayedEvents.length / ITEMS_PER_PAGE)
+  const paginatedEvents = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return displayedEvents.slice(start, start + ITEMS_PER_PAGE)
+  }, [displayedEvents, currentPage])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 350, behavior: 'smooth' })
+  }
 
   return (
     <div>
@@ -119,94 +139,106 @@ export default function EventsTimelineList({ events }: EventsTimelineListProps) 
           </button>
         </div>
       ) : (
-        /* Grille des événements */
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {displayedEvents.map((event) => {
-            const evDate = new Date(event.event_date)
-            const isUpcoming = evDate >= today
-            const hasGallery = Array.isArray(event.gallery_images) && event.gallery_images.length > 0
+        <>
+          {/* Grille des événements */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {paginatedEvents.map((event) => {
+              const evDate = new Date(event.event_date)
+              const isUpcoming = evDate >= today
+              const hasGallery = Array.isArray(event.gallery_images) && event.gallery_images.length > 0
 
-            return (
-              <Link
-                key={event.id}
-                href={`/evenements/${event.slug}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100/50"
-              >
-                {event.featured_image_url && (
-                  <div className="relative w-full aspect-square md:aspect-[1920/744] overflow-hidden">
-                    <Image
-                      src={event.featured_image_url}
-                      alt={event.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-555"
-                    />
+              return (
+                <Link
+                  key={event.id}
+                  href={`/evenements/${event.slug}`}
+                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100/50"
+                >
+                  {event.featured_image_url && (
+                    <div className="relative w-full aspect-square md:aspect-[1920/744] overflow-hidden">
+                      <Image
+                        src={event.featured_image_url}
+                        alt={event.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-555"
+                      />
 
-                    {/* Badge État : À venir ou Passé */}
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1 ${
-                          isUpcoming ? 'bg-[#22C83A]' : 'bg-[#E11A60]'
-                        }`}
-                      >
-                        {isUpcoming ? (
-                          <>
-                            <Sparkles size={12} />
-                            À venir
-                          </>
-                        ) : (
-                          <>
-                            <History size={12} />
-                            Passé
-                          </>
-                        )}
-                      </span>
-
-                      {hasGallery && (
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-xs text-white shadow-md">
-                          📷 Album photo ({event.gallery_images?.length})
+                      {/* Badge État : À venir ou Passé */}
+                      <div className="absolute top-4 left-4 flex items-center gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1 ${
+                            isUpcoming ? 'bg-[#22C83A]' : 'bg-[#E11A60]'
+                          }`}
+                        >
+                          {isUpcoming ? (
+                            <>
+                              <Sparkles size={12} />
+                              À venir
+                            </>
+                          ) : (
+                            <>
+                              <History size={12} />
+                              Passé
+                            </>
+                          )}
                         </span>
+
+                        {hasGallery && (
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-xs text-white shadow-md">
+                            📷 Album photo ({event.gallery_images?.length})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className={`p-3 rounded-xl text-center min-w-[70px] ${isUpcoming ? 'bg-[#014F43]' : 'bg-gray-700'}`}>
+                          <span className="block text-2xl font-bold text-white">
+                            {evDate.getDate()}
+                          </span>
+                          <span className="text-[10px] text-white/90 uppercase font-bold tracking-wider">
+                            {evDate.toLocaleDateString('fr-FR', { month: 'short' })}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-[#014F43] group-hover:text-[#E11A60] transition-colors line-clamp-1">
+                            {event.title}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {evDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}{' '}
+                            {event.location && `• ${event.location}`}
+                          </p>
+                        </div>
+                      </div>
+
+                      {event.description && (
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">
+                          {event.description}
+                        </p>
                       )}
                     </div>
-                  </div>
-                )}
 
-                <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className={`p-3 rounded-xl text-center min-w-[70px] ${isUpcoming ? 'bg-[#014F43]' : 'bg-gray-700'}`}>
-                        <span className="block text-2xl font-bold text-white">
-                          {evDate.getDate()}
-                        </span>
-                        <span className="text-[10px] text-white/90 uppercase font-bold tracking-wider">
-                          {evDate.toLocaleDateString('fr-FR', { month: 'short' })}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-[#014F43] group-hover:text-[#E11A60] transition-colors line-clamp-1">
-                          {event.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {evDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}{' '}
-                          {event.location && `• ${event.location}`}
-                        </p>
-                      </div>
+                    <div className="text-xs font-bold text-[#E11A60] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      {isUpcoming ? 'En savoir plus et s\'inscrire →' : 'Voir le compte-rendu & photos →'}
                     </div>
-
-                    {event.description && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">
-                        {event.description}
-                      </p>
-                    )}
                   </div>
+                </Link>
+              )
+            })}
+          </div>
 
-                  <div className="text-xs font-bold text-[#E11A60] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    {isUpcoming ? 'En savoir plus et s\'inscrire →' : 'Voir le compte-rendu & photos →'}
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+          {/* Pagination Controls */}
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={displayedEvents.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={handlePageChange}
+            itemName="événements"
+          />
+        </>
       )}
     </div>
   )

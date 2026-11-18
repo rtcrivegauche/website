@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Sparkles, CheckCircle2, HeartHandshake, ArrowRight, Calendar } from 'lucide-react'
+import PaginationControls from '@/components/public/PaginationControls'
 
 interface ActionItem {
   id: string
@@ -25,6 +26,8 @@ interface ActionItem {
 interface ActionsTimelineListProps {
   actions: ActionItem[]
 }
+
+const ITEMS_PER_PAGE = 6
 
 /**
  * Détermine de façon robuste si une action est passée / réalisée.
@@ -57,6 +60,12 @@ function isActionPast(action: ActionItem, today: Date): boolean {
 
 export default function ActionsTimelineList({ actions }: ActionsTimelineListProps) {
   const [filter, setFilter] = useState<'all' | 'ongoing' | 'completed'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+
+  // Réinitialiser la page à 1 lors du changement de filtre
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter])
 
   const today = useMemo(() => {
     const d = new Date()
@@ -84,6 +93,17 @@ export default function ActionsTimelineList({ actions }: ActionsTimelineListProp
     if (filter === 'completed') return completedActions
     return actions
   }, [filter, actions, ongoingActions, completedActions])
+
+  const totalPages = Math.ceil(displayedActions.length / ITEMS_PER_PAGE)
+  const paginatedActions = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return displayedActions.slice(start, start + ITEMS_PER_PAGE)
+  }, [displayedActions, currentPage])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 350, behavior: 'smooth' })
+  }
 
   return (
     <div>
@@ -148,93 +168,105 @@ export default function ActionsTimelineList({ actions }: ActionsTimelineListProp
           </button>
         </div>
       ) : (
-        /* Grille des actions */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedActions.map((action) => {
-            const isCompleted = isActionPast(action, today)
-            const hasGallery = Array.isArray(action.gallery_images) && action.gallery_images.length > 0
+        <>
+          {/* Grille des actions paginées */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {paginatedActions.map((action) => {
+              const isCompleted = isActionPast(action, today)
+              const hasGallery = Array.isArray(action.gallery_images) && action.gallery_images.length > 0
 
-            return (
-              <Link
-                key={action.id}
-                href={`/actions/${action.slug}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between border border-gray-100/50"
-              >
-                <div>
-                  {action.featured_image_url && (
-                    <div className="relative h-64 overflow-hidden">
-                      <Image
-                        src={action.featured_image_url}
-                        alt={action.title}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
+              return (
+                <Link
+                  key={action.id}
+                  href={`/actions/${action.slug}`}
+                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between border border-gray-100/50"
+                >
+                  <div>
+                    {action.featured_image_url && (
+                      <div className="relative h-64 overflow-hidden">
+                        <Image
+                          src={action.featured_image_url}
+                          alt={action.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
 
-                      {/* Catégorie & Badge État */}
-                      <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                        <span className="bg-[#22C83A] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                          {action.category}
-                        </span>
+                        {/* Catégorie & Badge État */}
+                        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                          <span className="bg-[#22C83A] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            {action.category}
+                          </span>
 
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1 ${
-                            isCompleted ? 'bg-[#014F43]' : 'bg-[#E11A60]'
-                          }`}
-                        >
-                          {isCompleted ? 'Réalisée' : 'En cours'}
-                        </span>
-                      </div>
-
-                      {hasGallery && (
-                        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                          📷 {action.gallery_images?.length} photo{(action.gallery_images?.length || 0) > 1 ? 's' : ''}
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1 ${
+                              isCompleted ? 'bg-[#014F43]' : 'bg-[#E11A60]'
+                            }`}
+                          >
+                            {isCompleted ? 'Réalisée' : 'En cours'}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  )}
 
-                  <div className="p-6">
-                    {/* Date si disponible */}
-                    {(action.start_date || action.end_date) && (
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 mb-2">
-                        <Calendar size={13} className="text-[#014F43]" />
-                        <span>
-                          {action.start_date && new Date(action.start_date).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                          {action.end_date && action.end_date !== action.start_date && (
-                            <> - {new Date(action.end_date).toLocaleDateString('fr-FR', {
+                        {hasGallery && (
+                          <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                            📷 {action.gallery_images?.length} photo{(action.gallery_images?.length || 0) > 1 ? 's' : ''}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="p-6">
+                      {/* Date si disponible */}
+                      {(action.start_date || action.end_date) && (
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 mb-2">
+                          <Calendar size={13} className="text-[#014F43]" />
+                          <span>
+                            {action.start_date && new Date(action.start_date).toLocaleDateString('fr-FR', {
                               day: 'numeric',
                               month: 'short',
                               year: 'numeric'
-                            })}</>
-                          )}
-                        </span>
-                      </div>
-                    )}
+                            })}
+                            {action.end_date && action.end_date !== action.start_date && (
+                              <> - {new Date(action.end_date).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}</>
+                            )}
+                          </span>
+                        </div>
+                      )}
 
-                    <h3 className="text-2xl font-bold text-[#014F43] mb-3 group-hover:text-[#22C83A] transition-colors line-clamp-2">
-                      {action.title}
-                    </h3>
+                      <h3 className="text-2xl font-bold text-[#014F43] mb-3 group-hover:text-[#22C83A] transition-colors line-clamp-2">
+                        {action.title}
+                      </h3>
 
-                    {action.description && (
-                      <p className="text-gray-600 line-clamp-3 mb-4 leading-relaxed text-sm">
-                        {action.description}
-                      </p>
-                    )}
+                      {action.description && (
+                        <p className="text-gray-600 line-clamp-3 mb-4 leading-relaxed text-sm">
+                          {action.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="p-6 pt-0 flex items-center justify-between text-[#014F43] font-semibold text-sm group-hover:text-[#22C83A] transition-colors">
-                  <span>{isCompleted ? 'Voir le bilan & photos' : 'En savoir plus & impact'}</span>
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+                  <div className="p-6 pt-0 flex items-center justify-between text-[#014F43] font-semibold text-sm group-hover:text-[#22C83A] transition-colors">
+                    <span>{isCompleted ? 'Voir le bilan & photos' : 'En savoir plus & impact'}</span>
+                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={displayedActions.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={handlePageChange}
+            itemName="actions"
+          />
+        </>
       )}
     </div>
   )

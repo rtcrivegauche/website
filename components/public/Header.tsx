@@ -173,7 +173,14 @@ export default function Header() {
                   )
                 })
               }
-              return null
+              return (
+                <Link
+                  href="/faire-un-don"
+                  className="px-5 py-2.5 text-sm font-bold bg-[#E11A60] text-white rounded-full shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center"
+                >
+                  Faire un don
+                </Link>
+              )
             })()}
           </div>
         </div>
@@ -261,7 +268,15 @@ export default function Header() {
                   )
                 })
               }
-              return null
+              return (
+                <Link
+                  href="/faire-un-don"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-8 py-3 text-center font-bold bg-[#E11A60] text-white rounded-full shadow-md text-base w-full"
+                >
+                  Faire un don ❤️
+                </Link>
+              )
             })()}
           </div>
         </div>

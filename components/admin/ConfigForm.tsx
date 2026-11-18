@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { HeartHandshake, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import ImageUploader from '@/components/admin/ImageUploader'
 
@@ -89,6 +91,26 @@ export default function ConfigForm({ config }: ConfigFormProps) {
           Configuration enregistrée avec succès !
         </div>
       )}
+
+      {/* Raccourci vers la gestion des dons */}
+      <div className="bg-gradient-to-r from-[#014F43] to-[#00362d] text-white rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="p-2.5 bg-white/10 rounded-xl">
+            <HeartHandshake className="w-6 h-6 text-emerald-300" />
+          </div>
+          <div>
+            <h3 className="text-base font-extrabold text-white">Comptes et numéros de réception de Dons</h3>
+            <p className="text-xs text-white/80">Configurez MTN Mobile Money, Moov Flooz, Celtiis Cash et le RIB bancaire pour les donateurs.</p>
+          </div>
+        </div>
+        <Link
+          href="/admin/dons"
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white text-[#014F43] rounded-xl text-xs font-black hover:bg-gray-100 transition whitespace-nowrap shadow-sm"
+        >
+          <span>Gérer les comptes de don</span>
+          <ArrowRight size={14} />
+        </Link>
+      </div>
 
       {/* Logos du site */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
