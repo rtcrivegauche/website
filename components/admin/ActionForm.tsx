@@ -29,6 +29,7 @@ type ActionData = {
   location: string
   beneficiaries_count: number | string
   display_order: number
+  status?: string | null
   is_featured: boolean
   is_published: boolean
 }
@@ -52,6 +53,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
     location: action?.location || '',
     beneficiaries_count: action?.beneficiaries_count || '',
     display_order: action?.display_order || 0,
+    status: (action as any)?.status || 'automatique',
     is_featured: action?.is_featured ?? false,
     is_published: action?.is_published ?? false,
   })
@@ -74,6 +76,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         end_date: formData.end_date && formData.end_date.trim() !== '' ? formData.end_date : null,
         beneficiaries_count: formData.beneficiaries_count ? parseInt(formData.beneficiaries_count as string) : null,
         gallery_images: formData.gallery_images || [],
+        status: formData.status && formData.status !== 'automatique' ? formData.status : null,
       }
 
       if (action?.id) {
@@ -116,8 +119,16 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de bénéficiaires</label>
-          <input type="number" value={formData.beneficiaries_count} onChange={(e) => setFormData({ ...formData, beneficiaries_count: e.target.value })} placeholder="Ex: 150" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Statut du projet</label>
+          <select
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]"
+          >
+            <option value="automatique">Automatique (Selon les dates de début / fin)</option>
+            <option value="en_cours">En cours (Projet actif)</option>
+            <option value="termine">Terminé / Réalisé (Avec bilan & souvenirs)</option>
+          </select>
         </div>
 
         <div>
@@ -130,7 +141,12 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
           <input type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
-        <div className="md:col-span-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de bénéficiaires</label>
+          <input type="number" value={formData.beneficiaries_count} onChange={(e) => setFormData({ ...formData, beneficiaries_count: e.target.value })} placeholder="Ex: 150" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Lieu</label>
           <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="Ex: Cotonou, Akpakpa..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>

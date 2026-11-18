@@ -65,10 +65,11 @@ CREATE POLICY "discoveries_all_editor" ON public.discoveries
   FOR ALL USING (true);
 
 
--- 2. AJOUT DES GALERIES D'IMAGES MULTIPLES SUR LES AUTRES MODULES
+-- 2. AJOUT DES GALERIES D'IMAGES MULTIPLES ET STATUT SUR LES AUTRES MODULES
 -- Permet d'associer un album de plusieurs photos à chaque événement, action et article
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS gallery_images TEXT[] DEFAULT '{}';
 ALTER TABLE public.actions ADD COLUMN IF NOT EXISTS gallery_images TEXT[] DEFAULT '{}';
+ALTER TABLE public.actions ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'automatique';
 ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS gallery_images TEXT[] DEFAULT '{}';
 
 
