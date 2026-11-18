@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export default async function ActionsPage() {
   const supabase = await createClient()
@@ -10,12 +11,16 @@ export default async function ActionsPage() {
     .select('*')
     .order('display_order', { ascending: true })
 
+  const allIds = actions?.map((a) => a.id) || []
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Actions & Projets</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Gérez les réalisations communautaires du club</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Gérez les réalisations communautaires du club. Réordonnez avec ▲ / ▼ pour ajuster l'affichage sur le site.
+          </p>
         </div>
         <Link
           href="/admin/actions/nouveau"
@@ -36,7 +41,7 @@ export default async function ActionsPage() {
                 Catégorie
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ordre
+                Ordre (Glisser ▲ / ▼)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Statut
@@ -47,7 +52,7 @@ export default async function ActionsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {actions?.map((action) => (
+            {actions?.map((action, index) => (
               <tr key={action.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -61,8 +66,15 @@ export default async function ActionsPage() {
                         />
                       </div>
                     )}
-                    <div className="text-sm font-medium text-gray-900">
-                      {action.title}
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {action.title}
+                      </div>
+                      {action.gallery_images && action.gallery_images.length > 0 && (
+                        <div className="text-[11px] text-gray-400">
+                          📷 {action.gallery_images.length} photo{action.gallery_images.length > 1 ? 's' : ''} dans l'album
+                        </div>
+                      )}
                     </div>
                   </div>
                 </td>
@@ -72,9 +84,13 @@ export default async function ActionsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                    #{action.display_order ?? 0}
-                  </span>
+                  <ReorderRowButtons
+                    table="actions"
+                    itemId={action.id}
+                    currentIndex={index}
+                    allIds={allIds}
+                    revalidatePath="/admin/actions"
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

@@ -144,18 +144,7 @@ export default function PresidentForm({ president }: { president: PresidentData 
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 font-semibold">
-              Ordre d&apos;affichage (1, 2, 3...)
-            </label>
-            <input
-              type="number"
-              value={formData.display_order}
-              onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] font-bold text-gray-900"
-              placeholder="1 pour premier, 2..."
-            />
-          </div>
+
 
           <div className="flex items-center pt-2">
             <label className="flex items-center gap-2 cursor-pointer">

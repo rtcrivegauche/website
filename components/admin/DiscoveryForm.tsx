@@ -5,11 +5,21 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import ImageUploader from '@/components/admin/ImageUploader'
+import MultiImageGalleryPicker from '@/components/admin/MultiImageGalleryPicker'
 
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
   ssr: false,
   loading: () => <div className="h-32 bg-gray-50 border border-gray-200 rounded-lg animate-pulse" />
 })
+
+const ACTIVITY_TYPES = [
+  'Immersion culturelle & historique',
+  'Excursion nature & écologique',
+  'Visite professionnelle & métiers',
+  'Sortie récréative & fraternelle',
+  'Voyage d\'études & découverte',
+  'Autre immersion'
+]
 
 type DiscoveryData = {
   id?: string
@@ -20,7 +30,14 @@ type DiscoveryData = {
   content_json?: any | null
   featured_image_url?: string | null
   discovery_date?: string | null
+  discovery_time?: string | null
   location?: string | null
+  location_address?: string | null
+  activity_type?: string | null
+  organizer_name?: string | null
+  participants_count?: number | string | null
+  fee?: string | null
+  gallery_images?: string[] | null
   display_order?: number
   is_featured?: boolean
   is_published?: boolean
@@ -39,7 +56,14 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
     content_json: (discovery as any)?.content_json || null,
     featured_image_url: discovery?.featured_image_url || '',
     discovery_date: discovery?.discovery_date || '',
+    discovery_time: discovery?.discovery_time || '',
     location: discovery?.location || '',
+    location_address: discovery?.location_address || '',
+    activity_type: discovery?.activity_type || ACTIVITY_TYPES[0],
+    organizer_name: discovery?.organizer_name || '',
+    participants_count: discovery?.participants_count || '',
+    fee: discovery?.fee || '',
+    gallery_images: discovery?.gallery_images || [],
     display_order: discovery?.display_order || 0,
     is_featured: discovery?.is_featured ?? false,
     is_published: discovery?.is_published ?? true,
@@ -65,8 +89,15 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
       const dataToSave = {
         ...formData,
         discovery_date: formData.discovery_date && formData.discovery_date.trim() !== '' ? formData.discovery_date : null,
+        discovery_time: formData.discovery_time.trim() || null,
         description: formData.description.trim() || null,
         location: formData.location.trim() || null,
+        location_address: formData.location_address.trim() || null,
+        activity_type: formData.activity_type.trim() || null,
+        organizer_name: formData.organizer_name.trim() || null,
+        participants_count: formData.participants_count ? parseInt(formData.participants_count as string) : null,
+        fee: formData.fee.trim() || null,
+        gallery_images: formData.gallery_images || [],
         featured_image_url: formData.featured_image_url.trim() || null,
       }
 
@@ -100,17 +131,18 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
     setLoading(true)
     try {
       const supabase = createClient()
-      const { error: deleteError } = await supabase
+      const { error: delError } = await supabase
         .from('discoveries')
         .delete()
         .eq('id', discovery.id)
-      if (deleteError) throw deleteError
+
+      if (delError) throw delError
 
       router.push('/admin/decouvertes')
       router.refresh()
     } catch (err: unknown) {
-      alert('Erreur lors de la suppression : ' + (err instanceof Error ? err.message : 'Erreur inconnue'))
-    } finally {
+      console.error('Erreur suppression découverte:', err)
+      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression.')
       setLoading(false)
     }
   }
@@ -156,6 +188,21 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
         </div>
 
         <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Type d'activité / Immersion</label>
+          <select
+            value={formData.activity_type}
+            onChange={(e) => setFormData({ ...formData, activity_type: e.target.value })}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
+          >
+            {ACTIVITY_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Date de l'activité</label>
           <input
             type="date"
@@ -166,7 +213,20 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Lieu / Ville</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Horaires / Heure (Ex: 08h30 - 16h00)
+          </label>
+          <input
+            type="text"
+            value={formData.discovery_time}
+            onChange={(e) => setFormData({ ...formData, discovery_time: e.target.value })}
+            placeholder="Ex: 08h30 - 16h00"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Lieu / Destination</label>
           <input
             type="text"
             value={formData.location}
@@ -177,11 +237,53 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Ordre d'affichage</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Point de rendez-vous précis / Adresse
+          </label>
+          <input
+            type="text"
+            value={formData.location_address}
+            onChange={(e) => setFormData({ ...formData, location_address: e.target.value })}
+            placeholder="Ex: Esplanade Stade de l'Amitié, Embarcadère de Calavi..."
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Tarif / Frais de participation
+          </label>
+          <input
+            type="text"
+            value={formData.fee}
+            onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+            placeholder="Ex: Gratuit, 3 000 FCFA, 5 000 FCFA..."
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Organisateur / Guide / Partenaire
+          </label>
+          <input
+            type="text"
+            value={formData.organizer_name}
+            onChange={(e) => setFormData({ ...formData, organizer_name: e.target.value })}
+            placeholder="Ex: Commission Activités Extérieures"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Nombre de participants (Capacité)
+          </label>
           <input
             type="number"
-            value={formData.display_order}
-            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+            value={formData.participants_count}
+            onChange={(e) => setFormData({ ...formData, participants_count: e.target.value })}
+            placeholder="Ex: 25"
             className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition"
           />
         </div>
@@ -203,7 +305,17 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
             onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
             entityType="actions"
             entityId={discovery?.id}
-            label="Photo de couverture de la découverte"
+            label="Photo de couverture principale"
+          />
+        </div>
+
+        {/* Album / Galerie de photos multiples */}
+        <div className="md:col-span-2 bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
+          <MultiImageGalleryPicker
+            images={formData.gallery_images}
+            onChange={(imgs) => setFormData({ ...formData, gallery_images: imgs })}
+            label="Album Photos & Galerie des Souvenirs"
+            description="Ajoutez les photos prises lors de cette découverte pour permettre aux visiteurs de revivre l'activité sous forme d'album interactif."
           />
         </div>
 
@@ -217,61 +329,59 @@ export default function DiscoveryForm({ discovery }: { discovery: DiscoveryData 
             placeholder="Racontez le déroulement de la visite, les découvertes marquantes, les apprentissages et les anecdotes..."
           />
         </div>
-
-        <div className="md:col-span-2 flex flex-wrap gap-6 pt-4 border-t border-gray-150">
-          <label className="flex items-center gap-2 cursor-pointer font-medium text-sm text-gray-800">
-            <input
-              type="checkbox"
-              checked={formData.is_featured}
-              onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-              className="w-4 h-4 text-[#014F43] rounded focus:ring-[#014F43]"
-            />
-            <span>Mettre en avant sur la page d'accueil</span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer font-medium text-sm text-gray-800">
-            <input
-              type="checkbox"
-              checked={formData.is_published}
-              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-              className="w-4 h-4 text-[#22C83A] rounded focus:ring-[#22C83A]"
-            />
-            <span>Publier immédiatement sur le site</span>
-          </label>
-        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-        <div>
-          {discovery?.id && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={loading}
-              className="px-5 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl text-sm transition"
-            >
-              Supprimer cette découverte
-            </button>
-          )}
-        </div>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 pt-4 border-t border-gray-150">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.is_published}
+            onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+            className="w-4 h-4 text-[#014F43] rounded focus:ring-[#014F43]"
+          />
+          <span className="text-sm font-semibold text-gray-700">Publié en ligne</span>
+        </label>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => router.push('/admin/decouvertes')}
-            disabled={loading}
-            className="flex-1 sm:flex-none px-5 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold rounded-xl text-sm transition"
-          >
-            Annuler
-          </button>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.is_featured}
+            onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+            className="w-4 h-4 text-[#014F43] rounded focus:ring-[#014F43]"
+          />
+          <span className="text-sm font-semibold text-gray-700">Mettre en avant sur la page d'accueil</span>
+        </label>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t border-gray-150">
+        <div className="flex items-center gap-3">
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 sm:flex-none px-6 py-2.5 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-xl text-sm transition shadow-sm"
+            className="w-full sm:w-auto px-6 py-3 bg-[#014F43] text-white rounded-xl hover:bg-[#00362d] transition font-bold disabled:opacity-50 shadow-sm"
           >
-            {loading ? 'Enregistrement...' : discovery ? 'Mettre à jour' : 'Créer la découverte'}
+            {loading ? 'Enregistrement en cours...' : discovery?.id ? 'Mettre à jour la découverte' : 'Créer la découverte'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="w-full sm:w-auto px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition font-medium"
+          >
+            Annuler
           </button>
         </div>
+
+        {discovery?.id && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading}
+            className="px-5 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition text-sm font-bold border border-red-200"
+          >
+            Supprimer cette découverte
+          </button>
+        )}
       </div>
     </form>
   )

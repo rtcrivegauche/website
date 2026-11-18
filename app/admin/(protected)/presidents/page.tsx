@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Edit2, Users, Star } from 'lucide-react'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export const metadata = {
   title: 'Gestion des Présidents - Administration',
@@ -21,6 +22,8 @@ export default async function PresidentsAdminPage() {
   if (error) {
     console.error('Error fetching presidents:', error)
   }
+
+  const allIds = presidents?.map((p) => p.id) || []
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -59,7 +62,7 @@ export default async function PresidentsAdminPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {presidents.map((p) => (
+          {presidents.map((p, index) => (
             <div 
               key={p.id} 
               className={`bg-white rounded-3xl border shadow-sm p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative ${
@@ -95,9 +98,13 @@ export default async function PresidentsAdminPage() {
               </div>
 
               <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
-                <span className="text-xs font-extrabold bg-gray-100 px-2.5 py-1 rounded-lg text-[#014F43]" title="Ordre d'affichage">
-                  #{p.display_order ?? 0}
-                </span>
+                <ReorderRowButtons
+                  table="presidents"
+                  itemId={p.id}
+                  currentIndex={index}
+                  allIds={allIds}
+                  revalidatePath="/admin/presidents"
+                />
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/admin/presidents/${p.id}`}

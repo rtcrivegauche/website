@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Compass, Calendar, MapPin } from 'lucide-react'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export const metadata = {
   title: 'Gestion des Découvertes - Administration',
@@ -21,6 +22,8 @@ export default async function DecouvertesAdminPage() {
     console.error('Error fetching discoveries:', error)
   }
 
+  const allIds = discoveries?.map((d) => d.id) || []
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
@@ -30,7 +33,7 @@ export default async function DecouvertesAdminPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Découvertes & Immersions</h1>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Gérez les visites culturelles, excursions d'éveil, immersions et activités d'échange du club
+            Gérez les visites culturelles, excursions d'éveil et immersions. Utilisez ▲ / ▼ pour définir leur ordre sur le site.
           </p>
         </div>
         <Link
@@ -74,7 +77,7 @@ export default async function DecouvertesAdminPage() {
                   Lieu
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Ordre
+                  Ordre (Glisser ▲ / ▼)
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Statut
@@ -85,7 +88,7 @@ export default async function DecouvertesAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {discoveries.map((item) => (
+              {discoveries.map((item, index) => (
                 <tr key={item.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -107,6 +110,11 @@ export default async function DecouvertesAdminPage() {
                         <div className="text-sm font-bold text-gray-900 line-clamp-1">{item.title}</div>
                         {item.description && (
                           <div className="text-xs text-gray-500 line-clamp-1 mt-0.5">{item.description}</div>
+                        )}
+                        {item.gallery_images && item.gallery_images.length > 0 && (
+                          <div className="text-[11px] text-gray-400">
+                            📷 {item.gallery_images.length} photo{item.gallery_images.length > 1 ? 's' : ''} dans l'album
+                          </div>
                         )}
                       </div>
                     </div>
@@ -136,9 +144,13 @@ export default async function DecouvertesAdminPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                      #{item.display_order ?? 0}
-                    </span>
+                    <ReorderRowButtons
+                      table="discoveries"
+                      itemId={item.id}
+                      currentIndex={index}
+                      allIds={allIds}
+                      revalidatePath="/admin/decouvertes"
+                    />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">

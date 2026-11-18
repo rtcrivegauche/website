@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import ImageUploader from '@/components/admin/ImageUploader'
+import MultiImageGalleryPicker from '@/components/admin/MultiImageGalleryPicker'
 
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
   ssr: false,
@@ -21,6 +22,7 @@ type ActionData = {
   content: string
   content_json?: any | null
   featured_image_url: string
+  gallery_images?: string[]
   category: string
   start_date: string
   end_date: string
@@ -43,6 +45,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
     content: action?.content || '',
     content_json: (action as any)?.content_json || null,
     featured_image_url: action?.featured_image_url || '',
+    gallery_images: action?.gallery_images || [],
     category: action?.category || 'SANTÉ',
     start_date: action?.start_date || '',
     end_date: action?.end_date || '',
@@ -70,6 +73,7 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         start_date: formData.start_date && formData.start_date.trim() !== '' ? formData.start_date : null,
         end_date: formData.end_date && formData.end_date.trim() !== '' ? formData.end_date : null,
         beneficiaries_count: formData.beneficiaries_count ? parseInt(formData.beneficiaries_count as string) : null,
+        gallery_images: formData.gallery_images || [],
       }
 
       if (action?.id) {
@@ -112,8 +116,8 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Ordre d'affichage</label>
-          <input type="number" value={formData.display_order} onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de bénéficiaires</label>
+          <input type="number" value={formData.beneficiaries_count} onChange={(e) => setFormData({ ...formData, beneficiaries_count: e.target.value })} placeholder="Ex: 150" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
         <div>
@@ -122,18 +126,13 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Date de fin</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Date de fin (Optionnel)</label>
           <input type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
-        <div>
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">Lieu</label>
-          <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de bénéficiaires</label>
-          <input type="number" value={formData.beneficiaries_count} onChange={(e) => setFormData({ ...formData, beneficiaries_count: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+          <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="Ex: Cotonou, Akpakpa..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
         <div className="md:col-span-2">
@@ -142,7 +141,17 @@ export default function ActionForm({ action }: { action: ActionData | null }) {
             onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
             entityType="actions"
             entityId={action?.id}
-            label="Image à la une"
+            label="Image principale de couverture"
+          />
+        </div>
+
+        {/* Galerie d'images multiples */}
+        <div className="md:col-span-2 bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
+          <MultiImageGalleryPicker
+            images={formData.gallery_images}
+            onChange={(imgs) => setFormData({ ...formData, gallery_images: imgs })}
+            label="Album Photos & Galerie des Souvenirs"
+            description="Ajoutez les photos de l'action pour créer un album souvenir interactif pour les visiteurs."
           />
         </div>
 

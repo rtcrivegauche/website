@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export default async function EventsPage() {
   const supabase = await createClient()
@@ -11,12 +12,16 @@ export default async function EventsPage() {
     .order('display_order', { ascending: true })
     .order('event_date', { ascending: false })
 
+  const allIds = events?.map((e) => e.id) || []
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Événements</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Gérez le calendrier des événements et conférences</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Gérez le calendrier des événements et conférences. Utilisez ▲ / ▼ pour ajuster leur position.
+          </p>
         </div>
         <Link
           href="/admin/evenements/nouveau"
@@ -34,13 +39,13 @@ export default async function EventsPage() {
                 Événement
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Date
+                Date & Heure
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Lieu
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ordre
+                Ordre (Glisser ▲ / ▼)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Statut
@@ -51,7 +56,7 @@ export default async function EventsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {events?.map((event) => (
+            {events?.map((event, index) => (
               <tr key={event.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -65,21 +70,36 @@ export default async function EventsPage() {
                         />
                       </div>
                     )}
-                    <div className="text-sm font-medium text-gray-900">
-                      {event.title}
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {event.title}
+                      </div>
+                      {event.gallery_images && event.gallery_images.length > 0 && (
+                        <div className="text-[11px] text-gray-400">
+                          📷 {event.gallery_images.length} photo{event.gallery_images.length > 1 ? 's' : ''} dans l'album
+                        </div>
+                      )}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {new Date(event.event_date).toLocaleDateString('fr-FR')}
+                  {new Date(event.event_date).toLocaleDateString('fr-FR')} à{' '}
+                  {new Date(event.event_date).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {event.location}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                    #{event.display_order ?? 0}
-                  </span>
+                  <ReorderRowButtons
+                    table="events"
+                    itemId={event.id}
+                    currentIndex={index}
+                    allIds={allIds}
+                    revalidatePath="/admin/evenements"
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

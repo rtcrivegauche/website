@@ -146,17 +146,7 @@ export default function TestimonialForm({ testimonial }: { testimonial: Testimon
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 font-semibold">
-              Ordre d'affichage
-            </label>
-            <input
-              type="number"
-              value={formData.display_order}
-              onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition-all"
-            />
-          </div>
+
 
           <div className="md:col-span-2">
             <ImageUploader

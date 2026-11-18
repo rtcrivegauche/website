@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Plus, Edit2, Quote } from 'lucide-react'
 import TestimonialVideoConfig from '@/components/admin/TestimonialVideoConfig'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export const metadata = {
   title: 'Gestion des Témoignages - Administration',
@@ -22,6 +23,8 @@ export default async function TestimonialsAdminPage() {
   if (error) {
     console.error('Error fetching testimonials:', error)
   }
+
+  const allIds = testimonials?.map((t) => t.id) || []
 
   // 2. Récupérer la config vidéo YouTube
   const { data: configData } = await supabase
@@ -73,7 +76,7 @@ export default async function TestimonialsAdminPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
+          {testimonials.map((t, index) => (
             <div 
               key={t.id} 
               className={`bg-white rounded-3xl border shadow-sm p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative ${
@@ -110,9 +113,13 @@ export default async function TestimonialsAdminPage() {
                 </div>
 
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded text-gray-500" title="Ordre d'affichage">
-                    #{t.display_order}
-                  </span>
+                  <ReorderRowButtons
+                    table="testimonials"
+                    itemId={t.id}
+                    currentIndex={index}
+                    allIds={allIds}
+                    revalidatePath="/admin/temoignages"
+                  />
                   <Link
                     href={`/admin/temoignages/${t.id}`}
                     className="p-2 bg-gray-50 hover:bg-[#014F43] text-gray-500 hover:text-white rounded-xl transition-all border border-gray-200"

@@ -273,18 +273,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
           />
         </div>
 
-        {/* Ordre d'affichage */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Ordre d'affichage
-          </label>
-          <input
-            type="number"
-            value={formData.display_order}
-            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60] focus:border-transparent"
-          />
-        </div>
+
       </div>
 
       {/* Checkboxes */}

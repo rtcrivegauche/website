@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export default async function BlogPage() {
   const supabase = await createClient()
@@ -11,12 +12,16 @@ export default async function BlogPage() {
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false })
 
+  const allIds = posts?.map((p) => p.id) || []
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Blog & Actualités</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Rédigez et publiez les articles d'actualité</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Rédigez et publiez les articles. Réordonnez-les facilement avec ▲ / ▼.
+          </p>
         </div>
         <Link
           href="/admin/blog/nouveau"
@@ -40,7 +45,7 @@ export default async function BlogPage() {
                 Date
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ordre
+                Ordre (Glisser ▲ / ▼)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Statut
@@ -51,7 +56,7 @@ export default async function BlogPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {posts?.map((post) => (
+            {posts?.map((post, index) => (
               <tr key={post.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -90,9 +95,13 @@ export default async function BlogPage() {
                     : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                    #{post.display_order ?? 0}
-                  </span>
+                  <ReorderRowButtons
+                    table="blog_posts"
+                    itemId={post.id}
+                    currentIndex={index}
+                    allIds={allIds}
+                    revalidatePath="/admin/blog"
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

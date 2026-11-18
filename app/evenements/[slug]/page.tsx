@@ -3,9 +3,12 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
 import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
+import ItemGalleryViewer from '@/components/public/ItemGalleryViewer'
+import { ArrowLeft } from 'lucide-react'
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -26,6 +29,15 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       <Header />
       <main className="pt-28 pb-16 md:pt-36 lg:pt-40">
         <article className="max-w-4xl mx-auto px-6">
+          {/* Bouton retour */}
+          <Link
+            href="/evenements"
+            className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-[#014F43] uppercase tracking-wider mb-6 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span>Tous les événements</span>
+          </Link>
+
           <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
             {event.featured_image_url && (
               <div className="relative w-full aspect-square md:aspect-[1920/744]">
@@ -118,6 +130,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                   </a>
                 )}
               </div>
+
+              {/* Galerie photos & souvenirs de l'événement */}
+              <ItemGalleryViewer
+                images={event.gallery_images}
+                title="Galerie Photos & Souvenirs"
+                subtitle="Retrouvez les moments forts de cette rencontre en images."
+              />
             </div>
           </div>
         </article>

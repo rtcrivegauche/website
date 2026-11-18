@@ -96,16 +96,7 @@ export default function BlogForm({ post }: { post: PostData | null }) {
           <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" placeholder="LEADERSHIP, IMPACT, etc." />
         </div>
 
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Ordre d'affichage (1, 2, 3...)</label>
-          <input
-            type="number"
-            value={formData.display_order}
-            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60] font-bold text-gray-900"
-            placeholder="1 pour premier, 2..."
-          />
-        </div>
+
 
         <div className="md:col-span-2">
           <ImageUploader

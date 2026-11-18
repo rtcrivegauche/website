@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Plus, Edit2, Calendar, FileText, Globe, EyeOff, Trash2 } from 'lucide-react'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export const metadata = {
   title: 'Gestion des Rapports - Administration',
@@ -20,6 +21,8 @@ export default async function RapportsAdminPage() {
   if (error) {
     console.error('Error fetching reports:', error)
   }
+
+  const allIds = reports?.map((r) => r.id) || []
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -65,17 +68,19 @@ export default async function RapportsAdminPage() {
                   <th className="px-6 py-4">Titre du rapport</th>
                   <th className="px-6 py-4">Date de Réunion</th>
                   <th className="px-6 py-4">PDF Officiel</th>
-                  <th className="px-6 py-4">Ordre</th>
+                  <th className="px-6 py-4">Ordre (Glisser ▲ / ▼)</th>
                   <th className="px-6 py-4">Statut</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
-                {reports.map((report) => (
+                {reports.map((report, index) => (
                   <tr key={report.id} className="hover:bg-gray-55/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-bold text-gray-900 line-clamp-1">{report.title}</div>
-                      <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">{report.summary}</div>
+                      {report.summary && (
+                        <div className="text-xs text-gray-400 line-clamp-1 mt-0.5">{report.summary}</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
                       <div className="flex items-center gap-2 font-medium">
@@ -103,9 +108,13 @@ export default async function RapportsAdminPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                        #{report.display_order ?? 0}
-                      </span>
+                      <ReorderRowButtons
+                        table="reports"
+                        itemId={report.id}
+                        currentIndex={index}
+                        allIds={allIds}
+                        revalidatePath="/admin/rapports"
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {report.is_published ? (

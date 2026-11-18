@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
 import DeleteButton from '@/components/admin/DeleteButton'
+import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export default async function MembresPage() {
   const supabase = await createClient()
@@ -10,12 +11,16 @@ export default async function MembresPage() {
     .select('*')
     .order('display_order', { ascending: true })
 
+  const allIds = members?.map((m) => m.id) || []
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Membres</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">Gérez le trombinoscope et les fonctions des membres</p>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Gérez le trombinoscope. Ajustez leur ordre d'apparition avec ▲ / ▼.
+          </p>
         </div>
         <Link
           href="/admin/membres/nouveau"
@@ -36,7 +41,7 @@ export default async function MembresPage() {
                 Poste
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Ordre
+                Ordre (Glisser ▲ / ▼)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Statut
@@ -47,7 +52,7 @@ export default async function MembresPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {members?.map((member) => (
+            {members?.map((member, index) => (
               <tr key={member.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -73,9 +78,13 @@ export default async function MembresPage() {
                   <div className="text-sm text-gray-900">{member.position}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
-                    #{member.display_order ?? 0}
-                  </span>
+                  <ReorderRowButtons
+                    table="members"
+                    itemId={member.id}
+                    currentIndex={index}
+                    allIds={allIds}
+                    revalidatePath="/admin/membres"
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
@@ -87,11 +96,6 @@ export default async function MembresPage() {
                   >
                     {member.is_active ? 'Actif' : 'Inactif'}
                   </span>
-                  {member.is_featured && (
-                    <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                      Mis en avant
-                    </span>
-                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center gap-3">

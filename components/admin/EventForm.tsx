@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import ImageUploader from '@/components/admin/ImageUploader'
+import MultiImageGalleryPicker from '@/components/admin/MultiImageGalleryPicker'
 
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
   ssr: false,
@@ -21,6 +22,7 @@ type EventData = {
   location: string
   location_address: string
   featured_image_url: string
+  gallery_images?: string[]
   speaker_name: string
   speaker_photo_url: string
   speaker_title: string
@@ -48,6 +50,7 @@ export default function EventForm({ event }: { event: EventData | null }) {
     location: event?.location || '',
     location_address: event?.location_address || '',
     featured_image_url: event?.featured_image_url || '',
+    gallery_images: event?.gallery_images || [],
     speaker_name: event?.speaker_name || '',
     speaker_photo_url: event?.speaker_photo_url || '',
     speaker_title: event?.speaker_title || '',
@@ -81,6 +84,7 @@ export default function EventForm({ event }: { event: EventData | null }) {
         ...formData,
         event_date: eventDateTime,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees as string) : null,
+        gallery_images: formData.gallery_images || [],
       }
       
       delete (dataToSave as any).event_time
@@ -128,6 +132,16 @@ export default function EventForm({ event }: { event: EventData | null }) {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+          <input type="text" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="Ex: Réunion statutaire, Conférence..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nombre max de participants</label>
+          <input type="number" value={formData.max_attendees} onChange={(e) => setFormData({ ...formData, max_attendees: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Lieu *</label>
           <input type="text" required value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
@@ -162,12 +176,22 @@ export default function EventForm({ event }: { event: EventData | null }) {
             onChange={(url) => setFormData({ ...formData, featured_image_url: url || '' })}
             entityType="events"
             entityId={event?.id}
-            label="Image à la une"
+            label="Image principale de couverture"
+          />
+        </div>
+
+        {/* Galerie photos & souvenirs */}
+        <div className="md:col-span-2 bg-gray-50/70 p-5 rounded-2xl border border-gray-200">
+          <MultiImageGalleryPicker
+            images={formData.gallery_images}
+            onChange={(imgs) => setFormData({ ...formData, gallery_images: imgs })}
+            label="Album Photos & Galerie des Souvenirs"
+            description="Ajoutez les photos de l'événement pour permettre aux visiteurs de revivre la rencontre en images."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Nom du conférencier</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Nom du conférencier / Invité</label>
           <input type="text" value={formData.speaker_name} onChange={(e) => setFormData({ ...formData, speaker_name: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60]" />
         </div>
 
@@ -184,19 +208,6 @@ export default function EventForm({ event }: { event: EventData | null }) {
             entityId={event?.id}
             label="Photo du conférencier"
           />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Ordre d'affichage (1, 2, 3...)
-          </label>
-          <input
-            type="number"
-            value={formData.display_order}
-            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-            className="w-full sm:w-64 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60] font-bold text-gray-900"
-            placeholder="1 pour premier, 2..."
-          />
-          <p className="text-xs text-gray-500 mt-1">1 apparaît en premier dans la liste (prioritaire sur la date)</p>
         </div>
       </div>
 
