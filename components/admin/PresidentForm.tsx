@@ -11,6 +11,7 @@ type PresidentData = {
   term: string
   photo_url: string | null
   message: string
+  display_order?: number
   is_current: boolean
 }
 
@@ -24,6 +25,7 @@ export default function PresidentForm({ president }: { president: PresidentData 
     term: president?.term || '',
     photo_url: president?.photo_url || '',
     message: president?.message || '',
+    display_order: (president as any)?.display_order || 0,
     is_current: president?.is_current ?? false,
   })
 
@@ -40,6 +42,7 @@ export default function PresidentForm({ president }: { president: PresidentData 
         term: formData.term,
         photo_url: formData.photo_url || null,
         message: formData.message,
+        display_order: parseInt(formData.display_order as any) || 0,
         is_current: formData.is_current,
         updated_at: new Date().toISOString()
       }
@@ -138,6 +141,19 @@ export default function PresidentForm({ president }: { president: PresidentData 
               onChange={(e) => setFormData({ ...formData, term: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition-all"
               placeholder="Ex: Mandat 2025-2026"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2 font-semibold">
+              Ordre d&apos;affichage (1, 2, 3...)
+            </label>
+            <input
+              type="number"
+              value={formData.display_order}
+              onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] font-bold text-gray-900"
+              placeholder="1 pour premier, 2..."
             />
           </div>
 

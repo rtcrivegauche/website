@@ -182,3 +182,44 @@ export async function getFeaturedPosts() {
 
   return orderedPosts
 }
+
+export async function getFeaturedDiscoveries() {
+  const supabase = await createClient()
+
+  try {
+    const { data: featured } = await supabase
+      .from('home_featured_items')
+      .select('item_id, order_index')
+      .eq('section_key', 'featured_discoveries')
+      .eq('is_active', true)
+      .order('order_index')
+
+    if (featured && featured.length > 0) {
+      const ids = featured.map(f => f.item_id)
+      const { data: discoveries } = await supabase
+        .from('discoveries')
+        .select('*')
+        .in('id', ids)
+        .eq('is_published', true)
+
+      if (discoveries && discoveries.length > 0) {
+        return featured
+          .map(f => discoveries.find(d => d.id === f.item_id))
+          .filter(Boolean)
+      }
+    }
+
+    // Fallback : prendre selon display_order ou date
+    const { data: fallback } = await supabase
+      .from('discoveries')
+      .select('*')
+      .eq('is_published', true)
+      .order('display_order', { ascending: true })
+      .order('discovery_date', { ascending: false })
+      .limit(3)
+
+    return fallback || []
+  } catch {
+    return []
+  }
+}

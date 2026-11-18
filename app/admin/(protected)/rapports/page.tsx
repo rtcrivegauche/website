@@ -14,6 +14,7 @@ export default async function RapportsAdminPage() {
   const { data: reports, error } = await supabase
     .from('reports')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('meeting_date', { ascending: false })
 
   if (error) {
@@ -64,6 +65,7 @@ export default async function RapportsAdminPage() {
                   <th className="px-6 py-4">Titre du rapport</th>
                   <th className="px-6 py-4">Date de Réunion</th>
                   <th className="px-6 py-4">PDF Officiel</th>
+                  <th className="px-6 py-4">Ordre</th>
                   <th className="px-6 py-4">Statut</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -99,6 +101,11 @@ export default async function RapportsAdminPage() {
                       ) : (
                         <span className="text-xs text-gray-400 font-medium">Aucun PDF lié</span>
                       )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
+                        #{report.display_order ?? 0}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {report.is_published ? (

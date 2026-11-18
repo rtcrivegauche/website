@@ -8,6 +8,7 @@ export default async function EventsPage() {
   const { data: events } = await supabase
     .from('events')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('event_date', { ascending: false })
 
   return (
@@ -37,6 +38,9 @@ export default async function EventsPage() {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Lieu
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Ordre
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Statut
@@ -71,6 +75,11 @@ export default async function EventsPage() {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {event.location}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
+                    #{event.display_order ?? 0}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

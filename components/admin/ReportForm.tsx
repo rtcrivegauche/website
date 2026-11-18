@@ -19,6 +19,7 @@ type ReportData = {
   content: string
   pdf_url: string | null
   meeting_date: string
+  display_order?: number
   is_published: boolean
 }
 
@@ -34,6 +35,7 @@ export default function ReportForm({ report }: { report: ReportData | null }) {
     content: report?.content || '',
     pdf_url: report?.pdf_url || null,
     meeting_date: report?.meeting_date ? new Date(report.meeting_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    display_order: (report as any)?.display_order || 0,
     is_published: report?.is_published ?? false,
   })
 
@@ -61,6 +63,7 @@ export default function ReportForm({ report }: { report: ReportData | null }) {
         content: formData.content,
         pdf_url: formData.pdf_url,
         meeting_date: formData.meeting_date,
+        display_order: parseInt(formData.display_order as any) || 0,
         is_published: formData.is_published,
       }
 
@@ -162,6 +165,20 @@ export default function ReportForm({ report }: { report: ReportData | null }) {
               onChange={(e) => setFormData({ ...formData, meeting_date: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent transition-all"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2 font-semibold">
+              Ordre d&apos;affichage (1, 2, 3...)
+            </label>
+            <input
+              type="number"
+              value={formData.display_order}
+              onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] font-bold text-gray-900"
+              placeholder="1 pour premier, 2..."
+            />
+            <p className="text-xs text-gray-400 mt-1">1 apparaît en premier dans la liste</p>
           </div>
 
           <div className="md:col-span-2">

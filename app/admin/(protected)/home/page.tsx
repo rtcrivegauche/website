@@ -11,6 +11,7 @@ export default async function AdminHomePage() {
     { data: members },
     { data: gallery },
     { data: posts },
+    { data: discoveries },
     { data: featured }
   ] = await Promise.all([
     supabase.from('events').select('id, title, event_date, is_published').eq('is_published', true).order('event_date', { ascending: false }),
@@ -18,6 +19,7 @@ export default async function AdminHomePage() {
     supabase.from('members').select('id, full_name, role_title, is_active').eq('is_active', true).order('full_name'),
     supabase.from('gallery_items').select('id, title, media_url, is_active').eq('is_active', true).order('created_at', { ascending: false }),
     supabase.from('blog_posts').select('id, title, published_at, is_published').eq('is_published', true).order('published_at', { ascending: false }),
+    supabase.from('discoveries').select('id, title, discovery_date, is_published').eq('is_published', true).order('discovery_date', { ascending: false }),
     supabase.from('home_featured_items').select('*').order('section_key').order('order_index')
   ])
 
@@ -36,6 +38,7 @@ export default async function AdminHomePage() {
         members={members || []}
         gallery={gallery || []}
         posts={posts || []}
+        discoveries={discoveries || []}
         featured={featured || []}
       />
     </div>

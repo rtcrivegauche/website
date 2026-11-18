@@ -28,6 +28,7 @@ type EventData = {
   max_attendees: number | string
   registration_url: string
   google_calendar_url?: string
+  display_order?: number
   is_featured: boolean
   is_published: boolean
 }
@@ -54,6 +55,7 @@ export default function EventForm({ event }: { event: EventData | null }) {
     max_attendees: event?.max_attendees || '',
     registration_url: event?.registration_url || '',
     google_calendar_url: event?.google_calendar_url || '',
+    display_order: event?.display_order || 0,
     is_featured: event?.is_featured ?? false,
     is_published: event?.is_published ?? false,
   })
@@ -182,6 +184,19 @@ export default function EventForm({ event }: { event: EventData | null }) {
             entityId={event?.id}
             label="Photo du conférencier"
           />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Ordre d'affichage (1, 2, 3...)
+          </label>
+          <input
+            type="number"
+            value={formData.display_order}
+            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+            className="w-full sm:w-64 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E11A60] font-bold text-gray-900"
+            placeholder="1 pour premier, 2..."
+          />
+          <p className="text-xs text-gray-500 mt-1">1 apparaît en premier dans la liste (prioritaire sur la date)</p>
         </div>
       </div>
 

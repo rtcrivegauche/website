@@ -10,6 +10,7 @@ export default async function BlogPage() {
     .from('blog_posts')
     .select('*')
     .eq('is_published', true)
+    .order('display_order', { ascending: true })
     .order('published_at', { ascending: false })
 
   return (

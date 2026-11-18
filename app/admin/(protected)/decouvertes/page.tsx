@@ -14,6 +14,7 @@ export default async function DecouvertesAdminPage() {
   const { data: discoveries, error } = await supabase
     .from('discoveries')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('discovery_date', { ascending: false })
 
   if (error) {
@@ -73,6 +74,9 @@ export default async function DecouvertesAdminPage() {
                   Lieu
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Ordre
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Statut
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -130,6 +134,11 @@ export default async function DecouvertesAdminPage() {
                     ) : (
                       <span className="text-xs text-gray-400">-</span>
                     )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
+                      #{item.display_order ?? 0}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">

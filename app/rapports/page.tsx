@@ -17,6 +17,7 @@ export default async function RapportsPage() {
     .from('reports')
     .select('*')
     .eq('is_published', true)
+    .order('display_order', { ascending: true })
     .order('meeting_date', { ascending: false })
 
   return (

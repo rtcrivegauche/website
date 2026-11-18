@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { X, GripVertical } from 'lucide-react'
+import { X, ArrowUp, ArrowDown } from 'lucide-react'
 
 interface ContentItem {
   id: string
@@ -12,6 +12,7 @@ interface ContentItem {
   event_date?: string
   category?: string
   published_at?: string
+  discovery_date?: string
 }
 
 interface FeaturedItem {
@@ -28,6 +29,7 @@ interface HomeFeaturedManagerProps {
   members: ContentItem[]
   gallery: ContentItem[]
   posts: ContentItem[]
+  discoveries?: ContentItem[]
   featured: FeaturedItem[]
 }
 
@@ -37,6 +39,7 @@ export default function HomeFeaturedManager({
   members,
   gallery,
   posts,
+  discoveries = [],
   featured
 }: HomeFeaturedManagerProps) {
   const router = useRouter()
@@ -53,6 +56,7 @@ export default function HomeFeaturedManager({
         else if (f.item_type === 'member') items = members
         else if (f.item_type === 'gallery') items = gallery
         else if (f.item_type === 'post') items = posts
+        else if (f.item_type === 'discovery') items = discoveries
         else return true // Type inconnu, considéré orphelin
 
         // Si l'item n'existe plus dans les items actifs/publiés, il est orphelin
@@ -94,6 +98,14 @@ export default function HomeFeaturedManager({
       items: actions,
       max: 4,
       description: 'Choisissez jusqu\'à 4 actions à mettre en avant'
+    },
+    {
+      key: 'featured_discoveries',
+      title: 'Découvertes & Immersions',
+      type: 'discovery',
+      items: discoveries,
+      max: 3,
+      description: 'Choisissez jusqu\'à 3 découvertes à mettre en avant sur la page d\'accueil'
     },
     {
       key: 'featured_members',
@@ -176,6 +188,29 @@ export default function HomeFeaturedManager({
     }
   }
 
+  const handleMoveItem = async (currentFeatured: FeaturedItem[], index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= currentFeatured.length) return
+
+    const currentItem = currentFeatured[index]
+    const swapItem = currentFeatured[targetIndex]
+
+    setLoading(true)
+    try {
+      const supabase = createClient()
+      await supabase.from('home_featured_items').update({ order_index: targetIndex + 1 }).eq('id', currentItem.id)
+      await supabase.from('home_featured_items').update({ order_index: index + 1 }).eq('id', swapItem.id)
+
+      setSuccess(true)
+      router.refresh()
+      setTimeout(() => setSuccess(false), 2000)
+    } catch (err) {
+      console.error('Error reordering item:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-8">
       {success && (
@@ -211,19 +246,43 @@ export default function HomeFeaturedManager({
                   return (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      className="flex items-center gap-2 p-2.5 sm:p-3 bg-gray-50 rounded-xl border border-gray-200"
                     >
-                      <GripVertical size={16} className="text-gray-400 shrink-0" />
-                      <span className="text-sm font-medium text-gray-700 flex-1 truncate">
-                        {index + 1}. {content.title || content.full_name}
+                      <span className="px-2 py-0.5 bg-[#014F43] text-white text-xs font-black rounded-md shrink-0">
+                        #{index + 1}
                       </span>
-                      <button
-                        onClick={() => handleRemoveItem(item.id)}
-                        disabled={loading}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors shrink-0"
-                      >
-                        <X size={16} />
-                      </button>
+                      <span className="text-sm font-semibold text-gray-800 flex-1 truncate">
+                        {content.title || content.full_name}
+                      </span>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveItem(currentFeatured, index, 'up')}
+                          disabled={loading || index === 0}
+                          className="p-1.5 text-gray-500 hover:text-[#014F43] hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition disabled:opacity-30 disabled:hover:bg-transparent"
+                          title="Monter"
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveItem(currentFeatured, index, 'down')}
+                          disabled={loading || index === currentFeatured.length - 1}
+                          className="p-1.5 text-gray-500 hover:text-[#014F43] hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition disabled:opacity-30 disabled:hover:bg-transparent"
+                          title="Descendre"
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveItem(item.id)}
+                          disabled={loading}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-1"
+                          title="Retirer de l'accueil"
+                        >
+                          <X size={15} />
+                        </button>
+                      </div>
                     </div>
                   )
                 })}

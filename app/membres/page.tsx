@@ -14,6 +14,7 @@ export default async function MembresPage() {
     .from('members')
     .select('*')
     .eq('is_active', true)
+    .order('display_order', { ascending: true })
     .order('full_name')
 
   const commissions = [...new Set(members?.map(m => m.commission).filter(Boolean))]

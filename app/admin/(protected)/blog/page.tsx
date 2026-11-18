@@ -8,6 +8,7 @@ export default async function BlogPage() {
   const { data: posts } = await supabase
     .from('blog_posts')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('created_at', { ascending: false })
 
   return (
@@ -37,6 +38,9 @@ export default async function BlogPage() {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Ordre
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Statut
@@ -84,6 +88,11 @@ export default async function BlogPage() {
                   {post.published_at
                     ? new Date(post.published_at).toLocaleDateString('fr-FR')
                     : '-'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2.5 py-1 bg-gray-100 rounded-lg text-xs font-extrabold text-[#014F43]">
+                    #{post.display_order ?? 0}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

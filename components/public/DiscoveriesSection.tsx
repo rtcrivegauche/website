@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronRight, Compass, Calendar, MapPin, Sparkles } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { getFeaturedDiscoveries } from '@/lib/actions/home'
 
 const FALLBACK_DISCOVERIES = [
   {
@@ -34,19 +34,11 @@ const FALLBACK_DISCOVERIES = [
 ]
 
 export default async function DiscoveriesSection() {
-  let discoveries = []
+  let discoveries: any[] = []
 
   try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-      .from('discoveries')
-      .select('id, title, slug, description, featured_image_url, discovery_date, location')
-      .eq('is_published', true)
-      .order('is_featured', { ascending: false })
-      .order('discovery_date', { ascending: false })
-      .limit(3)
-
-    if (!error && data && data.length > 0) {
+    const data = await getFeaturedDiscoveries()
+    if (data && data.length > 0) {
       discoveries = data
     } else {
       discoveries = FALLBACK_DISCOVERIES

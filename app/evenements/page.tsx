@@ -12,6 +12,7 @@ export default async function EventsPage() {
     .from('events')
     .select('*')
     .eq('is_published', true)
+    .order('display_order', { ascending: true })
     .order('event_date', { ascending: false })
 
   return (

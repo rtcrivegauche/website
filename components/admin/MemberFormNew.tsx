@@ -39,6 +39,7 @@ type Member = {
   is_active: boolean
   is_featured: boolean
   featured_order: number
+  display_order?: number
   status: string
 }
 
@@ -75,6 +76,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
     is_active: member?.is_active ?? true,
     is_featured: member?.is_featured ?? false,
     featured_order: member?.featured_order || 0,
+    display_order: member?.display_order || 0,
     status: member?.status || 'active',
   })
 
@@ -560,19 +562,24 @@ export default function MemberForm({ member }: { member: Member | null }) {
             <span className="text-sm text-gray-700">Mis en avant (page d&apos;accueil)</span>
           </label>
 
-          {formData.is_featured && (
-            <div className="w-full md:w-auto">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ordre d&apos;affichage
-              </label>
-              <input
-                type="number"
-                value={formData.featured_order}
-                onChange={(e) => setFormData({ ...formData, featured_order: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent"
-              />
-            </div>
-          )}
+          <div className="w-full sm:w-64 pt-2">
+            <label className="block text-sm font-bold text-gray-800 mb-1">
+              Ordre d&apos;affichage (1, 2, 3...)
+            </label>
+            <input
+              type="number"
+              value={formData.display_order ?? 0}
+              onChange={(e) => {
+                const val = parseInt(e.target.value) || 0
+                setFormData({ ...formData, display_order: val, featured_order: val })
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014F43] focus:border-transparent font-bold text-gray-900"
+              placeholder="Ex: 1 pour premier, 2..."
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Position du membre dans le trombinoscope (1 apparaît en premier)
+            </p>
+          </div>
         </div>
       </div>
 

@@ -15,6 +15,7 @@ export default async function PresidentsAdminPage() {
   const { data: presidents, error } = await supabase
     .from('presidents')
     .select('*')
+    .order('display_order', { ascending: true })
     .order('term', { ascending: false })
 
   if (error) {
@@ -93,21 +94,26 @@ export default async function PresidentsAdminPage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-4 mt-auto">
-                <Link
-                  href={`/admin/presidents/${p.id}`}
-                  className="p-2.5 bg-gray-50 hover:bg-[#014F43] text-gray-500 hover:text-white rounded-xl transition-all border border-gray-200 flex items-center gap-1.5 text-xs font-bold"
-                  title="Modifier ce président"
-                >
-                  <Edit2 size={14} />
-                  Modifier
-                </Link>
-                <DeleteButton
-                  table="presidents"
-                  id={p.id}
-                  itemName={p.full_name}
-                  variant="button"
-                />
+              <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
+                <span className="text-xs font-extrabold bg-gray-100 px-2.5 py-1 rounded-lg text-[#014F43]" title="Ordre d'affichage">
+                  #{p.display_order ?? 0}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/presidents/${p.id}`}
+                    className="p-2.5 bg-gray-50 hover:bg-[#014F43] text-gray-500 hover:text-white rounded-xl transition-all border border-gray-200 flex items-center gap-1.5 text-xs font-bold"
+                    title="Modifier ce président"
+                  >
+                    <Edit2 size={14} />
+                    Modifier
+                  </Link>
+                  <DeleteButton
+                    table="presidents"
+                    id={p.id}
+                    itemName={p.full_name}
+                    variant="button"
+                  />
+                </div>
               </div>
             </div>
           ))}
