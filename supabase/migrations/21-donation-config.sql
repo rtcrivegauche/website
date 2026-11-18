@@ -39,3 +39,9 @@ ALTER TABLE public.site_config ADD COLUMN IF NOT EXISTS donation_bank_account_na
 ALTER TABLE public.site_config ADD COLUMN IF NOT EXISTS donation_bank_rib TEXT DEFAULT 'BJ061 01001 001234567890 12';
 ALTER TABLE public.site_config ADD COLUMN IF NOT EXISTS donation_bank_iban TEXT DEFAULT 'BJ66 BJ06 1010 0100 1234 5678 9012';
 ALTER TABLE public.site_config ADD COLUMN IF NOT EXISTS donation_bank_swift TEXT DEFAULT 'AFRIBJBJ';
+
+-- 6. Mise à jour automatique du bouton de navigation 'Faire un Don' vers la nouvelle page /faire-un-don
+UPDATE public.navigation 
+SET url = '/faire-un-don' 
+WHERE LOWER(label) LIKE '%don%';
+

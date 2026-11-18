@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation'
+import FaireUnDonPage, { metadata } from '../faire-un-don/page'
 
-export default function DonRedirectPage() {
-  redirect('/faire-un-don')
-}
+export { metadata }
+export default FaireUnDonPage

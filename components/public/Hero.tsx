@@ -10,8 +10,17 @@ export default async function Hero() {
   const heroSubtitle = config?.hero_subtitle || "Au Club Rotaract de Cotonou Rive Gauche Cica, nous formons une nouvelle génération de leaders engagés pour un impact durable au Bénin à travers le service et l'amitié."
   const ctaPrimary = config?.hero_cta_primary || "REJOINDRE LE CLUB"
   const ctaSecondary = config?.hero_cta_secondary || "DÉCOUVRIR NOS ACTIONS"
-  const ctaPrimaryUrl = config?.hero_cta_primary_url || "/membres"
-  const ctaSecondaryUrl = config?.hero_cta_secondary_url || "/actions"
+
+  const sanitizeCtaUrl = (label: string, url: string | null | undefined, defaultUrl: string) => {
+    const l = (label || '').toLowerCase()
+    const u = (url || '').trim()
+    if (l.includes('don') || u === '/don' || u === '/faire-un-don') return '/faire-un-don'
+    if (!u || u === '#' || u === '/#') return defaultUrl
+    return u
+  }
+
+  const ctaPrimaryUrl = sanitizeCtaUrl(ctaPrimary, config?.hero_cta_primary_url, "/membres")
+  const ctaSecondaryUrl = sanitizeCtaUrl(ctaSecondary, config?.hero_cta_secondary_url, "/actions")
 
   return (
     <section className="min-h-[580px] md:min-h-[620px] flex items-center justify-center text-center px-6 pt-8 pb-16 md:pt-10 md:pb-20">

@@ -94,11 +94,30 @@ export default function Header() {
     fetchData()
   }, [])
 
+  const getSafeUrl = (item: any) => {
+    const label = (item?.label || '').toLowerCase().trim()
+    const rawUrl = (item?.url || '').trim()
+
+    // Si le lien ou bouton concerne un don
+    if (label.includes('don') || rawUrl === '/don' || rawUrl === '/faire-un-don') {
+      return '/faire-un-don'
+    }
+
+    // Si l'url est vide ou '#'
+    if (!rawUrl || rawUrl === '#' || rawUrl === '/#') {
+      if (label.includes('don')) return '/faire-un-don'
+      return '/'
+    }
+
+    return rawUrl
+  }
+
   const isActive = (url: string) => {
-    if (url === '/') {
+    const safe = url.startsWith('/') ? url : `/${url}`
+    if (safe === '/') {
       return pathname === '/'
     }
-    return pathname.startsWith(url)
+    return pathname.startsWith(safe)
   }
 
   return (
@@ -129,19 +148,22 @@ export default function Header() {
           </Link>
           
           <nav className="flex items-center gap-7 flex-1 justify-center">
-            {navLinks.filter(item => item.type !== 'cta').map((link) => (
-              <Link
-                key={link.url}
-                href={link.url}
-                className={`font-bold text-sm uppercase tracking-wide transition-all duration-300 whitespace-nowrap hover:text-[#E11A60] ${
-                  isActive(link.url)
-                    ? 'text-[#E11A60] border-b-2 border-[#E11A60] pb-1'
-                    : 'text-[#014F43] hover:border-b-2 hover:border-[#E11A60]/50 pb-1'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.filter(item => item.type !== 'cta').map((link) => {
+              const url = getSafeUrl(link)
+              return (
+                <Link
+                  key={link.id || link.url || link.label}
+                  href={url}
+                  className={`font-bold text-sm uppercase tracking-wide transition-all duration-300 whitespace-nowrap hover:text-[#E11A60] ${
+                    isActive(url)
+                      ? 'text-[#E11A60] border-b-2 border-[#E11A60] pb-1'
+                      : 'text-[#014F43] hover:border-b-2 hover:border-[#E11A60]/50 pb-1'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
           </nav>
           
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -149,6 +171,7 @@ export default function Header() {
               const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
               if (ctaItems.length > 0) {
                 return ctaItems.map((cta) => {
+                  const targetUrl = getSafeUrl(cta)
                   const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
                   const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
                   const textColor = cta.text_color || (isBgTransparent ? '#014F43' : '#FFFFFF')
@@ -157,8 +180,8 @@ export default function Header() {
 
                   return (
                     <Link
-                      key={cta.id || cta.url}
-                      href={cta.url}
+                      key={cta.id || cta.url || cta.label}
+                      href={targetUrl}
                       style={{
                         backgroundColor: bgColor,
                         color: textColor,
@@ -225,24 +248,28 @@ export default function Header() {
             &times;
           </button>
           
-          {navLinks.filter(item => item.type !== 'cta').map((link) => (
-            <Link
-              key={link.url}
-              href={link.url}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`text-xl font-bold uppercase tracking-wider transition-colors duration-300 ${
-                isActive(link.url) ? 'text-[#E11A60]' : 'text-white hover:text-[#E11A60]'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.filter(item => item.type !== 'cta').map((link) => {
+            const url = getSafeUrl(link)
+            return (
+              <Link
+                key={link.id || link.url || link.label}
+                href={url}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`text-xl font-bold uppercase tracking-wider transition-colors duration-300 ${
+                  isActive(url) ? 'text-[#E11A60]' : 'text-white hover:text-[#E11A60]'
+                }`}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
 
           <div className="w-full max-w-xs flex flex-col gap-3 mt-4">
             {(() => {
               const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
               if (ctaItems.length > 0) {
                 return ctaItems.map((cta) => {
+                  const targetUrl = getSafeUrl(cta)
                   const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
                   const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
                   const textColor = cta.text_color || '#FFFFFF'
@@ -251,8 +278,8 @@ export default function Header() {
 
                   return (
                     <Link
-                      key={cta.id || cta.url}
-                      href={cta.url}
+                      key={cta.id || cta.url || cta.label}
+                      href={targetUrl}
                       onClick={() => setMobileMenuOpen(false)}
                       style={{
                         backgroundColor: bgColor,
