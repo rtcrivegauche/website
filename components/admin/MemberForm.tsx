@@ -33,6 +33,8 @@ type Member = {
   is_active: boolean
   is_featured: boolean
   featured_order: number
+  is_honorary?: boolean
+  honorary_title?: string | null
   status: string
 }
 
@@ -69,6 +71,8 @@ export default function MemberForm({ member }: { member: Member | null }) {
     is_active: member?.is_active ?? true,
     is_featured: member?.is_featured ?? false,
     featured_order: member?.featured_order || 0,
+    is_honorary: (member as any)?.is_honorary ?? false,
+    honorary_title: (member as any)?.honorary_title || '',
     status: member?.status || 'active',
   })
 
@@ -277,7 +281,7 @@ export default function MemberForm({ member }: { member: Member | null }) {
       </div>
 
       {/* Checkboxes */}
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-6">
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -297,6 +301,36 @@ export default function MemberForm({ member }: { member: Member | null }) {
           />
           <span className="text-sm text-gray-700">Mis en avant (page d'accueil)</span>
         </label>
+      </div>
+
+      {/* Statut Membre d'Honneur */}
+      <div className="bg-amber-50/70 rounded-xl border-2 border-amber-300 p-5 space-y-4">
+        <label className="flex items-center gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.is_honorary || false}
+            onChange={(e) => setFormData({ ...formData, is_honorary: e.target.checked })}
+            className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
+          />
+          <span className="text-sm font-bold text-gray-900">
+            👑 Définir comme Membre d'Honneur (Carte VIP Gold sur le site)
+          </span>
+        </label>
+
+        {formData.is_honorary && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Titre / Distinction d'honneur
+            </label>
+            <input
+              type="text"
+              value={formData.honorary_title || ''}
+              onChange={(e) => setFormData({ ...formData, honorary_title: e.target.value })}
+              placeholder="Ex: Parrain Rotary, Membre Fondateur, Past-Président Émérite..."
+              className="w-full px-4 py-2 border border-amber-300 bg-white rounded-lg focus:ring-2 focus:ring-amber-500"
+            />
+          </div>
+        )}
       </div>
 
       {/* Boutons */}

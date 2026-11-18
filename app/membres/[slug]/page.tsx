@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { Mail, Phone, Award } from 'lucide-react'
+import Link from 'next/link'
+import { Mail, Phone, Award, Crown, ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
@@ -55,9 +56,20 @@ export default async function MemberPage({ params }: MemberPageProps) {
         {/* Hero */}
         <section className="bg-gradient-to-br from-[#014F43] to-[#00362d] text-white pt-28 pb-16 md:pt-36 lg:pt-40">
         <div className="max-w-[1320px] mx-auto px-6">
+          {/* Bouton retour */}
+          <Link
+            href="/membres"
+            className="inline-flex items-center gap-2 text-xs font-bold text-white/70 hover:text-white uppercase tracking-wider mb-8 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span>Tous les membres</span>
+          </Link>
+
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
             {/* Photo */}
-            <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
+            <div className={`relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 shadow-xl flex-shrink-0 ${
+              member.is_honorary ? 'border-amber-400 ring-4 ring-amber-300/40' : 'border-white'
+            }`}>
               {member.photo_url ? (
                 <Image
                   src={member.photo_url}
@@ -76,6 +88,13 @@ export default async function MemberPage({ params }: MemberPageProps) {
 
             {/* Infos */}
             <div className="flex-1 text-center md:text-left">
+              {member.is_honorary && (
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-xs uppercase tracking-wider rounded-full shadow-lg border border-amber-300 mb-3">
+                  <Crown size={15} className="text-amber-900 fill-amber-900" />
+                  <span>Membre d&apos;Honneur {member.honorary_title ? `• ${member.honorary_title}` : ''}</span>
+                </div>
+              )}
+
               <h1 className="text-4xl md:text-5xl font-bold mb-2">
                 {member.full_name}
               </h1>

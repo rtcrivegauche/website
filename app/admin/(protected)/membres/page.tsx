@@ -67,15 +67,25 @@ export default async function MembresPage() {
                       </div>
                     )}
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {member.full_name}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-900">
+                          {member.full_name}
+                        </span>
+                        {member.is_honorary && (
+                          <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-black rounded-full border border-amber-300 shadow-2xs">
+                            👑 Membre d'Honneur
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm text-gray-500">{member.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{member.position}</div>
+                  <div className="text-sm text-gray-900">{member.position || member.role_title}</div>
+                  {member.honorary_title && (
+                    <div className="text-xs text-amber-700 font-semibold">{member.honorary_title}</div>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <ReorderRowButtons

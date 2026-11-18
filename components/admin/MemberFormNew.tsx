@@ -40,6 +40,8 @@ type Member = {
   is_featured: boolean
   featured_order: number
   display_order?: number
+  is_honorary?: boolean
+  honorary_title?: string | null
   status: string
 }
 
@@ -77,6 +79,8 @@ export default function MemberForm({ member }: { member: Member | null }) {
     is_featured: member?.is_featured ?? false,
     featured_order: member?.featured_order || 0,
     display_order: member?.display_order || 0,
+    is_honorary: (member as any)?.is_honorary ?? false,
+    honorary_title: (member as any)?.honorary_title || '',
     status: member?.status || 'active',
   })
 
@@ -561,8 +565,51 @@ export default function MemberForm({ member }: { member: Member | null }) {
             />
             <span className="text-sm text-gray-700">Mis en avant (page d&apos;accueil)</span>
           </label>
+        </div>
+      </div>
 
+      {/* Statut Membre d'Honneur & Distinctions */}
+      <div className="bg-amber-50/70 rounded-xl shadow-xs border-2 border-amber-300 p-6">
+        <div className="flex items-center gap-2.5 mb-3 text-amber-900">
+          <span className="text-2xl">👑</span>
+          <div>
+            <h2 className="text-lg font-bold">Statut & Distinction d&apos;Honneur</h2>
+            <p className="text-xs text-amber-800/80">
+              Attribuez à ce membre le statut prestigieux de Membre d&apos;Honneur (carte VIP Gold sur le site).
+            </p>
+          </div>
+        </div>
+        
+        <div className="space-y-4 pt-2">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.is_honorary || false}
+              onChange={(e) => setFormData({ ...formData, is_honorary: e.target.checked })}
+              className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
+            />
+            <span className="text-sm font-bold text-gray-900">
+              Définir comme Membre d&apos;Honneur
+            </span>
+          </label>
 
+          {formData.is_honorary && (
+            <div className="pt-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
+                Titre / Distinction d&apos;Honneur (Optionnel)
+              </label>
+              <input
+                type="text"
+                value={formData.honorary_title || ''}
+                onChange={(e) => setFormData({ ...formData, honorary_title: e.target.value })}
+                placeholder="Ex: Parrain Rotary du Club, Membre Fondateur, Past-Président Émérite..."
+                className="w-full px-4 py-2.5 border border-amber-300 bg-white rounded-lg focus:ring-2 focus:ring-amber-500 font-medium text-gray-900"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Ce titre apparaîtra sur son badge doré sur la page publique des membres.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

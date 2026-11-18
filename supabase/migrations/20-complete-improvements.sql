@@ -73,9 +73,11 @@ ALTER TABLE public.actions ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'automat
 ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS gallery_images TEXT[] DEFAULT '{}';
 
 
--- 3. AJOUT DE LA COLONNE 'display_order' SUR TOUTES LES TABLES DE CONTENU
+-- 3. AJOUT DE LA COLONNE 'display_order' SUR TOUTES LES TABLES DE CONTENU & STATUT MEMBRE D'HONNEUR
 -- (Pour le glissement direct Haut / Bas sans taper de numéros)
 ALTER TABLE public.members ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS is_honorary BOOLEAN DEFAULT false;
+ALTER TABLE public.members ADD COLUMN IF NOT EXISTS honorary_title TEXT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
 ALTER TABLE public.actions ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
 ALTER TABLE public.blog_posts ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0;
