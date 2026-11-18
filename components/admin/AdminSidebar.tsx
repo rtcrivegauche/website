@@ -20,7 +20,6 @@ import {
   Mail,
   Quote,
   Compass,
-  HeartHandshake,
   X
 } from 'lucide-react'
 
@@ -66,7 +65,6 @@ const menuSectionsRaw = [
   {
     title: 'Administration',
     items: [
-      { label: 'Gestion des Dons', href: '/admin/dons', icon: HeartHandshake, permissionKey: 'menu_config' },
       { label: 'Utilisateurs', href: '/admin/users', icon: UserCog, permissionKey: 'menu_users' },
       { label: 'Rôles', href: '/admin/roles', icon: Shield, permissionKey: 'menu_roles' },
       { label: 'Configuration', href: '/admin/config', icon: Settings, permissionKey: 'menu_config' },

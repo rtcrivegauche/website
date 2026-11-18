@@ -14,7 +14,7 @@ export default async function Hero() {
   const sanitizeCtaUrl = (label: string, url: string | null | undefined, defaultUrl: string) => {
     const l = (label || '').toLowerCase()
     const u = (url || '').trim()
-    if (l.includes('don') || u === '/don' || u === '/faire-un-don') return '/faire-un-don'
+    if (l.includes('don') || u === '/don' || u === '/faire-un-don') return '#don'
     if (!u || u === '#' || u === '/#') return defaultUrl
     return u
   }

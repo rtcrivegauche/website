@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import DonationModal from '@/components/public/DonationModal'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [donationModalOpen, setDonationModalOpen] = useState(false)
   const pathname = usePathname()
   const [navLinks, setNavLinks] = useState<any[]>([
     { label: 'ACCUEIL', url: '/' },
@@ -18,7 +20,6 @@ export default function Header() {
     { label: 'ACTUALITÉS', url: '/blog' },
   ])
   const [siteConfig, setSiteConfig] = useState<any>(null)
-
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -30,18 +31,30 @@ export default function Header() {
       }
     }
 
-    // Détection initiale
     handleScroll()
-
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Écouter les demandes d'ouverture du modal de don depuis n'importe quel bouton de la page
+  useEffect(() => {
+    const handleOpenModal = () => setDonationModalOpen(true)
+    window.addEventListener('open-donation-modal', handleOpenModal)
+
+    if (window.location.hash === '#don' || window.location.hash === '#faire-un-don') {
+      setDonationModalOpen(true)
+    }
+
+    return () => {
+      window.removeEventListener('open-donation-modal', handleOpenModal)
+    }
   }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       const supabase = createClient()
       
-      // 1. Charger la config du site
+      // 1. Charger la config du site (incluant le numéro de téléphone de contact)
       const { data: config } = await supabase
         .from('site_config')
         .select('*')
@@ -61,7 +74,7 @@ export default function Header() {
       if (items && items.length > 0) {
         setNavLinks(items)
       } else {
-        // Auto-initialisation si aucun item de navigation n'existe du tout
+        // Auto-initialisation si aucun item de navigation n'existe
         const { data: allItems } = await supabase
           .from('navigation')
           .select('*')
@@ -71,14 +84,14 @@ export default function Header() {
             { label: 'ACCUEIL', url: '/', display_order: 1, is_active: true },
             { label: 'LE CLUB', url: '/a-propos', display_order: 2, is_active: true },
             { label: 'NOS ACTIONS', url: '/actions', display_order: 3, is_active: true },
-            { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 4, is_active: true },
-            { label: 'MEMBRES', url: '/membres', display_order: 5, is_active: true },
-            { label: 'ACTUALITÉS', url: '/blog', display_order: 6, is_active: true },
+            { label: 'DÉCOUVERTES', url: '/decouvertes', display_order: 4, is_active: true },
+            { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 5, is_active: true },
+            { label: 'MEMBRES', url: '/membres', display_order: 6, is_active: true },
+            { label: 'ACTUALITÉS', url: '/blog', display_order: 7, is_active: true },
           ]
           
           await supabase.from('navigation').insert(defaultLinks)
           
-          // Re-fetch après insertion
           const { data: newItems } = await supabase
             .from('navigation')
             .select('*')
@@ -94,30 +107,25 @@ export default function Header() {
     fetchData()
   }, [])
 
-  const getSafeUrl = (item: any) => {
+  const isDonationItem = (item: any) => {
     const label = (item?.label || '').toLowerCase().trim()
     const rawUrl = (item?.url || '').trim()
+    return label.includes('don') || rawUrl === '#don' || rawUrl === '/don' || rawUrl === '/faire-un-don'
+  }
 
-    // Si le lien ou bouton concerne un don
-    if (label.includes('don') || rawUrl === '/don' || rawUrl === '/faire-un-don') {
-      return '/faire-un-don'
-    }
-
-    // Si l'url est vide ou '#'
+  const getSafeUrl = (item: any) => {
+    const rawUrl = (item?.url || '').trim()
     if (!rawUrl || rawUrl === '#' || rawUrl === '/#') {
-      if (label.includes('don')) return '/faire-un-don'
       return '/'
     }
-
     return rawUrl
   }
 
   const isActive = (url: string) => {
-    const safe = url.startsWith('/') ? url : `/${url}`
-    if (safe === '/') {
+    if (url === '/') {
       return pathname === '/'
     }
-    return pathname.startsWith(safe)
+    return pathname.startsWith(url)
   }
 
   return (
@@ -149,6 +157,20 @@ export default function Header() {
           
           <nav className="flex items-center gap-7 flex-1 justify-center">
             {navLinks.filter(item => item.type !== 'cta').map((link) => {
+              const isDon = isDonationItem(link)
+              if (isDon) {
+                return (
+                  <button
+                    key={link.id || link.label}
+                    type="button"
+                    onClick={() => setDonationModalOpen(true)}
+                    className="font-bold text-sm uppercase tracking-wide transition-all duration-300 whitespace-nowrap text-[#014F43] hover:text-[#E11A60] pb-1 cursor-pointer"
+                  >
+                    {link.label}
+                  </button>
+                )
+              }
+
               const url = getSafeUrl(link)
               return (
                 <Link
@@ -171,13 +193,34 @@ export default function Header() {
               const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
               if (ctaItems.length > 0) {
                 return ctaItems.map((cta) => {
-                  const targetUrl = getSafeUrl(cta)
+                  const isDon = isDonationItem(cta)
                   const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
                   const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
                   const textColor = cta.text_color || (isBgTransparent ? '#014F43' : '#FFFFFF')
                   const borderColor = cta.border_color || (isBgTransparent ? '#014F43' : 'transparent')
                   const shape = cta.shape || 'rounded-full'
 
+                  if (isDon) {
+                    return (
+                      <button
+                        key={cta.id || cta.label}
+                        type="button"
+                        onClick={() => setDonationModalOpen(true)}
+                        style={{
+                          backgroundColor: bgColor,
+                          color: textColor,
+                          borderColor: borderColor,
+                          borderWidth: '2px',
+                          borderStyle: 'solid'
+                        }}
+                        className={`px-5 py-2.5 text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer ${shape}`}
+                      >
+                        {cta.label}
+                      </button>
+                    )
+                  }
+
+                  const targetUrl = getSafeUrl(cta)
                   return (
                     <Link
                       key={cta.id || cta.url || cta.label}
@@ -196,13 +239,16 @@ export default function Header() {
                   )
                 })
               }
+
+              // Bouton par défaut si aucun CTA n'est configuré
               return (
-                <Link
-                  href="/faire-un-don"
-                  className="px-5 py-2.5 text-sm font-bold bg-[#E11A60] text-white rounded-full shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center"
+                <button
+                  type="button"
+                  onClick={() => setDonationModalOpen(true)}
+                  className="px-5 py-2.5 text-sm font-bold bg-[#E11A60] hover:bg-[#c01550] text-white rounded-full shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer"
                 >
                   Faire un don
-                </Link>
+                </button>
               )
             })()}
           </div>
@@ -243,12 +289,29 @@ export default function Header() {
         <div className="fixed inset-0 w-full h-screen bg-[#00362d]/98 z-[100] flex flex-col items-center justify-center gap-8 p-6 overflow-y-auto">
           <button
             onClick={() => setMobileMenuOpen(false)}
-            className="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 border-[1.5px] border-white flex items-center justify-center text-white text-3xl"
+            className="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 border-[1.5px] border-white flex items-center justify-center text-white text-3xl cursor-pointer"
           >
             &times;
           </button>
           
           {navLinks.filter(item => item.type !== 'cta').map((link) => {
+            const isDon = isDonationItem(link)
+            if (isDon) {
+              return (
+                <button
+                  key={link.id || link.label}
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setDonationModalOpen(true)
+                  }}
+                  className="text-xl font-bold uppercase tracking-wider text-[#E11A60] cursor-pointer"
+                >
+                  {link.label}
+                </button>
+              )
+            }
+
             const url = getSafeUrl(link)
             return (
               <Link
@@ -269,13 +332,37 @@ export default function Header() {
               const ctaItems = navLinks.filter(item => item.type === 'cta').slice(0, 2)
               if (ctaItems.length > 0) {
                 return ctaItems.map((cta) => {
-                  const targetUrl = getSafeUrl(cta)
+                  const isDon = isDonationItem(cta)
                   const isBgTransparent = cta.is_transparent || cta.bg_color === 'transparent'
                   const bgColor = isBgTransparent ? 'transparent' : (cta.bg_color || '#E11A60')
                   const textColor = cta.text_color || '#FFFFFF'
                   const borderColor = cta.border_color || (isBgTransparent ? '#FFFFFF' : 'transparent')
                   const shape = cta.shape || 'rounded-full'
 
+                  if (isDon) {
+                    return (
+                      <button
+                        key={cta.id || cta.label}
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false)
+                          setDonationModalOpen(true)
+                        }}
+                        style={{
+                          backgroundColor: bgColor,
+                          color: textColor,
+                          borderColor: borderColor,
+                          borderWidth: '2px',
+                          borderStyle: 'solid'
+                        }}
+                        className={`px-8 py-3 text-center font-bold shadow-md text-base w-full cursor-pointer ${shape}`}
+                      >
+                        {cta.label}
+                      </button>
+                    )
+                  }
+
+                  const targetUrl = getSafeUrl(cta)
                   return (
                     <Link
                       key={cta.id || cta.url || cta.label}
@@ -296,18 +383,28 @@ export default function Header() {
                 })
               }
               return (
-                <Link
-                  href="/faire-un-don"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-8 py-3 text-center font-bold bg-[#E11A60] text-white rounded-full shadow-md text-base w-full"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setDonationModalOpen(true)
+                  }}
+                  className="px-8 py-3 text-center font-bold bg-[#E11A60] text-white rounded-full shadow-md text-base w-full cursor-pointer"
                 >
                   Faire un don ❤️
-                </Link>
+                </button>
               )
             })()}
           </div>
         </div>
       )}
+
+      {/* Modal interactif de Don */}
+      <DonationModal
+        isOpen={donationModalOpen}
+        onClose={() => setDonationModalOpen(false)}
+        phone={siteConfig?.contact_phone}
+      />
     </>
   )
 }

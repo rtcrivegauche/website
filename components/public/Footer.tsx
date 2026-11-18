@@ -127,17 +127,39 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-black text-white mb-6 uppercase tracking-wider text-center lg:text-left">Liens rapides</h4>
             <ul className="grid grid-cols-2 lg:grid-cols-1 gap-x-6 gap-y-3">
-              {usefulLinks.map((link) => (
-                <li key={link.url}>
-                  <Link
-                    href={link.url}
-                    className="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center justify-start lg:justify-start gap-1.5 group"
-                  >
-                    <span className="w-1.5 h-1.5 bg-[#E11A60] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {usefulLinks.map((link) => {
+                const isDon = link.label.toLowerCase().includes('don') || link.url === '#don'
+                if (isDon) {
+                  return (
+                    <li key={link.label}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('open-donation-modal'))
+                          }
+                        }}
+                        className="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center justify-start gap-1.5 group cursor-pointer"
+                      >
+                        <span className="w-1.5 h-1.5 bg-[#E11A60] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                        {link.label}
+                      </button>
+                    </li>
+                  )
+                }
+
+                return (
+                  <li key={link.url}>
+                    <Link
+                      href={link.url}
+                      className="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center justify-start lg:justify-start gap-1.5 group"
+                    >
+                      <span className="w-1.5 h-1.5 bg-[#E11A60] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      {link.label}
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           </div>
 

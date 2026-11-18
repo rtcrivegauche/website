@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 
 export default function FinalCTA() {
@@ -15,12 +17,17 @@ export default function FinalCTA() {
             Ensemble, créons un impact durable et construisons un avenir meilleur pour notre communauté au Bénin.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href="/faire-un-don"
-              className="w-full sm:w-auto px-9 py-4 bg-[#E11A60] hover:bg-[#c01550] text-white rounded-full font-black text-sm tracking-wide shadow-lg hover:shadow-xl hover:scale-105 transition-all text-center"
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('open-donation-modal'))
+                }
+              }}
+              className="w-full sm:w-auto px-9 py-4 bg-[#E11A60] hover:bg-[#c01550] text-white rounded-full font-black text-sm tracking-wide shadow-lg hover:shadow-xl hover:scale-105 transition-all text-center cursor-pointer"
             >
               FAIRE UN DON ❤️
-            </Link>
+            </button>
             <Link
               href="/p/rejoindre-le-club"
               className="w-full sm:w-auto px-9 py-4 bg-white text-[#014F43] hover:bg-gray-100 rounded-full font-black text-sm tracking-wide hover:scale-105 transition-all shadow-lg text-center"
