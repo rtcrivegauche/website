@@ -160,6 +160,14 @@ export default function Header() {
     return pathname.startsWith(url)
   }
 
+  const getLogoUrl = (config: any) => {
+    const url = config?.site_logo_url
+    if (!url || url.includes('Rotaract_Logo_FR21') || url.includes('f3d723ca-9095-45f6-a860-930e207feabf')) {
+      return '/rtcimage/rotaract-logo.png'
+    }
+    return url
+  }
+
   return (
     <>
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out border-b border-gray-100 ${
@@ -170,22 +178,16 @@ export default function Header() {
         {/* Desktop Header */}
         <div className="hidden md:flex max-w-[1440px] mx-auto px-4 xl:px-6 justify-between items-center gap-3 lg:gap-5 xl:gap-8">
           <Link href="/" className="flex-shrink-0 flex items-center py-1">
-            {siteConfig?.site_logo_url ? (
-              <img 
-                src={siteConfig.site_logo_url} 
-                alt={siteConfig.site_name || 'Rotaract Cica'} 
-                style={{
-                  height: isScrolled ? '70px' : '95px',
-                  maxHeight: isScrolled ? '80px' : '115px',
-                  minHeight: isScrolled ? '60px' : '80px',
-                }}
-                className="w-auto object-contain transition-all duration-300 ease-in-out" 
-              />
-            ) : (
-              <div className="text-xl lg:text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
-                {siteConfig?.site_name ? siteConfig.site_name.replace('Club Rotaract de ', 'Rotaract ').replace('Cotonou Rive Gauche ', '') : 'Rotaract Cica'}
-              </div>
-            )}
+            <img 
+              src={getLogoUrl(siteConfig)} 
+              alt={siteConfig?.site_name || 'Rotaract Cica'} 
+              style={{
+                height: isScrolled ? '50px' : '65px',
+                maxHeight: isScrolled ? '60px' : '78px',
+                minHeight: isScrolled ? '44px' : '54px',
+              }}
+              className="w-auto object-contain transition-all duration-300 ease-in-out" 
+            />
           </Link>
           
           <nav className="flex items-center gap-2 md:gap-2.5 lg:gap-3.5 xl:gap-5 2xl:gap-6 flex-1 justify-center min-w-0">
@@ -290,22 +292,16 @@ export default function Header() {
         {/* Mobile Header */}
         <div className="flex md:hidden px-5 justify-between items-center">
           <Link href="/" className="flex-shrink-0 flex items-center py-1">
-            {siteConfig?.site_logo_url ? (
-              <img 
-                src={siteConfig.site_logo_url} 
-                alt={siteConfig.site_name || 'Rotaract Cica'} 
-                style={{
-                  height: isScrolled ? '50px' : '70px',
-                  maxHeight: isScrolled ? '60px' : '85px',
-                  minHeight: isScrolled ? '45px' : '60px',
-                }}
-                className="w-auto object-contain transition-all duration-300 ease-in-out" 
-              />
-            ) : (
-              <div className="text-[20px] font-extrabold text-[#014F43] uppercase tracking-tight">
-                {siteConfig?.site_name ? siteConfig.site_name.replace('Club Rotaract de ', 'Rotaract ').replace('Cotonou Rive Gauche ', '') : 'Rotaract Cica'}
-              </div>
-            )}
+            <img 
+              src={getLogoUrl(siteConfig)} 
+              alt={siteConfig?.site_name || 'Rotaract Cica'} 
+              style={{
+                height: isScrolled ? '38px' : '48px',
+                maxHeight: isScrolled ? '44px' : '56px',
+                minHeight: isScrolled ? '34px' : '40px',
+              }}
+              className="w-auto object-contain transition-all duration-300 ease-in-out" 
+            />
           </Link>
           
           <button

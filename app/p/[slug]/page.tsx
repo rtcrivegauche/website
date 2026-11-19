@@ -61,8 +61,8 @@ export default async function CustomPage({ params }: PageProps) {
     notFound()
   }
 
-  // Si c'est un embed code (Tally, etc.), on l'affiche avec Header et Footer
-  if (page.content_type === 'embed' && page.embed_code) {
+  // Si un code embed est configuré (Tally, formulaire, etc.), qu'il soit 'embed' ou 'hybrid'
+  if (page.embed_code) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
         <Header />
@@ -76,6 +76,14 @@ export default async function CustomPage({ params }: PageProps) {
                 {page.description}
               </p>
             )}
+
+            {/* Contenu riche optionnel si en mode hybride */}
+            {page.content_type === 'hybrid' && page.rich_content && (
+              <div className="prose prose-lg max-w-none mb-6">
+                <SafeHtmlRenderer html={page.rich_content} />
+              </div>
+            )}
+
             <EmbedCodeRenderer code={page.embed_code} />
           </div>
         </main>
@@ -84,7 +92,7 @@ export default async function CustomPage({ params }: PageProps) {
     )
   }
 
-  // Si c'est du contenu riche ou hybride
+  // Si c'est du contenu riche uniquement
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
       <Header />
@@ -101,16 +109,9 @@ export default async function CustomPage({ params }: PageProps) {
           )}
 
           {/* Contenu riche rendu de manière sécurisée */}
-          {page.rich_content?.html && (
+          {page.rich_content && (
             <div className="prose prose-lg max-w-none">
-              <SafeHtmlRenderer html={page.rich_content.html} />
-            </div>
-          )}
-
-          {/* Embed code en mode hybride */}
-          {page.content_type === 'hybrid' && page.embed_code && (
-            <div className="mt-10 pt-8 border-t border-gray-200">
-              <EmbedCodeRenderer code={page.embed_code} />
+              <SafeHtmlRenderer html={page.rich_content} />
             </div>
           )}
         </div>
