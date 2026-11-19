@@ -165,20 +165,21 @@ export default function Header() {
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out border-b border-gray-100 ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-xl shadow-md py-1.5 md:py-2' 
-          : 'bg-white/90 backdrop-blur-xl shadow-xs py-2 md:py-3'
+          : 'bg-white/90 backdrop-blur-xl shadow-xs py-2 md:py-3.5'
       }`}>
         {/* Desktop Header */}
         <div className="hidden md:flex max-w-[1440px] mx-auto px-4 xl:px-6 justify-between items-center gap-3 lg:gap-5 xl:gap-8">
-          <Link href="/" className="flex-shrink-0 flex items-center py-0.5">
+          <Link href="/" className="flex-shrink-0 flex items-center py-1">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className={`w-auto object-contain transition-all duration-300 ease-in-out ${
-                  isScrolled 
-                    ? 'h-14 md:h-16 lg:h-18 xl:h-20' 
-                    : 'h-20 md:h-24 lg:h-28 xl:h-32'
-                }`} 
+                style={{
+                  height: isScrolled ? '70px' : '95px',
+                  maxHeight: isScrolled ? '80px' : '115px',
+                  minHeight: isScrolled ? '60px' : '80px',
+                }}
+                className="w-auto object-contain transition-all duration-300 ease-in-out" 
               />
             ) : (
               <div className="text-xl lg:text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
@@ -288,14 +289,17 @@ export default function Header() {
 
         {/* Mobile Header */}
         <div className="flex md:hidden px-5 justify-between items-center">
-          <Link href="/" className="flex-shrink-0 flex items-center py-0.5">
+          <Link href="/" className="flex-shrink-0 flex items-center py-1">
             {siteConfig?.site_logo_url ? (
               <img 
                 src={siteConfig.site_logo_url} 
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
-                className={`w-auto object-contain transition-all duration-300 ease-in-out ${
-                  isScrolled ? 'h-14 sm:h-16' : 'h-18 sm:h-22'
-                }`} 
+                style={{
+                  height: isScrolled ? '50px' : '70px',
+                  maxHeight: isScrolled ? '60px' : '85px',
+                  minHeight: isScrolled ? '45px' : '60px',
+                }}
+                className="w-auto object-contain transition-all duration-300 ease-in-out" 
               />
             ) : (
               <div className="text-[20px] font-extrabold text-[#014F43] uppercase tracking-tight">

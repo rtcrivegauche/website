@@ -10,6 +10,13 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+function isValidDescription(desc: any): boolean {
+  if (!desc) return false
+  if (typeof desc === 'object') return false
+  const str = String(desc).trim()
+  return str !== '' && str !== '[object Object]' && str !== 'null' && str !== 'undefined'
+}
+
 // Générer les métadonnées dynamiques
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
@@ -59,12 +66,12 @@ export default async function CustomPage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
         <Header />
-        <main className="flex-grow mt-24 py-8 px-4 sm:px-6 max-w-5xl mx-auto w-full">
-          <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border border-gray-150">
-            <h1 className="text-3xl sm:text-4xl font-black text-[#014F43] mb-2 text-center">
+        <main className="flex-grow pt-28 md:pt-36 pb-16 px-4 sm:px-6 max-w-4xl mx-auto w-full">
+          <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-150">
+            <h1 className="text-3xl sm:text-4xl font-black text-[#014F43] mb-3 text-center tracking-tight">
               {page.title}
             </h1>
-            {page.description && (
+            {isValidDescription(page.description) && (
               <p className="text-sm sm:text-base text-gray-500 mb-6 text-center max-w-2xl mx-auto">
                 {page.description}
               </p>
@@ -81,13 +88,13 @@ export default async function CustomPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
       <Header />
-      <main className="flex-grow mt-24">
-        <div className="max-w-4xl mx-auto px-6 py-16">
+      <main className="flex-grow pt-28 md:pt-36 pb-16">
+        <div className="max-w-4xl mx-auto px-6 py-10">
           <h1 className="text-4xl font-bold text-[#014F43] mb-4">
             {page.title}
           </h1>
           
-          {page.description && (
+          {isValidDescription(page.description) && (
             <p className="text-xl text-gray-600 mb-8">
               {page.description}
             </p>

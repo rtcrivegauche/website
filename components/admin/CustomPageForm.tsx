@@ -25,6 +25,15 @@ interface CustomPageFormProps {
     is_published: boolean
   }
 }
+
+const sanitizeDescription = (val: any): string => {
+  if (!val) return ''
+  if (typeof val === 'object') return ''
+  const str = String(val).trim()
+  if (str === '[object Object]' || str === 'null' || str === 'undefined') return ''
+  return str
+}
+
 export default function CustomPageForm({ page }: CustomPageFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -35,12 +44,12 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
   const [formData, setFormData] = useState({
     slug: page?.slug || '',
     title: page?.title || '',
-    description: page?.description || '',
+    description: sanitizeDescription(page?.description),
     content_type: page?.content_type || 'rich_text',
     embed_code: page?.embed_code || '',
     rich_content: page?.rich_content || null,
     meta_title: page?.meta_title || '',
-    meta_description: page?.meta_description || '',
+    meta_description: sanitizeDescription(page?.meta_description),
     og_image_url: page?.og_image_url || '',
     is_published: page?.is_published || false,
   })
@@ -52,12 +61,17 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
 
     try {
       const supabase = createClient()
+      const dataToSave = {
+        ...formData,
+        description: sanitizeDescription(formData.description) || null,
+        meta_description: sanitizeDescription(formData.meta_description) || null,
+      }
       
       if (page) {
         // Mise à jour
         const { error: updateError } = await supabase
           .from('custom_pages')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', page.id)
 
         if (updateError) throw updateError
@@ -65,7 +79,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
         // Création
         const { error: insertError } = await supabase
           .from('custom_pages')
-          .insert([formData])
+          .insert([dataToSave])
 
         if (insertError) throw insertError
       }
