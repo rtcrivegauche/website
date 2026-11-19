@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/public/Header'
 import Footer from '@/components/public/Footer'
 import SafeHtmlRenderer from '@/components/ui/SafeHtmlRenderer'
+import EmbedCodeRenderer from '@/components/ui/EmbedCodeRenderer'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -53,13 +54,26 @@ export default async function CustomPage({ params }: PageProps) {
     notFound()
   }
 
-  // Si c'est un embed code (Tally, etc.), on l'affiche en full page
+  // Si c'est un embed code (Tally, etc.), on l'affiche avec Header et Footer
   if (page.content_type === 'embed' && page.embed_code) {
     return (
-      <div 
-        className="w-full h-screen"
-        dangerouslySetInnerHTML={{ __html: page.embed_code }}
-      />
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+        <Header />
+        <main className="flex-grow mt-24 py-8 px-4 sm:px-6 max-w-5xl mx-auto w-full">
+          <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border border-gray-150">
+            <h1 className="text-3xl sm:text-4xl font-black text-[#014F43] mb-2 text-center">
+              {page.title}
+            </h1>
+            {page.description && (
+              <p className="text-sm sm:text-base text-gray-500 mb-6 text-center max-w-2xl mx-auto">
+                {page.description}
+              </p>
+            )}
+            <EmbedCodeRenderer code={page.embed_code} />
+          </div>
+        </main>
+        <Footer />
+      </div>
     )
   }
 
@@ -88,10 +102,9 @@ export default async function CustomPage({ params }: PageProps) {
 
           {/* Embed code en mode hybride */}
           {page.content_type === 'hybrid' && page.embed_code && (
-            <div 
-              className="mt-8"
-              dangerouslySetInnerHTML={{ __html: page.embed_code }}
-            />
+            <div className="mt-10 pt-8 border-t border-gray-200">
+              <EmbedCodeRenderer code={page.embed_code} />
+            </div>
           )}
         </div>
       </main>
