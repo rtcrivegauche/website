@@ -14,10 +14,11 @@ export default function Header() {
     { label: 'ACCUEIL', url: '/' },
     { label: 'LE CLUB', url: '/a-propos' },
     { label: 'NOS ACTIONS', url: '/actions' },
-    { label: 'DÉCOUVERTES', url: '/decouvertes' },
     { label: 'ÉVÉNEMENTS', url: '/evenements' },
     { label: 'MEMBRES', url: '/membres' },
+    { label: 'PAST-PRÉSIDENTS', url: '/past-presidents' },
     { label: 'ACTUALITÉS', url: '/blog' },
+    { label: 'DÉCOUVERTES', url: '/decouvertes' },
   ])
   const [siteConfig, setSiteConfig] = useState<any>(null)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -72,7 +73,34 @@ export default function Header() {
         .order('display_order')
       
       if (items && items.length > 0) {
-        setNavLinks(items)
+        // S'assurer que PAST-PRÉSIDENTS est présent même avant la migration SQL manuelle
+        const hasPastPresidents = items.some((it: any) => 
+          (it?.url || '').includes('past-president') || 
+          (it?.label || '').toLowerCase().includes('past-président') ||
+          (it?.label || '').toLowerCase().includes('past-president')
+        )
+
+        if (!hasPastPresidents) {
+          const membresIdx = items.findIndex((it: any) => 
+            (it?.label || '').toUpperCase().includes('MEMBRE') || (it?.url || '').includes('membres')
+          )
+          const pastItem = { 
+            id: 'virtual-past-presidents',
+            label: 'PAST-PRÉSIDENTS', 
+            url: '/past-presidents', 
+            display_order: membresIdx >= 0 ? (items[membresIdx]?.display_order || 5) + 0.5 : 5.5,
+            is_active: true 
+          }
+          const updated = [...items]
+          if (membresIdx >= 0) {
+            updated.splice(membresIdx + 1, 0, pastItem)
+          } else {
+            updated.push(pastItem)
+          }
+          setNavLinks(updated)
+        } else {
+          setNavLinks(items)
+        }
       } else {
         // Auto-initialisation si aucun item de navigation n'existe
         const { data: allItems } = await supabase
@@ -84,10 +112,11 @@ export default function Header() {
             { label: 'ACCUEIL', url: '/', display_order: 1, is_active: true },
             { label: 'LE CLUB', url: '/a-propos', display_order: 2, is_active: true },
             { label: 'NOS ACTIONS', url: '/actions', display_order: 3, is_active: true },
-            { label: 'DÉCOUVERTES', url: '/decouvertes', display_order: 4, is_active: true },
-            { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 5, is_active: true },
-            { label: 'MEMBRES', url: '/membres', display_order: 6, is_active: true },
+            { label: 'ÉVÉNEMENTS', url: '/evenements', display_order: 4, is_active: true },
+            { label: 'MEMBRES', url: '/membres', display_order: 5, is_active: true },
+            { label: 'PAST-PRÉSIDENTS', url: '/past-presidents', display_order: 6, is_active: true },
             { label: 'ACTUALITÉS', url: '/blog', display_order: 7, is_active: true },
+            { label: 'DÉCOUVERTES', url: '/decouvertes', display_order: 8, is_active: true },
           ]
           
           await supabase.from('navigation').insert(defaultLinks)
@@ -125,6 +154,9 @@ export default function Header() {
     if (url === '/') {
       return pathname === '/'
     }
+    if (url.includes('past-president')) {
+      return pathname.startsWith('/past-president') || pathname.startsWith('/past-presidents')
+    }
     return pathname.startsWith(url)
   }
 
@@ -133,10 +165,10 @@ export default function Header() {
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out border-b border-gray-100 ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-xl shadow-md py-1.5 md:py-2' 
-          : 'bg-white/80 backdrop-blur-xl shadow-sm py-3 md:py-5'
+          : 'bg-white/80 backdrop-blur-xl shadow-sm py-3 md:py-4'
       }`}>
         {/* Desktop Header */}
-        <div className="hidden md:flex max-w-[1320px] mx-auto px-6 justify-between items-center gap-8">
+        <div className="hidden md:flex max-w-[1440px] mx-auto px-4 xl:px-6 justify-between items-center gap-3 lg:gap-5 xl:gap-8">
           <Link href="/" className="flex-shrink-0">
             {siteConfig?.site_logo_url ? (
               <img 
@@ -144,18 +176,18 @@ export default function Header() {
                 alt={siteConfig.site_name || 'Rotaract Cica'} 
                 className={`w-auto object-contain transition-all duration-300 ease-in-out ${
                   isScrolled 
-                    ? 'h-12 md:h-14 lg:h-16' 
-                    : 'h-18 md:h-22 lg:h-24'
+                    ? 'h-11 md:h-12 lg:h-14' 
+                    : 'h-14 md:h-16 lg:h-20'
                 }`} 
               />
             ) : (
-              <div className="text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
+              <div className="text-xl lg:text-2xl font-extrabold text-[#014F43] uppercase tracking-tight">
                 {siteConfig?.site_name ? siteConfig.site_name.replace('Club Rotaract de ', 'Rotaract ').replace('Cotonou Rive Gauche ', '') : 'Rotaract Cica'}
               </div>
             )}
           </Link>
           
-          <nav className="flex items-center gap-7 flex-1 justify-center">
+          <nav className="flex items-center gap-2 md:gap-2.5 lg:gap-3.5 xl:gap-5 2xl:gap-6 flex-1 justify-center min-w-0">
             {navLinks.filter(item => item.type !== 'cta').map((link) => {
               const isDon = isDonationItem(link)
               if (isDon) {
@@ -164,7 +196,7 @@ export default function Header() {
                     key={link.id || link.label}
                     type="button"
                     onClick={() => setDonationModalOpen(true)}
-                    className="font-bold text-sm uppercase tracking-wide transition-all duration-300 whitespace-nowrap text-[#014F43] hover:text-[#E11A60] pb-1 cursor-pointer"
+                    className="font-bold text-[11px] lg:text-xs xl:text-[13px] 2xl:text-sm uppercase tracking-tight lg:tracking-normal transition-all duration-300 whitespace-nowrap text-[#014F43] hover:text-[#E11A60] pb-1 cursor-pointer"
                   >
                     {link.label}
                   </button>
@@ -176,7 +208,7 @@ export default function Header() {
                 <Link
                   key={link.id || link.url || link.label}
                   href={url}
-                  className={`font-bold text-sm uppercase tracking-wide transition-all duration-300 whitespace-nowrap hover:text-[#E11A60] ${
+                  className={`font-bold text-[11px] lg:text-xs xl:text-[13px] 2xl:text-sm uppercase tracking-tight lg:tracking-normal transition-all duration-300 whitespace-nowrap hover:text-[#E11A60] ${
                     isActive(url)
                       ? 'text-[#E11A60] border-b-2 border-[#E11A60] pb-1'
                       : 'text-[#014F43] hover:border-b-2 hover:border-[#E11A60]/50 pb-1'
@@ -213,7 +245,7 @@ export default function Header() {
                           borderWidth: '2px',
                           borderStyle: 'solid'
                         }}
-                        className={`px-5 py-2.5 text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer ${shape}`}
+                        className={`px-4 lg:px-5 py-2 lg:py-2.5 text-xs lg:text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer ${shape}`}
                       >
                         {cta.label}
                       </button>
@@ -232,7 +264,7 @@ export default function Header() {
                         borderWidth: '2px',
                         borderStyle: 'solid'
                       }}
-                      className={`px-5 py-2.5 text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center ${shape}`}
+                      className={`px-4 lg:px-5 py-2 lg:py-2.5 text-xs lg:text-sm font-bold shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center ${shape}`}
                     >
                       {cta.label}
                     </Link>
@@ -245,7 +277,7 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setDonationModalOpen(true)}
-                  className="px-5 py-2.5 text-sm font-bold bg-[#E11A60] hover:bg-[#c01550] text-white rounded-full shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer"
+                  className="px-4 lg:px-5 py-2 lg:py-2.5 text-xs lg:text-sm font-bold bg-[#E11A60] hover:bg-[#c01550] text-white rounded-full shadow-md hover:scale-95 transition-all duration-200 whitespace-nowrap text-center cursor-pointer"
                 >
                   Faire un don
                 </button>

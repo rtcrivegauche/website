@@ -20,6 +20,7 @@ import {
   Mail,
   Quote,
   Compass,
+  Award,
   X
 } from 'lucide-react'
 
@@ -49,7 +50,7 @@ const menuSectionsRaw = [
       { label: 'Galerie', href: '/admin/galerie', icon: Image, permissionKey: 'menu_galerie' },
       { label: 'Rapports', href: '/admin/rapports', icon: FileText, permissionKey: 'menu_rapports' },
       { label: 'Témoignages', href: '/admin/temoignages', icon: Quote, permissionKey: 'menu_testimonials' },
-      { label: 'Président', href: '/admin/presidents', icon: Users, permissionKey: 'menu_presidents' },
+      { label: 'Past-Présidents', href: '/admin/presidents', icon: Award, permissionKey: 'menu_presidents' },
     ]
   },
   {

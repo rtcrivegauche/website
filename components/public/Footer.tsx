@@ -71,10 +71,11 @@ export default function Footer() {
     { label: 'Notre Vision', url: '/a-propos' },
     { label: 'Nos Actions', url: '/actions' },
     { label: 'Événements', url: '/evenements' },
+    { label: 'Nos Membres', url: '/membres' },
+    { label: 'Past-Présidents', url: '/past-presidents' },
     { label: 'Actualités', url: '/blog' },
-    { label: 'Faire un don ❤️', url: '/faire-un-don' },
+    { label: 'Faire un don ❤️', url: '#don' },
     { label: 'Devenir Membre', url: '/p/rejoindre-le-club' },
-    { label: 'Plan du Site', url: '/sitemap.xml' },
     { label: 'Contact', url: '/contact' }
   ]
 

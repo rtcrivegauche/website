@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Plus, Edit2, Users, Star } from 'lucide-react'
+import { Plus, Edit2, Users, Star, Award, Sparkles, Briefcase, Eye } from 'lucide-react'
 import DeleteButton from '@/components/admin/DeleteButton'
 import ReorderRowButtons from '@/components/admin/ReorderRowButtons'
 
 export const metadata = {
   title: 'Gestion des Présidents - Administration',
-  description: 'Gérez la liste des présidents de mandat et éditez le mot du Président de la page d\'accueil.',
+  description: 'Gérez la liste des présidents de mandat et des anciens présidents (Past-Presidents).',
 }
 
 export default async function PresidentsAdminPage() {
@@ -26,37 +26,56 @@ export default async function PresidentsAdminPage() {
   const allIds = presidents?.map((p) => p.id) || []
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Présidents & Mandats</h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Gérez les présidents et éditez le mot du Président affiché sur la page d'accueil pour le mandat en cours.
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-[#014F43] text-white rounded-xl">
+              <Award size={24} />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+              Présidents &amp; Past-Présidents
+            </h1>
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1.5">
+            Gérez l&apos;historique des mandats, le mot du président actuel et les profils complets des anciens présidents du club.
           </p>
         </div>
-        <Link
-          href="/admin/presidents/nouveau"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-xl transition-all shadow-sm hover:shadow-md text-center"
-        >
-          <Plus size={20} />
-          Ajouter un président
-        </Link>
+
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/past-presidents"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-gray-300 text-gray-700 hover:text-[#014F43] hover:border-[#014F43] text-xs font-bold transition shadow-xs"
+          >
+            <Eye size={15} />
+            <span>Voir la page publique</span>
+          </Link>
+
+          <Link
+            href="/admin/presidents/new"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#014F43] hover:bg-[#00362d] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-sm hover:shadow-md text-center"
+          >
+            <Plus size={18} />
+            <span>Ajouter un président</span>
+          </Link>
+        </div>
       </div>
 
       {!presidents || presidents.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-150 p-12 text-center max-w-2xl mx-auto">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-150 p-12 text-center max-w-2xl mx-auto">
           <div className="p-4 bg-gray-50 rounded-full w-fit mx-auto text-gray-400 mb-4">
             <Users size={48} />
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">Aucun président enregistré</h3>
-          <p className="text-gray-500 mb-6">
-            Ajoutez le premier président du club et configurez son message d'accueil.
+          <p className="text-gray-500 mb-6 text-sm">
+            Ajoutez le premier président du club et configurez son mandat et ses accomplissements.
           </p>
           <Link
-            href="/admin/presidents/nouveau"
-            className="inline-flex items-center gap-2 px-5 py-3 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-xl transition-all"
+            href="/admin/presidents/new"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-[#014F43] hover:bg-[#00362d] text-white font-bold rounded-xl transition-all text-sm"
           >
-            <Plus size={20} />
+            <Plus size={18} />
             Créer un président
           </Link>
         </div>
@@ -66,16 +85,22 @@ export default async function PresidentsAdminPage() {
             <div 
               key={p.id} 
               className={`bg-white rounded-3xl border shadow-sm p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative ${
-                p.is_current ? 'border-2 border-[#E11A60]' : 'border-gray-150'
+                p.is_current ? 'border-2 border-[#E11A60] ring-2 ring-[#E11A60]/10' : 'border-gray-200'
               }`}
             >
-              {/* Statut Président Actuel */}
-              {p.is_current && (
-                <span className="absolute top-4 right-4 bg-[#E11A60] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                  <Star size={10} className="fill-white" />
-                  Mandat En Cours
-                </span>
-              )}
+              {/* Statut Badge */}
+              <div className="absolute top-4 right-4">
+                {p.is_current ? (
+                  <span className="bg-[#E11A60] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                    <Star size={10} className="fill-white" />
+                    Mandat Actuel
+                  </span>
+                ) : (
+                  <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    Past-Président
+                  </span>
+                )}
+              </div>
 
               <div>
                 <div className="flex items-center gap-4 mb-4">
@@ -86,13 +111,32 @@ export default async function PresidentsAdminPage() {
                       p.full_name.charAt(0)
                     )}
                   </div>
-                  <div>
-                    <h4 className="font-extrabold text-[#014F43] text-lg leading-tight">{p.full_name}</h4>
-                    <p className="text-xs font-bold text-[#E11A60] uppercase tracking-wider">{p.term}</p>
+                  <div className="pr-20">
+                    <h4 className="font-extrabold text-[#014F43] text-base leading-tight">{p.full_name}</h4>
+                    <p className="text-xs font-bold text-[#E11A60] uppercase tracking-wider mt-0.5">{p.term}</p>
                   </div>
                 </div>
 
-                <p className="text-gray-600 italic text-sm leading-relaxed mb-6 line-clamp-5 border-t border-gray-100 pt-4">
+                {/* Thème du mandat */}
+                {p.theme && (
+                  <div className="mb-3 flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
+                    <Sparkles size={13} className="text-amber-600 flex-shrink-0" />
+                    <span className="truncate">Thème : {p.theme}</span>
+                  </div>
+                )}
+
+                {/* Profession & Entreprise */}
+                {(p.professional_title || p.company) && (
+                  <div className="mb-3 flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                    <Briefcase size={13} className="text-gray-400 flex-shrink-0" />
+                    <span className="truncate">
+                      {p.professional_title}
+                      {p.company && ` • ${p.company}`}
+                    </span>
+                  </div>
+                )}
+
+                <p className="text-gray-600 italic text-xs leading-relaxed mb-6 line-clamp-4 border-t border-gray-100 pt-3">
                   « {p.message} »
                 </p>
               </div>
