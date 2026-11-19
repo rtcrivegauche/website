@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import ImageUploader from '@/components/admin/ImageUploader'
+import { Award } from 'lucide-react'
 
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), {
   ssr: false,
@@ -50,6 +52,31 @@ export default function MemberForm({ member }: { member: Member | null }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [skillInput, setSkillInput] = useState('')
+  const [linkedMandates, setLinkedMandates] = useState<any[]>([])
+
+  useEffect(() => {
+    if (!member?.id) return
+    async function loadMandates() {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('presidents')
+          .select('id, term, theme, is_current, member_id, full_name')
+        if (data) {
+          const norm = (member?.full_name || '').trim().toLowerCase()
+          const matches = data.filter((p: any) => {
+            if (p.member_id && p.member_id === member?.id) return true
+            const normP = (p.full_name || '').trim().toLowerCase()
+            return normP && norm && (normP === norm || norm.includes(normP) || normP.includes(norm))
+          })
+          setLinkedMandates(matches)
+        }
+      } catch (e) {
+        console.error('Erreur chargement mandats du membre:', e)
+      }
+    }
+    loadMandates()
+  }, [member?.id, member?.full_name])
   
   const [formData, setFormData] = useState<Member>({
     full_name: member?.full_name || '',
@@ -177,6 +204,34 @@ export default function MemberForm({ member }: { member: Member | null }) {
       {/* Informations de base */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
         <h2 className="text-xl font-bold text-gray-900">Informations de base</h2>
+
+        {linkedMandates.length > 0 && (
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/90 via-amber-100/50 to-amber-50/80 border border-amber-300 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-xs">
+                <Award size={20} />
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase tracking-wider text-amber-950">
+                  Mandat(s) Présidentiel(s) Associé(s)
+                </p>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {linkedMandates.map((m: any) => (
+                    <span key={m.id} className="text-xs font-bold text-amber-900 bg-white px-2.5 py-0.5 rounded-lg border border-amber-200 shadow-xs">
+                      {m.is_current ? '⭐ Mandat Actuel' : '🏅 Past-Président'} : {m.term} {m.theme ? `(« ${m.theme} »)` : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Link
+              href="/admin/presidents"
+              className="px-3.5 py-2 bg-amber-200 hover:bg-amber-300 text-amber-950 text-xs font-bold rounded-xl transition self-start sm:self-auto"
+            >
+              Gérer dans Past-Présidents →
+            </Link>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

@@ -14,14 +14,48 @@ export const metadata = {
 export default async function MembresPage() {
   const supabase = await createClient()
   
-  const { data: members } = await supabase
-    .from('members')
-    .select('*')
-    .eq('is_active', true)
-    .order('display_order', { ascending: true })
-    .order('full_name')
+  // Charger les membres et les mandats en parallèle de manière 100% tolérante
+  const [membersRes, presidentsRes] = await Promise.all([
+    supabase
+      .from('members')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true })
+      .order('full_name'),
+    supabase
+      .from('presidents')
+      .select('id, member_id, full_name, term, theme, is_current')
+  ])
 
-  const validMembers = members || []
+  // Indexer les mandats par member_id et par nom normalisé pour assurer la liaison
+  const mandatesByMemberId = new Map<string, any[]>()
+  const mandatesByName = new Map<string, any[]>()
+
+  if (presidentsRes.data) {
+    for (const p of presidentsRes.data) {
+      if (p.member_id) {
+        const list = mandatesByMemberId.get(p.member_id) || []
+        list.push(p)
+        mandatesByMemberId.set(p.member_id, list)
+      }
+      const norm = (p.full_name || '').trim().toLowerCase()
+      if (norm) {
+        const list = mandatesByName.get(norm) || []
+        list.push(p)
+        mandatesByName.set(norm, list)
+      }
+    }
+  }
+
+  const validMembers = (membersRes.data || []).map((m) => {
+    const norm = (m.full_name || '').trim().toLowerCase()
+    const mandates = mandatesByMemberId.get(m.id) || mandatesByName.get(norm) || []
+    return {
+      ...m,
+      presidency_mandates: mandates
+    }
+  })
+
   const commissions = [...new Set(validMembers.map((m) => m.commission).filter(Boolean))] as string[]
 
   return (

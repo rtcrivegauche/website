@@ -13,15 +13,20 @@ export const metadata = {
 export default async function PresidentsAdminPage() {
   const supabase = await createClient()
 
-  const { data: presidents, error } = await supabase
-    .from('presidents')
-    .select('*')
-    .order('display_order', { ascending: true })
-    .order('term', { ascending: false })
+  const [presidentsRes, membersRes] = await Promise.all([
+    supabase
+      .from('presidents')
+      .select('*')
+      .order('display_order', { ascending: true })
+      .order('term', { ascending: false }),
+    supabase
+      .from('members')
+      .select('id, full_name')
+  ])
 
-  if (error) {
-    console.error('Error fetching presidents:', error)
-  }
+  const presidents = presidentsRes.data || []
+  const membersMap = new Map<string, string>()
+  membersRes.data?.forEach((m: any) => membersMap.set(m.id, m.full_name))
 
   const allIds = presidents?.map((p) => p.id) || []
 
@@ -114,6 +119,22 @@ export default async function PresidentsAdminPage() {
                   <div className="pr-20">
                     <h4 className="font-extrabold text-[#014F43] text-base leading-tight">{p.full_name}</h4>
                     <p className="text-xs font-bold text-[#E11A60] uppercase tracking-wider mt-0.5">{p.term}</p>
+                    {(() => {
+                      const linkedName = p.member_id ? membersMap.get(p.member_id) : null
+                      if (linkedName) {
+                        return (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 mt-1">
+                            <Users size={10} />
+                            <span>Lié au membre : {linkedName}</span>
+                          </span>
+                        )
+                      }
+                      return (
+                        <span className="inline-block text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200 mt-1">
+                          Mandat autonome
+                        </span>
+                      )
+                    })()}
                   </div>
                 </div>
 

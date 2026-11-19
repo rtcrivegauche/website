@@ -16,7 +16,7 @@ export default async function PastPresidentsPage() {
 
   const { data: presidents } = await supabase
     .from('presidents')
-    .select('*')
+    .select('*, member:members(id, full_name, slug, photo_url, role_title, is_active)')
     .order('is_current', { ascending: false })
     .order('display_order', { ascending: true })
     .order('term', { ascending: false })

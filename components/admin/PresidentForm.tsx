@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -16,7 +16,9 @@ import {
   Phone, 
   Star,
   Quote,
-  Trash2
+  Trash2,
+  Users,
+  RefreshCw
 } from 'lucide-react'
 
 const LinkedinIcon = ({ className = '', size = 16 }: { className?: string; size?: number }) => (
@@ -43,6 +45,7 @@ const InstagramIcon = ({ className = '', size = 16 }: { className?: string; size
 
 export type PresidentData = {
   id?: string
+  member_id?: string | null
   full_name: string
   term: string
   photo_url: string | null
@@ -67,8 +70,10 @@ export default function PresidentForm({ president }: { president: PresidentData 
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [membersList, setMembersList] = useState<any[]>([])
 
   const [formData, setFormData] = useState<PresidentData>({
+    member_id: president?.member_id || null,
     full_name: president?.full_name || '',
     term: president?.term || '',
     photo_url: president?.photo_url || null,
@@ -89,6 +94,70 @@ export default function PresidentForm({ president }: { president: PresidentData 
     is_current: president?.is_current ?? false,
   })
 
+  // Charger la liste des membres pour la liaison optionnelle
+  useEffect(() => {
+    async function loadMembers() {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase
+          .from('members')
+          .select('id, full_name, slug, photo_url, role_title, professional_title, professional_classification, company, email, phone, whatsapp, linkedin_url, facebook_url, instagram_url')
+          .order('full_name')
+        if (data) setMembersList(data)
+      } catch (err) {
+        console.error('Erreur chargement membres:', err)
+      }
+    }
+    loadMembers()
+  }, [])
+
+  // Gérer la sélection d'un membre existant
+  const handleMemberSelect = (selectedId: string) => {
+    if (!selectedId) {
+      setFormData(prev => ({ ...prev, member_id: null }))
+      return
+    }
+
+    const member = membersList.find(m => m.id === selectedId)
+    if (!member) return
+
+    setFormData(prev => ({
+      ...prev,
+      member_id: member.id,
+      full_name: member.full_name || prev.full_name,
+      photo_url: member.photo_url || prev.photo_url,
+      professional_title: member.role_title || member.professional_title || member.professional_classification || prev.professional_title,
+      company: member.company || prev.company,
+      email: member.email || prev.email,
+      phone: member.phone || prev.phone,
+      whatsapp: member.whatsapp || prev.whatsapp,
+      linkedin_url: member.linkedin_url || prev.linkedin_url,
+      facebook_url: member.facebook_url || prev.facebook_url,
+      instagram_url: member.instagram_url || prev.instagram_url,
+    }))
+  }
+
+  // Resynchroniser manuellement avec la fiche membre
+  const handleSyncWithMember = () => {
+    if (!formData.member_id) return
+    const member = membersList.find(m => m.id === formData.member_id)
+    if (!member) return
+
+    setFormData(prev => ({
+      ...prev,
+      full_name: member.full_name || prev.full_name,
+      photo_url: member.photo_url || prev.photo_url,
+      professional_title: member.role_title || member.professional_title || member.professional_classification || prev.professional_title,
+      company: member.company || prev.company,
+      email: member.email || prev.email,
+      phone: member.phone || prev.phone,
+      whatsapp: member.whatsapp || prev.whatsapp,
+      linkedin_url: member.linkedin_url || prev.linkedin_url,
+      facebook_url: member.facebook_url || prev.facebook_url,
+      instagram_url: member.instagram_url || prev.instagram_url,
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -98,6 +167,7 @@ export default function PresidentForm({ president }: { president: PresidentData 
       const supabase = createClient()
 
       const dataToSave = {
+        member_id: formData.member_id || null,
         full_name: formData.full_name.trim(),
         term: formData.term.trim(),
         photo_url: formData.photo_url || null,
@@ -210,6 +280,63 @@ export default function PresidentForm({ president }: { president: PresidentData 
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* LIAISON OPTIONNELLE AVEC UN MEMBRE DU CLUB */}
+          <div className="md:col-span-2 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50/80 via-white to-amber-50/50 border border-amber-200/90 shadow-xs space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-amber-500 text-white rounded-lg">
+                  <Users size={16} />
+                </div>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-wider text-amber-950">
+                    Lier à un Membre du Club (Optionnel)
+                  </label>
+                  <p className="text-[11px] text-amber-900/80">
+                    Permet de synchroniser les informations et d&apos;afficher le badge présidentiel sur sa fiche membre.
+                  </p>
+                </div>
+              </div>
+
+              {formData.member_id && (
+                <button
+                  type="button"
+                  onClick={handleSyncWithMember}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-xs transition cursor-pointer self-start sm:self-auto"
+                  title="Mettre à jour les champs depuis sa fiche membre"
+                >
+                  <RefreshCw size={13} />
+                  <span>Synchroniser les infos</span>
+                </button>
+              )}
+            </div>
+
+            <select
+              value={formData.member_id || ''}
+              onChange={(e) => handleMemberSelect(e.target.value)}
+              className="w-full px-4 py-2.5 border border-amber-300 rounded-xl text-sm bg-white font-semibold text-gray-800 focus:ring-2 focus:ring-amber-500 focus:border-transparent cursor-pointer"
+            >
+              <option value="">— Aucun (Past-Président qui n&apos;est plus membre ou mandat d&apos;époque) —</option>
+              {membersList.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.full_name} {m.role_title ? `• ${m.role_title}` : ''}
+                </option>
+              ))}
+            </select>
+
+            {formData.member_id ? (
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-200">
+                <CheckCircle2 size={15} className="text-emerald-600 flex-shrink-0" />
+                <span>
+                  Ce mandat est rattaché à sa fiche membre. Un badge d&apos;honneur apparaîtra sur son profil public !
+                </span>
+              </div>
+            ) : (
+              <p className="text-[11px] text-gray-500 italic">
+                ℹ️ Mode autonome : si cette personne n&apos;est plus membre du club, laissez sur « Aucun ». Le mandat apparaîtra tout de même dans la galerie des Past-Présidents.
+              </p>
+            )}
+          </div>
+
           <div className="md:col-span-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
               Nom complet du Président *

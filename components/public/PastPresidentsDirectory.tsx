@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { 
   Award, 
   Search, 
@@ -43,6 +44,7 @@ const InstagramIcon = ({ size = 14, className = '' }: { size?: number; className
 
 export interface PresidentItem {
   id: string
+  member_id?: string | null
   full_name: string
   term: string
   photo_url: string | null
@@ -61,6 +63,14 @@ export interface PresidentItem {
   instagram_url?: string | null
   display_order?: number
   is_current: boolean
+  member?: {
+    id: string
+    full_name: string
+    slug: string
+    photo_url: string | null
+    role_title: string | null
+    is_active?: boolean
+  } | null
 }
 
 interface PastPresidentsDirectoryProps {
@@ -277,6 +287,20 @@ export default function PastPresidentsDirectory({ presidents }: PastPresidentsDi
                         {isCurrent ? 'Président du Mandat' : 'Past-Président'}
                       </p>
 
+                      {/* Lien vers sa fiche membre si rattaché */}
+                      {p.member?.slug && (
+                        <div className="mb-3">
+                          <Link
+                            href={`/membres/${p.member.slug}`}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                            title="Voir sa fiche membre dans le trombinoscope"
+                          >
+                            <Users size={12} className="text-emerald-700" />
+                            <span>Membre du Club • Fiche profil →</span>
+                          </Link>
+                        </div>
+                      )}
+
                       {/* Thème du mandat */}
                       {p.theme && (
                         <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-100/70 border border-amber-300 px-2.5 py-1 rounded-lg mb-3">
@@ -441,6 +465,19 @@ export default function PastPresidentsDirectory({ presidents }: PastPresidentsDi
                       {selectedPresident.professional_title}
                       {selectedPresident.company && ` • ${selectedPresident.company}`}
                     </p>
+                  )}
+
+                  {selectedPresident.member?.slug && (
+                    <div className="mt-2.5">
+                      <Link
+                        href={`/membres/${selectedPresident.member.slug}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 hover:bg-white text-white hover:text-[#014F43] text-xs font-bold transition duration-200"
+                        title="Voir sa fiche membre complète"
+                      >
+                        <Users size={13} />
+                        <span>Consulter son profil membre →</span>
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>

@@ -19,6 +19,12 @@ export interface MemberItem {
   honorary_title?: string | null
   is_active?: boolean
   display_order?: number
+  presidency_mandates?: {
+    id: string
+    term: string
+    theme?: string | null
+    is_current: boolean
+  }[]
 }
 
 interface MembersDirectoryProps {
@@ -285,6 +291,10 @@ export default function MembersDirectory({ members, commissions }: MembersDirect
               }
 
               // CARTE MEMBRE CLASSIQUE
+              const currentMandate = member.presidency_mandates?.find(m => m.is_current)
+              const pastMandate = member.presidency_mandates?.[0]
+              const mandateToShow = currentMandate || pastMandate
+
               return (
                 <Link
                   key={member.id}
@@ -305,9 +315,34 @@ export default function MembersDirectory({ members, commissions }: MembersDirect
                           {member.full_name.charAt(0)}
                         </div>
                       )}
+
+                      {/* Badge Mandat Présidentiel sur la photo */}
+                      {mandateToShow && (
+                        <div className="absolute top-3 left-3 z-10">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-full shadow-md text-white ${
+                            mandateToShow.is_current ? 'bg-[#E11A60]' : 'bg-amber-600 border border-amber-300'
+                          }`}>
+                            {mandateToShow.is_current ? '⭐ Présidence' : '🏅 Past-Président'}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="p-5">
+                      {/* Badge de mandat sous le nom */}
+                      {mandateToShow && (
+                        <div className="mb-2">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                            mandateToShow.is_current
+                              ? 'bg-[#E11A60]/10 text-[#E11A60] border border-[#E11A60]/20'
+                              : 'bg-amber-50 text-amber-800 border border-amber-300'
+                          }`}>
+                            {mandateToShow.is_current ? <Star size={11} className="fill-[#E11A60]" /> : <Award size={11} className="text-amber-700" />}
+                            <span>{mandateToShow.is_current ? `Président(e) • ${mandateToShow.term}` : `Past-Président • ${mandateToShow.term}`}</span>
+                          </span>
+                        </div>
+                      )}
+
                       <h3 className="text-lg font-bold text-[#014F43] group-hover:text-[#E11A60] transition-colors mb-1">
                         {member.full_name}
                       </h3>

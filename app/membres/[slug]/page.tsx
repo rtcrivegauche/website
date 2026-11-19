@@ -49,6 +49,20 @@ export default async function MemberPage({ params }: MemberPageProps) {
     notFound()
   }
 
+  // Charger les mandats présidentiels rattachés à ce membre de manière tolérante
+  const { data: allPresidents } = await supabase
+    .from('presidents')
+    .select('*')
+    .order('is_current', { ascending: false })
+    .order('term', { ascending: false })
+
+  const normMemberName = (member.full_name || '').trim().toLowerCase()
+  const memberMandates = (allPresidents || []).filter((p: any) => {
+    if (p.member_id && p.member_id === member.id) return true
+    const normPName = (p.full_name || '').trim().toLowerCase()
+    return normPName && normMemberName && (normPName === normMemberName || normMemberName.includes(normPName) || normPName.includes(normMemberName))
+  })
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
       <Header />
@@ -89,9 +103,25 @@ export default async function MemberPage({ params }: MemberPageProps) {
             {/* Infos */}
             <div className="flex-1 text-center md:text-left">
               {member.is_honorary && (
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-xs uppercase tracking-wider rounded-full shadow-lg border border-amber-300 mb-3">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-amber-950 font-black text-xs uppercase tracking-wider rounded-full shadow-lg border border-amber-300 mb-3 mr-2">
                   <Crown size={15} className="text-amber-900 fill-amber-900" />
                   <span>Membre d&apos;Honneur {member.honorary_title ? `• ${member.honorary_title}` : ''}</span>
+                </div>
+              )}
+
+              {memberMandates.length > 0 && (
+                <div className="inline-flex flex-wrap gap-2 mb-3">
+                  {memberMandates.map((m: any) => (
+                    <Link
+                      key={m.id}
+                      href="/past-presidents"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-400 text-amber-950 font-black text-xs uppercase tracking-wider hover:bg-amber-300 transition-colors shadow-md"
+                      title="Découvrir son mandat dans la galerie des présidents"
+                    >
+                      <Award size={14} className="text-amber-900" />
+                      <span>{m.is_current ? `⭐ Présidence en cours (${m.term})` : `🏅 Past-Président (${m.term})`}</span>
+                    </Link>
+                  ))}
                 </div>
               )}
 
@@ -193,6 +223,84 @@ export default async function MemberPage({ params }: MemberPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Colonne principale */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Mandat(s) Présidentiel(s) */}
+            {memberMandates.length > 0 && (
+              <div className="bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 rounded-2xl p-6 sm:p-8 border border-amber-300 shadow-md space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-amber-200 pb-4 gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-xs">
+                      <Award size={22} />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-black text-[#014F43]">
+                        Mandat(s) Présidentiel(s) au Club
+                      </h2>
+                      <p className="text-xs text-amber-900/80 font-medium">
+                        Galerie d&apos;honneur et gouvernance du club
+                      </p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/past-presidents"
+                    className="text-xs font-black uppercase tracking-wider text-amber-900 hover:text-[#E11A60] transition-colors self-start sm:self-auto"
+                  >
+                    Voir tous les mandats →
+                  </Link>
+                </div>
+
+                <div className="space-y-6">
+                  {memberMandates.map((m: any) => (
+                    <div key={m.id} className="p-5 rounded-2xl bg-white/90 border border-amber-200 space-y-4 shadow-xs">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="px-3 py-1 bg-amber-400 text-amber-950 font-black text-xs uppercase tracking-wider rounded-full shadow-xs">
+                          {m.term}
+                        </span>
+                        {m.is_current && (
+                          <span className="px-2.5 py-0.5 bg-[#E11A60] text-white font-black text-[10px] uppercase tracking-wider rounded-full shadow-xs">
+                            Présidence en cours
+                          </span>
+                        )}
+                        {m.theme && (
+                          <span className="text-xs font-bold text-amber-900 italic">
+                            Thème : « {m.theme} »
+                          </span>
+                        )}
+                      </div>
+
+                      {m.citation && (
+                        <p className="text-sm italic text-gray-700 bg-amber-50/50 p-4 rounded-xl border-l-4 border-l-amber-500">
+                          « {m.citation} »
+                        </p>
+                      )}
+
+                      {m.message && (
+                        <div>
+                          <h4 className="text-xs font-black uppercase tracking-wider text-[#014F43] mb-1.5">
+                            Le Mot du Mandat :
+                          </h4>
+                          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-xl border border-gray-150">
+                            {m.message}
+                          </p>
+                        </div>
+                      )}
+
+                      {m.achievements && (
+                        <div className="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200">
+                          <h4 className="text-xs font-black uppercase tracking-wider text-emerald-900 mb-1">
+                            Bilan &amp; Réalisations marquantes :
+                          </h4>
+                          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                            {m.achievements}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Biographie */}
             {member.bio && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">

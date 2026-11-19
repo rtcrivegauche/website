@@ -2,16 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Quote, Star, Video, ArrowLeft, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 interface Testimonial {
   id: string | number
+  member_id?: string | null
   name: string
   role: string
   promotion: string | null
   quote: string
   avatar_url: string | null
+  member?: {
+    id: string
+    full_name: string
+    photo_url: string | null
+    role_title: string | null
+    slug: string
+  } | null
 }
 
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
@@ -51,10 +60,10 @@ export default function TestimonialsSection() {
       try {
         const supabase = createClient()
         
-        // Charger les témoignages
+        // Charger les témoignages avec jointure membre
         const { data, error } = await supabase
           .from('testimonials')
-          .select('*')
+          .select('*, member:members(id, full_name, photo_url, role_title, slug)')
           .eq('is_published', true)
           .order('display_order', { ascending: true })
 
@@ -149,26 +158,48 @@ export default function TestimonialsSection() {
             </p>
 
             {/* Auteur */}
-            <div className="flex items-center gap-4">
-              <div className="relative w-14 h-14 rounded-full border-2 border-[#E11A60] overflow-hidden bg-gray-50 flex items-center justify-center font-black text-[#E11A60] text-lg uppercase flex-shrink-0">
-                {testimonials[activeIndex].avatar_url ? (
-                  <Image src={testimonials[activeIndex].avatar_url} alt={testimonials[activeIndex].name} fill className="object-cover" />
-                ) : (
-                  testimonials[activeIndex].name.charAt(0)
-                )}
-              </div>
-              <div>
-                <h4 className="font-extrabold text-[#014F43] text-base md:text-lg">
-                  {testimonials[activeIndex].name}
-                </h4>
-                <p className="text-xs font-bold text-[#E11A60] uppercase tracking-wider">
-                  {testimonials[activeIndex].role}
-                </p>
-                <p className="text-[10px] font-semibold text-gray-400">
-                  {testimonials[activeIndex].promotion}
-                </p>
-              </div>
-            </div>
+            {(() => {
+              const current = testimonials[activeIndex]
+              const authorName = current?.member?.full_name || current?.name
+              const authorRole = current?.role || current?.member?.role_title || 'Membre'
+              const authorAvatar = current?.member?.photo_url || current?.avatar_url
+              const memberSlug = current?.member?.slug
+
+              return (
+                <div className="flex items-center gap-4">
+                  <div className="relative w-14 h-14 rounded-full border-2 border-[#E11A60] overflow-hidden bg-gray-50 flex items-center justify-center font-black text-[#E11A60] text-lg uppercase flex-shrink-0">
+                    {authorAvatar ? (
+                      <Image src={authorAvatar} alt={authorName} fill className="object-cover" />
+                    ) : (
+                      authorName.charAt(0)
+                    )}
+                  </div>
+                  <div>
+                    {memberSlug ? (
+                      <Link 
+                        href={`/membres/${memberSlug}`}
+                        className="font-extrabold text-[#014F43] text-base md:text-lg hover:text-[#E11A60] transition-colors inline-block"
+                        title="Voir la fiche du membre"
+                      >
+                        {authorName}
+                      </Link>
+                    ) : (
+                      <h4 className="font-extrabold text-[#014F43] text-base md:text-lg">
+                        {authorName}
+                      </h4>
+                    )}
+                    <p className="text-xs font-bold text-[#E11A60] uppercase tracking-wider">
+                      {authorRole}
+                    </p>
+                    {current?.promotion && (
+                      <p className="text-[10px] font-semibold text-gray-400">
+                        {current.promotion}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
           </div>
 
           {/* Boutons de navigation du Carousel */}
