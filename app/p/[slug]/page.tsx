@@ -77,8 +77,8 @@ export default async function CustomPage({ params }: PageProps) {
               </p>
             )}
 
-            {/* Contenu riche optionnel si en mode hybride */}
-            {page.content_type === 'hybrid' && page.rich_content && (
+            {/* Contenu riche optionnel si en mode hybride (exclu sur les pages de formulaire d'adhésion) */}
+            {page.content_type === 'hybrid' && !slug.includes('rejoindre') && page.rich_content && (
               <div className="prose prose-lg max-w-none mb-6">
                 <SafeHtmlRenderer html={page.rich_content} />
               </div>

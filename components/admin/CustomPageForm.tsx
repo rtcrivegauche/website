@@ -65,6 +65,7 @@ export default function CustomPageForm({ page }: CustomPageFormProps) {
         ...formData,
         description: sanitizeDescription(formData.description) || null,
         meta_description: sanitizeDescription(formData.meta_description) || null,
+        rich_content: formData.content_type === 'embed' ? null : formData.rich_content,
       }
       
       if (page) {
